@@ -6,6 +6,8 @@ export type LeadStatus =
   | "assigned_to_provider"
   | "in_progress"
   | "won"
+  | "rebate_received"
+  | "rebate_paid"
   | "lost"
   | "disqualified";
 
@@ -123,6 +125,10 @@ export async function assignLeadToProvider(
 }
 
 const PROVIDER_SETTABLE_STATUSES: LeadStatus[] = ["in_progress", "won", "lost", "disqualified"];
+// rebate_received/rebate_paid are franchisor-only — the provider closes
+// the deal, but tracking whether the franchise received and then paid
+// out the rebate is a franchisor accounting concern, not the provider's.
+const REBATE_STATUSES: LeadStatus[] = ["rebate_received", "rebate_paid"];
 
 export async function updateLeadStatus(
   ctx: SessionContext,
@@ -135,6 +141,9 @@ export async function updateLeadStatus(
   }
   if (ctx.role === "franchisee") {
     throw new Error("Franchisees have view-only access to lead status.");
+  }
+  if (REBATE_STATUSES.includes(status) && ctx.role !== "super_admin" && ctx.role !== "franchisor") {
+    throw new Error("Only the franchisor can update rebate status.");
   }
 
   await withTenantContext(ctx, async (tx) => {
@@ -152,5 +161,74 @@ export async function updateLeadStatus(
       insert into lead_status_history (lead_id, status, changed_by, note)
       values (${leadId}, ${status}, ${ctx.userId}, ${opts?.note ?? null})
     `;
+  });
+}
+
+export type LeadStatusHistoryEntry = {
+  status: LeadStatus;
+  changedByName: string | null;
+  note: string | null;
+  changedAt: string;
+};
+
+export type LeadDetail = Lead & {
+  details: Record<string, unknown>;
+  consentToContact: boolean;
+  updatedAt: string;
+  statusHistory: LeadStatusHistoryEntry[];
+};
+
+/**
+ * Full detail view for a single lead — the free-text/structured answers
+ * the chat agent collected (leads.details), plus the full status-change
+ * audit trail. Same role-scoping as listLeads (a provider can only open
+ * a lead assigned to them, a franchisee only one from their own tenant).
+ */
+export async function getLeadDetail(ctx: SessionContext, leadId: string): Promise<LeadDetail | null> {
+  return withTenantContext(ctx, async (tx) => {
+    const rows = await tx<(LeadRow & { details: Record<string, unknown>; consent_to_contact: boolean; updated_at: string })[]>`
+      select
+        l.id, l.tenant_id, t.name as tenant_name,
+        st.key as service_type_key, st.name as service_type_label,
+        l.status, l.assigned_provider_id, sp.company_name as assigned_provider_name,
+        l.full_name, l.contact_email, l.contact_phone, l.postcode,
+        l.deal_value, l.created_at, l.updated_at, l.details, l.consent_to_contact
+      from leads l
+      join tenants t on t.id = l.tenant_id
+      join service_types st on st.id = l.service_type_id
+      left join service_providers sp on sp.id = l.assigned_provider_id
+      where l.id = ${leadId}
+      and ${
+        ctx.role === "franchisee"
+          ? tx`l.tenant_id = ${ctx.tenantId}`
+          : ctx.role === "service_provider"
+            ? tx`l.assigned_provider_id = ${ctx.providerId}`
+            : tx`true`
+      }
+      limit 1
+    `;
+    if (rows.length === 0) return null;
+
+    const historyRows = await tx<{ status: LeadStatus; note: string | null; changed_at: string; changed_by_name: string | null }[]>`
+      select h.status, h.note, h.changed_at, u.full_name as changed_by_name
+      from lead_status_history h
+      left join users u on u.id = h.changed_by
+      where h.lead_id = ${leadId}
+      order by h.changed_at asc
+    `;
+
+    const row = rows[0];
+    return {
+      ...toLead(row),
+      details: row.details ?? {},
+      consentToContact: row.consent_to_contact,
+      updatedAt: row.updated_at,
+      statusHistory: historyRows.map((h) => ({
+        status: h.status,
+        changedByName: h.changed_by_name,
+        note: h.note,
+        changedAt: h.changed_at,
+      })),
+    };
   });
 }

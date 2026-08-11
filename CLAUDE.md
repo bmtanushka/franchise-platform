@@ -284,8 +284,25 @@ Cloudflare R2 + a `documents` table linked to `leads`).
    value, capped) on status → `won`," but decided against computing it
    at all: the service provider's manually-entered `deal_value` (step 6)
    is the only number tracked. The `rebates`/`rebate_rules` tables still
-   exist in the schema (migration 001) but nothing writes to them —
-   revisit only if manual rebate/payout tracking is wanted later.
+   exist in the schema (migration 001) but nothing writes to them.
+
+   What *was* added instead (still manual, no math): two more
+   `lead_status` enum values, `rebate_received` and `rebate_paid`
+   (migration 006 — `ALTER TYPE ... ADD VALUE`, can't run in the same
+   transaction as a statement using the new value). Franchisor/
+   super_admin only can advance a `won` lead through them
+   (`REBATE_STATUSES` guard in `web/src/lib/db/leads.ts` — providers and
+   franchisees are blocked), via a one-click "Mark rebate received/paid"
+   button next to the lead row on `/dashboard`.
+
+   Also added: a lead detail page (`/dashboard/leads/[id]`) with a "View"
+   link from every row, for all four roles. Shows the full
+   `leads.details` jsonb (whatever the chat agent collected —
+   service-specific answers), contact info, and the complete
+   `lead_status_history` timeline with who changed what and when. Same
+   role-scoping as the list view (a provider/franchisee opening a lead
+   they're not authorized for gets a 404, verified with real browser
+   sessions for both).
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.

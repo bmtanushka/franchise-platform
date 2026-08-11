@@ -1,20 +1,18 @@
+import Link from "next/link";
 import { listLeads, type Lead, type LeadStatus } from "@/lib/db/leads";
 import { listServiceProviders } from "@/lib/db/providers";
 import { assignLeadAction, updateLeadStatusAction } from "@/lib/actions/leads";
+import { STATUS_LABEL } from "@/lib/lead-status-labels";
 import type { Role } from "@/lib/db/context";
 import type { SessionContext } from "@/lib/db/context";
 
-const STATUS_LABEL: Record<LeadStatus, string> = {
-  new: "New",
-  qualified: "Qualified",
-  assigned_to_provider: "Assigned",
-  in_progress: "In progress",
-  won: "Won",
-  lost: "Lost",
-  disqualified: "Disqualified",
-};
-
 const PROVIDER_NEXT_STATUSES: LeadStatus[] = ["in_progress", "won", "lost", "disqualified"];
+
+// won -> rebate_received -> rebate_paid, franchisor-only (see leads.ts).
+const NEXT_REBATE_STATUS: Partial<Record<LeadStatus, LeadStatus>> = {
+  won: "rebate_received",
+  rebate_received: "rebate_paid",
+};
 
 export async function LeadsSection({ ctx }: { ctx: SessionContext }) {
   const leads = await listLeads(ctx);
@@ -42,6 +40,7 @@ export async function LeadsSection({ ctx }: { ctx: SessionContext }) {
               <th className="px-3 py-2 font-medium">Contact</th>
               <th className="px-3 py-2 font-medium">Status</th>
               <th className="px-3 py-2 font-medium">Provider</th>
+              <th className="px-3 py-2 font-medium">Details</th>
               {ctx.role !== "franchisee" && <th className="px-3 py-2 font-medium">Action</th>}
             </tr>
           </thead>
@@ -63,13 +62,24 @@ export async function LeadsSection({ ctx }: { ctx: SessionContext }) {
                   {lead.dealValue && <div className="mt-1 text-xs opacity-60">${lead.dealValue}</div>}
                 </td>
                 <td className="px-3 py-2">{lead.assignedProviderName ?? "—"}</td>
+                <td className="px-3 py-2">
+                  <Link href={`/dashboard/leads/${lead.id}`} className="text-xs underline opacity-70 hover:opacity-100">
+                    View
+                  </Link>
+                </td>
                 {ctx.role !== "franchisee" && (
                   <td className="px-3 py-2">
-                    {(ctx.role === "super_admin" || ctx.role === "franchisor") &&
-                      !lead.assignedProviderId && <AssignForm leadId={lead.id} providers={providers} />}
-                    {ctx.role === "service_provider" && (
-                      <UpdateStatusForm leadId={lead.id} currentStatus={lead.status} currentDealValue={lead.dealValue} />
-                    )}
+                    <div className="flex flex-col gap-1.5">
+                      {(ctx.role === "super_admin" || ctx.role === "franchisor") &&
+                        !lead.assignedProviderId && <AssignForm leadId={lead.id} providers={providers} />}
+                      {ctx.role === "service_provider" && (
+                        <UpdateStatusForm leadId={lead.id} currentStatus={lead.status} currentDealValue={lead.dealValue} />
+                      )}
+                      {(ctx.role === "super_admin" || ctx.role === "franchisor") &&
+                        NEXT_REBATE_STATUS[lead.status] && (
+                          <RebateAdvanceForm leadId={lead.id} nextStatus={NEXT_REBATE_STATUS[lead.status]!} />
+                        )}
+                    </div>
                   </td>
                 )}
               </tr>
@@ -159,6 +169,21 @@ function UpdateStatusForm({
       />
       <button type="submit" className="rounded bg-black px-2 py-1 text-xs text-white dark:bg-white dark:text-black">
         Update
+      </button>
+    </form>
+  );
+}
+
+function RebateAdvanceForm({ leadId, nextStatus }: { leadId: string; nextStatus: LeadStatus }) {
+  return (
+    <form action={updateLeadStatusAction}>
+      <input type="hidden" name="leadId" value={leadId} />
+      <input type="hidden" name="status" value={nextStatus} />
+      <button
+        type="submit"
+        className="rounded border border-black/15 px-2 py-1 text-xs dark:border-white/20"
+      >
+        Mark {STATUS_LABEL[nextStatus].toLowerCase()}
       </button>
     </form>
   );
