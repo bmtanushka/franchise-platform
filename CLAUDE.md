@@ -12,9 +12,11 @@ conventions to follow for every change in this repo.
 - Customers get connected to business service providers (credit brokers,
   mortgage brokers, real estate agents, etc.) through the platform.
 - When a deal closes successfully via this pipeline, the franchisee (or in
-  some cases the franchisor directly) earns a rebate.
-- Actual payout of rebates happens outside this system — we only need to
-  track and display rebate amounts and a paid/pending flag.
+  some cases the franchisor directly) earns a rebate. Actual rebate
+  calculation and payout happen outside this system for now — the
+  platform's job is just to capture the real `deal_value`, entered
+  directly by the service provider who closed it, not to compute a
+  rebate amount from a formula.
 
 ## User roles
 
@@ -53,8 +55,7 @@ placeholders — treat as literal until real domains are provided):
   directly** for national/online visitors — these leads are owned by the
   franchisor tenant outright, never routed to a franchisee, and the
   franchisor assigns them straight to a service provider in the relevant
-  area. No rebate is created for franchisor-owned leads (see rebate logic
-  below).
+  area.
 - `*.franchiseenetwork.com` — wildcard subdomain, one per franchisee (e.g.
   `london.franchiseenetwork.com`). Same chat agent, but leads are owned by
   that franchisee immediately.
@@ -126,11 +127,10 @@ won / lost / disqualified`. Every status change is logged to
   (franchisor is just another row in `tenants`, type `franchisor`). Never
   reassigned to a franchisee.
 - Franchisor assigns leads to a `service_provider` (manual selection in v1).
-- Service providers update status as they work the deal and set
-  `deal_value` on close.
-- **Rebate creation rule**: on status → `won`, only create a `rebates` row
-  if the lead's owning tenant is type `franchisee`. Franchisor-owned leads
-  still get their full status history and `deal_value`, just no rebate row.
+- Service providers update status as they work the deal and manually enter
+  `deal_value` themselves — there's no automatic rebate calculation from a
+  formula (e.g. a percentage of loan amount). The provider's entered
+  number is the source of truth.
 
 ## AI chat agent (lead capture)
 
@@ -234,7 +234,8 @@ Cloudflare R2 + a `documents` table linked to `leads`).
   hidden in the UI.
 - Chat agent answer extraction always goes through a tool-call schema.
 - Every chat message is persisted before the turn completes.
-- Rebate creation always checks the owning tenant's type before inserting.
+- No automatic rebate calculation — `deal_value` is whatever the service
+  provider enters, not a computed percentage/cap of anything.
 
 ## Roadmap
 
@@ -274,16 +275,20 @@ Cloudflare R2 + a `documents` table linked to `leads`).
    SELECT. Every change still logs to `lead_status_history` with
    `changed_by`. Tested end-to-end with a real browser (franchisor assign
    → provider update to `won` with deal value → franchisee sees the
-   result read-only, no rebate created yet).
-7. Build rebate calculation on `won` status and the pending/paid toggle.
+   result read-only). The status/deal-value form defaults to the lead's
+   *current* status (not always the first option) and pre-fills the
+   existing deal value, so re-submitting to tweak one doesn't silently
+   clobber the other.
+7. ❌ Descoped — no automatic rebate calculation. Originally planned as
+   "insert a `rebates` row using `rebate_rules` (percentage of deal
+   value, capped) on status → `won`," but decided against computing it
+   at all: the service provider's manually-entered `deal_value` (step 6)
+   is the only number tracked. The `rebates`/`rebate_rules` tables still
+   exist in the schema (migration 001) but nothing writes to them —
+   revisit only if manual rebate/payout tracking is wanted later.
 
-Next up: step 7, rebate calculation. On a lead's status → `won`, insert a
-`rebates` row using `rebate_rules` *only* if the lead's owning tenant is
-type `franchisee` (franchisor-owned leads never get one) — that check
-currently isn't done anywhere, so `updateLeadStatus` in
-`web/src/lib/db/leads.ts` is the place to add it. Also needs the
-pending/paid toggle UI, most naturally on the franchisor/franchisee
-dashboard views.
+Both the original roadmap items are done. Next up is whatever's needed
+next — nothing currently queued.
 
 ## Known gaps / things to revisit
 
