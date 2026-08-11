@@ -1,0 +1,319 @@
+<!-- ════════════════════════════════════════════════════
+     franchise-opportunities.html
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── IMAGE PLACEHOLDER ── */
+  .img-ph {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.8rem; position: relative; overflow: hidden;
+    min-height: 280px;
+  }
+  .img-ph::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(74,158,120,0.07), rgba(201,168,76,0.04));
+  }
+  .img-ph-icon { font-size: 2.2rem; position: relative; z-index: 1; opacity: 0.45; }
+  .img-ph-label {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); position: relative; z-index: 1; font-weight: 500; text-align: center; padding: 0 1rem;
+  }
+  .img-ph.tall { min-height: 360px; }
+  .img-ph.short { min-height: 200px; }
+
+  /* ── SECTION LAYOUT: text + image ── */
+  .content-split {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: center; margin-top: 3rem;
+  }
+  .content-split.flip { direction: rtl; }
+  .content-split.flip > * { direction: ltr; }
+
+  /* ── FEATURE BADGES ── */
+  .badge-row { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.8rem; }
+  .badge {
+    padding: 0.5rem 1.1rem; border: 1px solid var(--glass-b);
+    background: var(--glass); color: var(--cream); font-size: 0.8rem;
+    letter-spacing: 0.06em; font-weight: 500; transition: all 0.3s;
+  }
+  .badge:hover { border-color: var(--gold); color: var(--gold-light); }
+
+  /* ── DISCLOSURE CALLOUT ── */
+  .disclosure-callout {
+    background: linear-gradient(135deg, rgba(42,82,64,0.3), rgba(24,46,36,0.65));
+    border: 1px solid var(--glass-b); border-left: 3px solid var(--gold);
+    padding: 1.8rem 2rem; margin-top: 1.5rem;
+    font-size: 0.92rem; color: rgba(245,240,232,0.78); line-height: 1.8;
+    font-weight: 400;
+  }
+  .disclosure-callout strong { color: var(--gold-light); }
+
+  @media (max-width: 960px) {
+    .content-split { grid-template-columns: 1fr; gap: 2.5rem; direction: ltr; }
+    .content-split.flip { direction: ltr; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / Franchise Opportunities</div>
+
+  <h1 class="hero-title">
+    Build multiple<br>
+    <em>income streams</em><br>
+    <span class="g">without starting from scratch</span>
+  </h1>
+
+  <p class="hero-body">
+    The Luna Verde Corporate franchise is built for entrepreneurs who want multiple income streams within a structured, compliance-first, technology-driven ecosystem — without building separate businesses.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#overview" class="btn-g"><span>Explore the Model</span></a>
+    <a href="/#claim" class="btn-txt">Request Information</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FRANCHISE OVERVIEW
+══════════════════════════════════════════ -->
+<section class="sec banded" id="overview">
+  <div class="tag rv">Franchise Overview</div>
+  <h2 class="sec-title rv d1">A model built for <em>scalable</em><br>entrepreneurship</h2>
+  <div class="rule rv d2"></div>
+
+  <div class="content-split">
+    <div class="rv d2">
+      <p class="body-txt">
+        The Luna Verde Corporate franchise is built for entrepreneurs who want multiple income streams without building separate businesses. Franchisees operate within a structured system that prioritizes compliance, automation, and scalability.
+      </p>
+      <p class="body-txt" style="margin-top:1.2rem;">
+        The model allows participation at different levels — from referral-focused roles to fully engaged operators. Support, systems, and training are centralized, allowing franchisees to focus on growth.
+      </p>
+      <p class="body-txt" style="margin-top:1.2rem;">
+        This path is designed to align with different time commitments, experience levels, and income goals. Franchisees focus on relationship building and introductions, as well as operations and learning.
+      </p>
+      <div class="badge-row">
+        <span class="badge">Multiple Income Streams</span>
+        <span class="badge">Compliance-First</span>
+        <span class="badge">Centralized Systems</span>
+        <span class="badge">Scalable Model</span>
+      </div>
+    </div>
+    <div class="rv d3">
+      <div class="img-ph tall" style="margin-bottom:1rem;">
+        <div class="img-ph-icon">🤝</div>
+        <div class="img-ph-label">Professional team collaboration</div>
+      </div>
+      <div class="img-ph short">
+        <div class="img-ph-icon">💻</div>
+        <div class="img-ph-label">Professional individuals working remotely</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Intro pills below -->
+  <div class="intro-pills" style="margin-top:3rem;">
+    <div class="pill rv d1"><div class="pill-ic">📋</div><div class="pill-title">Referral-Focused</div><div class="pill-body">Entry-level participation through compliant introductions and referrals.</div></div>
+    <div class="pill rv d2"><div class="pill-ic">⚙️</div><div class="pill-title">Full Operator</div><div class="pill-body">Deeply engaged in operations across all five service pillars.</div></div>
+    <div class="pill rv d3"><div class="pill-ic">🔗</div><div class="pill-title">Network Effect</div><div class="pill-body">Ecosystem of partners, lenders, and real estate professionals.</div></div>
+    <div class="pill rv d4"><div class="pill-ic">📈</div><div class="pill-title">Built to Scale</div><div class="pill-body">Centralized tools and automation allow growth without proportional overhead.</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     EARNINGS & ECONOMICS
+══════════════════════════════════════════ -->
+<section class="sec" id="earnings">
+  <div class="tag rv">Earnings &amp; Economics</div>
+  <h2 class="sec-title rv d1">Diversified income across <em>multiple pillars</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="content-split flip">
+    <div class="rv d2">
+      <p class="body-txt">
+        Franchise earnings are driven by multiple service pillars rather than a single commission source. This diversification helps stabilize income and reduce reliance on any one market.
+      </p>
+      <p class="body-txt" style="margin-top:1.2rem;">
+        Compensation is structured around completed milestones and compliant referral outcomes — not employment or hourly work. Clear rules and reporting ensure transparency for all parties.
+      </p>
+      <ul class="credit-list" style="margin-top:2rem;">
+        <li>Earnings tied to completed, compliant outcomes — not hours worked.</li>
+        <li>Multi-pillar model reduces dependence on any single service category.</li>
+        <li>Transparent reporting and clear compensation rules across the network.</li>
+        <li>Income potential scales with engagement level and pillar participation.</li>
+      </ul>
+    </div>
+    <div class="rv d3">
+      <div class="img-ph tall">
+        <div class="img-ph-icon">📊</div>
+        <div class="img-ph-label">Revenue stream illustration — charts without dollar figures</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TRAINING & SUPPORT
+══════════════════════════════════════════ -->
+<section class="sec banded" id="training">
+  <div class="tag rv">Training &amp; Support</div>
+  <h2 class="sec-title rv d1">Structured onboarding,<br><em>ongoing support</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="content-split">
+    <div class="rv d2">
+      <p class="body-txt">
+        Every franchisee receives structured onboarding, ongoing training, and access to centralized tools. Education focuses on systems, compliance, and practical execution — not theory alone.
+      </p>
+      <p class="body-txt" style="margin-top:1.2rem;">
+        Automation, AI tools, and marketing support help reduce manual work while improving consistency. Franchisees are supported without being micromanaged.
+      </p>
+      <div class="badge-row">
+        <span class="badge">Structured Onboarding</span>
+        <span class="badge">Compliance Training</span>
+        <span class="badge">AI &amp; Automation Tools</span>
+        <span class="badge">Marketing Support</span>
+        <span class="badge">Ongoing Education</span>
+      </div>
+    </div>
+    <div class="rv d3">
+      <div class="img-ph tall">
+        <div class="img-ph-icon">🎓</div>
+        <div class="img-ph-label">Training session or digital learning platform</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Support features row -->
+  <div class="rebate-block" style="margin-top:4rem;align-items:start;">
+    <div class="rebate-widget rv d3" style="padding:2.5rem;">
+      <div class="credit-lbl" style="margin-bottom:1.5rem;">What's Included</div>
+      <ul class="credit-list">
+        <li>Structured onboarding program covering all five pillars.</li>
+        <li>Access to centralized compliance documentation and workflows.</li>
+        <li>AI-powered tools and automation to reduce manual tasks.</li>
+        <li>Marketing templates, materials, and brand guidelines.</li>
+        <li>Ongoing training updates as systems and regulations evolve.</li>
+      </ul>
+    </div>
+    <div class="rv d4">
+      <div class="tag" style="margin-top:0;">The Support Philosophy</div>
+      <h3 class="sub-heading">Supported,<br>not <em>micromanaged</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        Our support model is designed to equip franchisees with the knowledge and tools they need to operate confidently — then step back and let them grow. Centralized systems handle the complexity so franchisees can focus on relationships and execution.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FRANCHISE DISCLOSURE
+══════════════════════════════════════════ -->
+<section class="sec" id="disclosure">
+  <div class="credit-grid">
+    <div>
+      <div class="tag rv">Franchise Disclosure</div>
+      <h2 class="sec-title rv d1">Full transparency,<br><em>before you decide</em></h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Transparency is essential in franchising. Our disclosure materials outline expectations, responsibilities, and regulatory requirements clearly.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        Availability varies by state, and all franchise opportunities are offered in accordance with applicable laws.
+      </p>
+      <p class="body-txt rv d4" style="margin-top:1.2rem;">
+        Prospective franchisees are encouraged to review all materials carefully and seek independent advice before making any decisions.
+      </p>
+      <div class="disclosure-callout rv d4">
+        <strong>Important:</strong> Not all franchise opportunities are available in all states. Licensing and registration requirements vary by jurisdiction. All materials are provided in accordance with applicable federal and state franchise laws.
+      </div>
+    </div>
+    <div class="rv d2" style="display:flex;flex-direction:column;gap:1.5rem;">
+      <div class="img-ph" style="min-height:240px;">
+        <div class="img-ph-icon">📄</div>
+        <div class="img-ph-label">Professional document review</div>
+      </div>
+      <ul class="credit-list" style="padding:2rem;background:var(--glass);border:1px solid var(--glass-b);">
+        <li>Disclosure materials outline all expectations and responsibilities.</li>
+        <li>Regulatory requirements clearly documented before engagement.</li>
+        <li>State-specific availability confirmed prior to any agreement.</li>
+        <li>Independent review of all materials strongly encouraged.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     EXPLORE FURTHER
+══════════════════════════════════════════ -->
+<section class="sec banded" id="explore">
+  <div class="tag rv">Go Deeper</div>
+  <h2 class="sec-title rv d1">Everything you need to<br><em>make your decision</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:640px;margin-bottom:3.5rem;">
+    Ready to go beyond the overview? Explore our dedicated pages covering how we train and support every franchisee, and exactly what it costs to get started.
+  </p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;" class="rv d3">
+    <!-- Training & Support card -->
+    <a href="/franchise-opportunities/training-and-support/" style="text-decoration:none;display:block;background:var(--glass);border:1px solid var(--glass-b);padding:2.8rem;position:relative;overflow:hidden;transition:transform 0.4s,border-color 0.4s,background 0.4s;" onmouseover="this.style.transform='translateY(-6px)';this.style.borderColor='rgba(201,168,76,0.45)';this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.transform='';this.style.borderColor='';this.style.background='var(--glass)'">
+      <div style="font-size:2rem;margin-bottom:1.2rem;">🎓</div>
+      <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;font-weight:500;">Training &amp; Support</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--cream);line-height:1.15;margin-bottom:1rem;">Franchise Training<br><em style="color:var(--mint);font-style:italic;">Built for You</em></div>
+      <p style="font-size:0.92rem;color:rgba(245,240,232,0.65);line-height:1.75;margin-bottom:1.5rem;">Explore our personalized onboarding program, ongoing mentorship, virtual networking, and the complete support ecosystem that ensures you're never in business alone.</p>
+      <span style="font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-light);display:flex;align-items:center;gap:0.5rem;font-weight:500;">Explore Training &amp; Support <span style="transition:transform 0.3s;">→</span></span>
+    </a>
+
+    <!-- Investment card -->
+    <a href="/franchise-opportunities/investment/" style="text-decoration:none;display:block;background:var(--glass);border:1px solid var(--glass-b);padding:2.8rem;position:relative;overflow:hidden;transition:transform 0.4s,border-color 0.4s,background 0.4s;" onmouseover="this.style.transform='translateY(-6px)';this.style.borderColor='rgba(201,168,76,0.45)';this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.transform='';this.style.borderColor='';this.style.background='var(--glass)'">
+      <div style="font-size:2rem;margin-bottom:1.2rem;">💼</div>
+      <div style="font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;font-weight:500;">Investment</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--cream);line-height:1.15;margin-bottom:1rem;">What Does It Cost<br><em style="color:var(--mint);font-style:italic;">to Get Started?</em></div>
+      <p style="font-size:0.92rem;color:rgba(245,240,232,0.65);line-height:1.75;margin-bottom:1.5rem;">Get a full breakdown of the initial franchise fee, total investment range ($6,950–$29,000), financial requirements, and why Luna Verde Corporate is one of the most cost-efficient franchises in its market.</p>
+      <span style="font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold-light);display:flex;align-items:center;gap:0.5rem;font-weight:500;">View Investment Details <span style="transition:transform 0.3s;">→</span></span>
+    </a>
+  </div>
+
+  <style>
+    @media(max-width:960px){
+      #explore > div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns:1fr !important; }
+    }
+  </style>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Explore?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      Earn across <em>multiple income</em><br>streams — built to scale
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Request our franchise information package to learn more about the Luna Verde Corporate model, income structure, and onboarding process. No commitment required.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">Multiple Income Streams</div>
+      <div class="stream">Centralized Systems</div>
+      <div class="stream">Compliance-First</div>
+      <div class="stream">Automation</div>
+      <div class="stream">Ongoing Support</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
+      <a href="/#claim" class="btn-g"><span>Request Franchise Information</span></a>
+      <a href="#disclosure" class="btn-txt">Read Disclosures</a>
+    </div>
+  </div>
+</section>

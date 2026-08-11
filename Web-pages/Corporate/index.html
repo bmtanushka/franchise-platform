@@ -1,0 +1,561 @@
+<!-- ════════════════════════════════════════════════════
+     index.html — Home Page
+     Structure: [header.html] + THIS FILE + [footer.html]
+
+     When building in the CMS:
+       1. Global Header section  → paste _partials/header.html
+       2. This page's sections   → content below
+       3. Global Footer section  → paste _partials/footer.html
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── APPLICATION FORM (embedded, per-product) ── */
+  .apply-form-wrap {
+    max-width: 800px; margin: 3rem auto 0; background: #fff;
+    border-radius: 8px; overflow: hidden; position: relative;
+  }
+  .apply-form-wrap::before {
+    content: ''; position: absolute; inset: -1px; border-radius: 9px; z-index: -1;
+    background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(74,158,120,0.15), rgba(201,168,76,0.25));
+  }
+  .apply-form-wrap iframe { display: block; width: 100%; height: 2052px; border: none; }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / Capital &amp; Property Solutions</div>
+
+  <h1 class="hero-title">
+    Welcome to<br>Luna Verde Corporate<br>
+    <em>Capital &amp; Property</em><span class="g">Solutions</span>
+  </h1>
+
+  <div class="hero-paths">
+    <a href="#claim" class="hero-path" data-variant="services">
+      <div class="hero-path-icon">💼</div>
+      <div class="hero-path-label">I'm looking for</div>
+      <div class="hero-path-title">Financial Services</div>
+      <div class="hero-path-desc">Business capital, commercial &amp; residential mortgages, and credit solutions — with rebates built in.</div>
+      <span class="hero-path-arrow">Get Financing &amp; Rebates →</span>
+    </a>
+    <a href="/franchise-opportunities" class="hero-path" data-variant="franchise">
+      <div class="hero-path-icon">🌱</div>
+      <div class="hero-path-label">I'm interested in</div>
+      <div class="hero-path-title">Franchise Ownership</div>
+      <div class="hero-path-desc">Own your branch of Luna Verde with centralized systems, automation, and multiple income streams.</div>
+      <span class="hero-path-arrow">Explore Franchise Opportunities →</span>
+    </a>
+  </div>
+
+  <p class="hero-body">
+    Our clients no longer need to manage multiple independent brokers to push a single deal across the finish line. By operating as a true one-stop shop, we eliminate communication bottlenecks and ensure your financing matches your goals perfectly.
+  </p>
+
+  <div class="hero-cards">
+    <div class="hcard">
+      <div class="hcard-label">Business Capital Rebate</div>
+      <div class="hcard-val">$5K</div>
+      <div class="hcard-sub">Avg. savings returned to you</div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-label">Commercial / Foreign Nationals</div>
+      <div class="hcard-val">$20K</div>
+      <div class="hcard-sub">Max rebate per deal</div>
+    </div>
+    <div class="hcard">
+      <div class="hcard-label">Real Estate Combined</div>
+      <div class="hcard-val">$6K</div>
+      <div class="hcard-sub">On a $400,000 home</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     UNIFIED APPROACH
+══════════════════════════════════════════ -->
+<section class="sec banded">
+  <div class="intro-inner">
+    <div>
+      <div class="tag rv">The Power of a Unified Approach</div>
+      <h2 class="sec-title rv d1">Redefining <em>financial</em><br>efficiency</h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Managing separate brokers for financing and real estate leaves massive amounts of money on the table due to disconnected fee structures. By consolidating these services, you unlock a compounding financial benefit that traditional, single-focus firms simply cannot match. We streamline your transaction, stacking your savings and rebates across different service providers to maximize your ability to keep more cash in <strong style="color:var(--gold-light)">YOUR pockets</strong>.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        As a modern financial services network built to simplify how individuals and businesses access capital, real estate, and financial solutions. Instead of navigating multiple lenders, brokers, and advisors, clients start with <strong style="color:var(--cream)">one simple application</strong> and gain access to a broad partner ecosystem. Our system connects people to the right solution — whether that's improving credit readiness, securing business funding, financing commercial property, purchasing real estate, or navigating international transactions. Transparency, compliance, and efficiency are built into every step.
+      </p>
+      <p class="body-txt rv d4" style="margin-top:1.2rem;">
+        For entrepreneurs, Luna Verde also offers a franchise opportunity designed for scalability. Franchisees earn across multiple income streams using centralized systems, automation, and compliance-first processes — without the overhead of building everything from scratch.
+      </p>
+    </div>
+    <div class="intro-pills">
+      <div class="pill rv d1"><div class="pill-ic">🏦</div><div class="pill-title">Credit Readiness</div><div class="pill-body">Improve your credit profile before approaching any lender.</div></div>
+      <div class="pill rv d2"><div class="pill-ic">💼</div><div class="pill-title">Business Funding</div><div class="pill-body">Secure the capital your business needs to grow and scale.</div></div>
+      <div class="pill rv d3"><div class="pill-ic">🏢</div><div class="pill-title">Commercial Property</div><div class="pill-body">Finance and acquire commercial real estate with confidence.</div></div>
+      <div class="pill rv d4"><div class="pill-ic">🌍</div><div class="pill-title">Foreign Nationals</div><div class="pill-body">US property financing for international investors — compliant, optimized, rebate-backed.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CREDIT
+══════════════════════════════════════════ -->
+<section class="sec" id="credit">
+  <div class="credit-grid">
+    <div class="credit-box rv">
+      <div class="credit-price">$1</div>
+      <div class="credit-lbl">FICO Score Pull</div>
+      <ul class="credit-list">
+        <li>Own your data: Pull your FICO score for just $1 to review, control, and share whenever you are ready.</li>
+        <li>Stop unauthorized credit pulls: Pay $1 to check your own FICO score, and you decide exactly which lenders get to see it.</li>
+        <li>Client-led credit checks: Access your FICO score for $1, review the details privately, and share it only with preferred partners.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="tag rv">Credit</div>
+      <h2 class="sec-title rv d1">Take total control<br>of <em>your data</em></h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Take total control of your data with a <strong style="color:var(--gold-light)">$1 FICO score pull</strong>. Review your report privately, keep ownership of your file, and share it only with the lenders you choose.
+      </p>
+      <div style="margin-top:1.5rem;" class="rv d3">
+        <a href="/credit" class="btn-txt">Explore Credit Details</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     BUSINESS FINANCING & LINES OF CREDIT
+══════════════════════════════════════════ -->
+<section class="sec banded" id="business">
+  <div class="tag rv">Business Financing &amp; Lines of Credit</div>
+  <h2 class="sec-title rv d1">Securing the right business loans<br>or <em>lines of credit</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:800px;">
+    Securing the right business loans or lines of credit is vital for maintaining operational momentum and scaling your company. Our financing rebate program alters the traditional lending model by reducing the standard origination costs and fees tied to business credit. We actively structure credit facilities that fuel your cash flow while returning a portion of our broker's compensation directly to you. Whether you need equipment financing or working capital, merchant cash advance, start-up funding, invoice factoring or anything else. We ensure your business borrowing is affordable, flexible, and financially rewarding.
+  </p>
+  <div class="biz-tags rv d3">
+    <span class="biz-tag">Equipment Financing</span>
+    <span class="biz-tag">Working Capital</span>
+    <span class="biz-tag">Merchant Cash Advance</span>
+    <span class="biz-tag">Start-up Funding</span>
+    <span class="biz-tag">Invoice Factoring</span>
+  </div>
+
+  <div class="rebate-block rv d3">
+    <div>
+      <div class="tag">Unlock your Business Capital and Save Money</div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average Business Capital Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong>. Example, on a $100,000 loan amount you would get back $1,000.00. Check out how much you can save using the slider below.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Savings up to <strong style="color:var(--mint)">$5,000</strong> by using our Business Capital Commission Rebate Advantage. We pass the savings directly back to you, into your pocket, not to traditional big brokerages.
+      </p>
+    </div>
+    <div class="rebate-widget">
+      <div class="rebate-compare">
+        <div>
+          <div class="rc-label">Traditional Broker / Lender</div>
+          <div class="rc-trad">$0</div>
+        </div>
+        <div class="rc-yours">
+          <div class="rc-label">Your Rebate from using our system</div>
+          <div class="rc-amount" id="biz-disp">$500</div>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-lbs"><span>0</span><span>Loan Amount</span><span>$500,000</span></div>
+        <input type="range" class="rslider" id="biz-sl" min="0" max="500000" value="50000" step="1000">
+        <div class="slider-result">
+          <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="biz-loan">$50,000</div></div>
+          <div><div class="sr-label" style="text-align:right">Your Rebate (1%)</div><div class="sr-val-r" id="biz-reb">$500</div></div>
+        </div>
+      </div>
+      <div class="rebate-caption">Savings up to <span class="hi">$5,000</span> by using our Business Capital Commission Rebate Advantage. We pass the savings directly <strong>back to you</strong>, into your pocket, not to traditional big brokerages.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     COMMERCIAL MORTGAGES
+══════════════════════════════════════════ -->
+<section class="sec" id="commercial">
+  <div class="tag rv">Commercial Mortgages</div>
+  <h2 class="sec-title rv d1">Navigating the commercial<br>mortgage <em>loan market</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:800px;">
+    Navigating the commercial mortgage loan market requires aggressive deal structuring and massive upfront capital. Our Commercial Mortgage Rebate Program directly lowers your acquisition costs by giving our commission right back to your business. These significant savings provide your company with immediate liquidity that can be used for property renovations, tenant improvements, or cash reserves. Because commercial transactions involve high dollar amounts, a percentage-based rebate can equate to tens or even hundreds of thousands of dollars saved at closing. Keep your hard-earned equity in your business rather than letting it fund large corporate brokerages.
+  </p>
+  <div style="margin-top:1.5rem;" class="rv d3">
+    <a href="/commercial-mortgages" class="btn-txt">Explore Commercial Mortgage Details</a>
+  </div>
+
+  <div class="rebate-block flip rv d3">
+    <div class="rebate-widget">
+      <div class="rebate-compare">
+        <div>
+          <div class="rc-label">Traditional Broker / Lender</div>
+          <div class="rc-trad">$0</div>
+        </div>
+        <div class="rc-yours">
+          <div class="rc-label">Your Rebate from using our system</div>
+          <div class="rc-amount" id="com-disp">$5,000</div>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-lbs"><span>0</span><span>Loan Amount</span><span>$2,000,000</span></div>
+        <input type="range" class="rslider" id="com-sl" min="0" max="2000000" value="500000" step="5000">
+        <div class="slider-result">
+          <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="com-loan">$500,000</div></div>
+          <div><div class="sr-label" style="text-align:right">Your Rebate (1%)</div><div class="sr-val-r" id="com-reb">$5,000</div></div>
+        </div>
+      </div>
+      <div class="rebate-caption">Savings up to <span class="hi">$20,000</span> by using our Commercial Mortgage Commission Rebate Advantage. We pass the savings directly <strong>back to you</strong>, into your pocket, not to traditional big brokerages.</div>
+    </div>
+    <div>
+      <div class="tag">Unlock your Commercial Mortgage and Save Money</div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average Commercial Mortgage Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong>. Example, on a $500,000 loan amount you would get back $5,000.00. Check out how much you can save using the slider below.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Savings up to <strong style="color:var(--mint)">$20,000</strong> by using our Commercial Mortgage Commission Rebate Advantage. We pass the savings directly back to you, into your pocket, not to traditional big brokerages.
+      </p>
+    </div>
+  </div>
+
+  <div id="commercial-apply" style="margin-top:4rem;">
+    <div class="tag rv" style="justify-content:center;">Start Your Application</div>
+    <h3 class="sec-title rv d1" style="text-align:center;">Tell us about<br><em>your commercial mortgage</em></h3>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2" style="max-width:640px;margin:0 auto;text-align:center;">
+      Complete the form below and one of our commercial mortgage specialists will reach out with tailored options — plus your commission rebate applied directly to reduce your costs.
+    </p>
+
+    <div class="apply-form-wrap rv d3">
+      <iframe
+        src="https://link.sharetechsolutions.com/widget/form/E8E67qoUiEWHFG8b3lyY"
+        style="width:100%;height:2052px;border:none;border-radius:8px;display:block;"
+        id="inline-E8E67qoUiEWHFG8b3lyY"
+        data-layout="{'id':'INLINE'}"
+        data-trigger-type="alwaysShow"
+        data-trigger-value=""
+        data-activation-type="alwaysActivated"
+        data-activation-value=""
+        data-deactivation-type="neverDeactivate"
+        data-deactivation-value=""
+        data-form-name="Commercial Mortgage Financing"
+        data-height="2052"
+        data-layout-iframe-id="inline-E8E67qoUiEWHFG8b3lyY"
+        data-form-id="E8E67qoUiEWHFG8b3lyY"
+        title="Commercial Mortgage Financing"
+      ></iframe>
+    </div>
+  </div>
+</section>
+<script src="https://link.sharetechsolutions.com/js/form_embed.js"></script>
+
+<!-- ══════════════════════════════════════════
+     FOREIGN NATIONALS & INVESTORS
+══════════════════════════════════════════ -->
+<section class="sec banded" id="foreign-nationals">
+  <div class="tag rv">Foreign Nationals &amp; Investors</div>
+  <h2 class="sec-title rv d1">US property for<br><em>foreign nationals</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:800px;">
+    Our Foreign Nationals program offers a rebate which offsets hidden costs by injecting money back into your US property acquisitions. We understand the nuances of financing for international real estate investors and match them with our lending experts for an easy transition to buying in the US. By receiving a commission rebate on international deals, you gain a massive competitive advantage in applying this to closing costs for your transaction. Our infrastructure ensures that your investments are seamless, legally compliant, and financially optimized from the very beginning.
+  </p>
+  <div style="margin-top:1.5rem;" class="rv d3">
+    <a href="/foreign-nationals" class="btn-txt">Explore Loan Options &amp; Details</a>
+  </div>
+
+  <div class="rebate-block rv d3">
+    <div>
+      <div class="tag">Optimize the Foreign National Loan and Save Money</div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average Foreign National Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong>. Example, on a $500,000 loan amount you would get back $5,000.00. Check out how much you can save using the slider below.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Savings up to <strong style="color:var(--mint)">$20,000</strong> by using our Foreign National Commission Rebate Advantage. We pass the savings directly back to you, into your pocket, not to traditional big brokerages.
+      </p>
+    </div>
+    <div class="rebate-widget">
+      <div class="rebate-compare">
+        <div>
+          <div class="rc-label">Traditional Broker / Lender</div>
+          <div class="rc-trad">$0</div>
+        </div>
+        <div class="rc-yours">
+          <div class="rc-label">Your Rebate from using our system</div>
+          <div class="rc-amount" id="int-disp">$5,000</div>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-lbs"><span>0</span><span>Loan Amount</span><span>$2,000,000</span></div>
+        <input type="range" class="rslider" id="int-sl" min="0" max="2000000" value="500000" step="5000">
+        <div class="slider-result">
+          <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="int-loan">$500,000</div></div>
+          <div><div class="sr-label" style="text-align:right">Your Rebate (1%)</div><div class="sr-val-r" id="int-reb">$5,000</div></div>
+        </div>
+      </div>
+      <div class="rebate-caption">Savings up to <span class="hi">$20,000</span> by using our Foreign National Commission Rebate Advantage. We pass the savings directly <strong>back to you</strong>, into your pocket, not to traditional big brokerages.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REAL ESTATE
+══════════════════════════════════════════ -->
+<section class="sec" id="realestate">
+  <div class="tag rv">Real Estate</div>
+  <h2 class="sec-title rv d1">Buying a home or expanding your<br><em>residential investment portfolio</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:820px;">
+    Buying a home or expanding your residential investment portfolio here in the U.S. or abroad should be a rewarding financial milestone, not a fee-heavy burden. We apply our commission-sharing model to all the real estate sectors to ensure everyday buyers and seasoned investors get the best possible financial start. This rebate can be used directly to offset costly closing fees, lower your mortgage rate, or fund immediate home upgrades. Traditional real estate brokerages rarely share their profits, but we believe that the buyer deserves the ultimate reward for making the investment. Your real estate transaction becomes an optimized financial strategy that builds instant wealth from day one.
+  </p>
+  <div style="margin-top:1.5rem;" class="rv d3">
+    <a href="/real-estate" class="btn-txt">Explore Real Estate Details</a>
+  </div>
+
+  <div class="re-example-row rv d3">
+    <div class="re-ex-item">
+      <div class="re-ex-amount">$3,000</div>
+      <div class="re-ex-label">Real Estate Commission Rebate</div>
+    </div>
+    <div class="re-ex-sep">+</div>
+    <div class="re-ex-item">
+      <div class="re-ex-amount">$3,000</div>
+      <div class="re-ex-label">Mortgage Rebate</div>
+    </div>
+    <div class="re-ex-sep">=</div>
+    <div class="re-ex-item">
+      <div class="re-ex-amount" style="color:var(--mint);">$6,000.00</div>
+      <div class="re-ex-label">Combined on a $400,000 Home</div>
+    </div>
+  </div>
+
+  <div class="rebate-block rv d3">
+    <div>
+      <div class="tag">Unlock your Real Estate Property Solutions and Save Money</div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average Real Estate Commission Rebate and Mortgage Rebate is <strong style="color:var(--gold-light)">$3,000 each</strong> or a combined <strong style="color:var(--gold-light)">$6,000.00</strong> on a $400,000 home. Check out how much you can save.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Savings up to <strong style="color:var(--mint)">$20,000</strong> by using our savings system Advantage. Simply use our real estate and mortgages rebates offered. We pass the savings directly back to you, into your pocket, not to traditional big brokerages.
+      </p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding:1rem 0;border-bottom:1px solid var(--glass-b);border-top:1px solid var(--glass-b);">
+        <div style="font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);">Traditional Broker and Mortgage</div>
+        <div style="font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);">Your Rebate from our system</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:rgba(245,240,232,0.22);text-decoration:line-through;">$0</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--gold-light);">$20,000</span>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Calculator 1: Real Estate Commission -->
+      <div class="rebate-widget">
+        <div class="rebate-widget-title">Real Estate Commission Rebate Calculator</div>
+        <div class="rebate-compare">
+          <div>
+            <div class="rc-label">Traditional Broker Keeps</div>
+            <div class="rc-trad">$0 back</div>
+          </div>
+          <div class="rc-yours">
+            <div class="rc-label">Your Commission Rebate</div>
+            <div class="rc-amount" id="re-disp">$3,000</div>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-lbs"><span>$0</span><span>Enter Your Home Price</span><span>$1,000,000</span></div>
+          <input type="range" class="rslider" id="re-sl" min="0" max="1000000" value="400000" step="5000">
+          <div class="slider-result">
+            <div><div class="sr-label">Home Price</div><div class="sr-val-l" id="re-home">$400,000</div></div>
+            <div><div class="sr-label" style="text-align:right">Commission Rebate</div><div class="sr-val-r" id="re-reb">$3,000</div></div>
+          </div>
+        </div>
+        <div class="rebate-caption">Real Estate agent commission rebate — returned to you at closing. Up to <span class="hi">$10,000</span>.</div>
+      </div>
+
+      <!-- Calculator 2: Mortgage Rebate -->
+      <div class="rebate-widget">
+        <div class="rebate-widget-title">Mortgage Rebate Calculator</div>
+        <div class="rebate-compare">
+          <div>
+            <div class="rc-label">Traditional Lender Keeps</div>
+            <div class="rc-trad">$0 back</div>
+          </div>
+          <div class="rc-yours">
+            <div class="rc-label">Your Mortgage Rebate</div>
+            <div class="rc-amount" id="mort-disp">$2,400</div>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-lbs"><span>$0</span><span>Enter Your Loan Amount</span><span>$1,000,000</span></div>
+          <input type="range" class="rslider" id="mort-sl" min="0" max="1000000" value="320000" step="5000">
+          <div class="slider-result">
+            <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="mort-loan">$320,000</div></div>
+            <div><div class="sr-label" style="text-align:right">Mortgage Rebate (0.75%)</div><div class="sr-val-r" id="mort-reb">$2,400</div></div>
+          </div>
+        </div>
+        <div class="rebate-caption">0.75% of your loan amount returned to you. Up to <span class="hi">$10,000</span> — paid directly at closing.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="video-grid rv d4">
+    <div class="vid-card" id="vid1">
+      <div class="play-ring"></div>
+      <div class="vid-lbl">Buying a House Video</div>
+    </div>
+    <div class="vid-card" id="vid2">
+      <div class="play-ring"></div>
+      <div class="vid-lbl">Selling a Home Video</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CLAIM YOUR OFFER — LEAD FORM
+══════════════════════════════════════════ -->
+<section class="form-section" id="claim">
+  <div class="form-inner">
+    <div class="form-left">
+      <div class="tag rv">Get Started Today</div>
+      <h2 class="sec-title rv d1">Claim Your <em>Rebate</em><br>Offer Now</h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Ready to keep more cash in your pocket? Fill in the form and one of our specialists will reach out to walk you through your personalised rebate strategy — whether it's business capital, commercial mortgages, international financing, or real estate.
+      </p>
+      <div class="form-benefits rv d3">
+        <div class="form-benefit">
+          <div class="form-benefit-icon">💼</div>
+          <div class="form-benefit-text">
+            <div class="form-benefit-title">Business Capital Rebate — up to $5,000</div>
+            <div class="form-benefit-desc">1% of your loan amount returned directly to you, not your broker.</div>
+          </div>
+        </div>
+        <div class="form-benefit">
+          <div class="form-benefit-icon">🏢</div>
+          <div class="form-benefit-text">
+            <div class="form-benefit-title">Commercial Mortgage Rebate — up to $20,000</div>
+            <div class="form-benefit-desc">Immediate liquidity at closing — fund renovations or boost cash reserves.</div>
+          </div>
+        </div>
+        <div class="form-benefit">
+          <div class="form-benefit-icon">🌍</div>
+          <div class="form-benefit-text">
+            <div class="form-benefit-title">Foreign National Loan Rebate — up to $20,000</div>
+            <div class="form-benefit-desc">Offset hidden costs and gain a competitive edge at closing on US property.</div>
+          </div>
+        </div>
+        <div class="form-benefit">
+          <div class="form-benefit-icon">🏠</div>
+          <div class="form-benefit-text">
+            <div class="form-benefit-title">Real Estate Combined Rebate — up to $20,000</div>
+            <div class="form-benefit-desc">$3,000 commission + $3,000 mortgage rebate on a $400,000 home.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-right rv d2">
+      <div class="form-iframe-wrap">
+        <iframe
+          src="https://link.sharetechsolutions.com/widget/form/rJbJcZHZXBqKKPZpjZGb"
+          style="width:100%;height:433px;border:none;border-radius:0;"
+          id="inline-rJbJcZHZXBqKKPZpjZGb"
+          data-layout="{'id':'INLINE'}"
+          data-trigger-type="alwaysShow"
+          data-trigger-value=""
+          data-activation-type="alwaysActivated"
+          data-activation-value=""
+          data-deactivation-type="neverDeactivate"
+          data-deactivation-value=""
+          data-form-name="Marketing Form - Claim Offer"
+          data-height="433"
+          data-layout-iframe-id="inline-rJbJcZHZXBqKKPZpjZGb"
+          data-form-id="rJbJcZHZXBqKKPZpjZGb"
+          title="Marketing Form - Claim Offer"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+<script src="https://link.sharetechsolutions.com/js/form_embed.js"></script>
+
+<!-- ══════════════════════════════════════════
+     FRANCHISE
+══════════════════════════════════════════ -->
+<section class="franchise-band" id="franchise">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Franchise Opportunity</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      Earn across <em>multiple income</em><br>streams — built to scale
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      For entrepreneurs, Luna Verde also offers a franchise opportunity designed for scalability. Franchisees earn across multiple income streams using centralized systems, automation, and compliance-first processes — without the overhead of building everything from scratch.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">Centralized Systems</div>
+      <div class="stream">Automation</div>
+      <div class="stream">Compliance-First</div>
+      <div class="stream">Multiple Income Streams</div>
+      <div class="stream">No Build-From-Scratch</div>
+    </div>
+    <a href="/franchise-opportunities" class="btn-g rv d4"><span>Explore Franchise Opportunity</span></a>
+  </div>
+</section>
+
+<!-- Page-specific scripts -->
+<script>
+  // Slider helper
+  var fmt = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
+
+  function bindSlider(slId, loanId, rebId, dispId, rateFn, cap) {
+    var sl = document.getElementById(slId);
+    var upd = function() {
+      var v = +sl.value;
+      var r = rateFn(v);
+      if(cap) r = Math.min(r, cap);
+      var pct = ((v - +sl.min) / (+sl.max - +sl.min)) * 100;
+      sl.style.background = 'linear-gradient(90deg, var(--mint) ' + pct + '%, rgba(255,255,255,0.1) ' + pct + '%)';
+      if(document.getElementById(loanId)) document.getElementById(loanId).textContent = fmt(v);
+      if(document.getElementById(rebId))  document.getElementById(rebId).textContent  = fmt(r);
+      if(document.getElementById(dispId)) document.getElementById(dispId).textContent = fmt(r);
+    };
+    sl.addEventListener('input', upd);
+    upd();
+  }
+
+  bindSlider('biz-sl','biz-loan','biz-reb','biz-disp', function(v){ return v*0.01; }, 5000);
+  bindSlider('com-sl','com-loan','com-reb','com-disp', function(v){ return v*0.01; }, 20000);
+  bindSlider('int-sl','int-loan','int-reb','int-disp', function(v){ return v*0.01; }, 20000);
+  bindSlider('re-sl',   're-home',  're-reb',   're-disp',   function(v){ return (v/400000)*3000; }, 10000);
+  bindSlider('mort-sl', 'mort-loan','mort-reb', 'mort-disp', function(v){ return v*0.0075; },         10000);
+
+  // Video placeholders
+  ['vid1','vid2'].forEach(function(id){
+    document.getElementById(id).addEventListener('click', function(){
+      var lbl = this.querySelector('.vid-lbl').textContent;
+      this.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;z-index:1;position:relative;"><div style="font-size:2rem;margin-bottom:0.8rem">🎬</div><em>' + lbl + '</em><br><span style="font-size:0.73rem;opacity:0.55;margin-top:0.5rem;display:block;">Add your video URL to activate this placeholder.</span></div>';
+    });
+  });
+</script>

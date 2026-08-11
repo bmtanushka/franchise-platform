@@ -1,0 +1,279 @@
+<!-- ════════════════════════════════════════════════════
+     commercial-mortgages.html — Commercial Mortgages
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── FINANCING TYPE GRID ── */
+  .fin-type-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .fin-type-card {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    padding: 1.8rem; transition: border-color 0.3s; position: relative; overflow: hidden;
+  }
+  .fin-type-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--mint), var(--gold));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .fin-type-card:hover::after { transform: scaleX(1); }
+  .fin-type-card:hover { border-color: rgba(201,168,76,0.4); }
+  .fin-type-icon { font-size: 1.5rem; margin-bottom: 0.9rem; }
+  .fin-type-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem; color: var(--gold-light); margin-bottom: 1rem; font-weight: 400;
+  }
+  .fin-type-items { list-style: none; display: flex; flex-direction: column; gap: 0.65rem; }
+  .fin-type-items li {
+    font-size: 0.88rem; color: rgba(245,240,232,0.75); line-height: 1.6;
+    padding-left: 1.1rem; position: relative;
+  }
+  .fin-type-items li::before {
+    content: '✦'; position: absolute; left: 0;
+    color: var(--gold); font-size: 0.5rem; top: 0.35rem;
+  }
+  .fin-type-items li strong { color: var(--cream); font-weight: 500; }
+  .fin-type-items li span { display: block; color: var(--muted); font-size: 0.82rem; margin-top: 0.15rem; }
+
+  /* ── SBA CALLOUT ── */
+  .sba-callout {
+    background: linear-gradient(135deg, rgba(42,82,64,0.35), rgba(24,46,36,0.7));
+    border: 1px solid var(--glass-b); border-left: 3px solid var(--gold);
+    padding: 2.5rem; margin-top: 3rem;
+  }
+  .sba-callout strong { color: var(--gold-light); }
+  .sba-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem 2rem; margin-top: 1.5rem;
+  }
+  .sba-item { display: flex; flex-direction: column; gap: 0.3rem; padding: 1rem 1.2rem; background: var(--glass); border: 1px solid var(--glass-b); }
+  .sba-item-title { font-size: 0.88rem; font-weight: 600; color: var(--cream); }
+  .sba-item-desc { font-size: 0.83rem; color: var(--muted); line-height: 1.6; }
+
+  @media(max-width:960px){
+    .fin-type-grid { grid-template-columns: 1fr 1fr; }
+    .sba-grid { grid-template-columns: 1fr; }
+  }
+  @media(max-width:600px){
+    .fin-type-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / Commercial Mortgages</div>
+
+  <h1 class="hero-title">
+    Navigating the commercial<br>
+    <em>mortgage loan market</em><br>
+    <span class="g">with a rebate advantage.</span>
+  </h1>
+
+  <p class="hero-body">
+    Navigating the commercial mortgage loan market requires aggressive deal structuring and massive upfront capital. Our Commercial Mortgage Rebate Program directly lowers your acquisition costs by giving our commission right back to your business.
+  </p>
+
+  <div class="hero-cta">
+    <a href="/rebate-and-credit-rewards#commercial" class="btn-g"><span>See Your Rebate</span></a>
+    <a href="#commercial-apply" class="btn-txt">Chat With Us</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     COMMERCIAL MORTGAGES
+══════════════════════════════════════════ -->
+<section class="sec" id="rebate">
+  <div class="tag rv">Commercial Mortgages</div>
+  <h2 class="sec-title rv d1">Navigating the commercial<br>mortgage <em>loan market</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:800px;">
+    Navigating the commercial mortgage loan market requires aggressive deal structuring and massive upfront capital. Our Commercial Mortgage Rebate Program directly lowers your acquisition costs by giving our commission right back to your business. These significant savings provide your company with immediate liquidity that can be used for property renovations, tenant improvements, or cash reserves. Because commercial transactions involve high dollar amounts, a percentage-based rebate can equate to tens or even hundreds of thousands of dollars saved at closing. Keep your hard-earned equity in your business rather than letting it fund large corporate brokerages.
+  </p>
+  <p class="body-txt rv d3" style="max-width:800px;margin-top:1.2rem;">
+    The average Commercial Mortgage Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong> — up to <strong style="color:var(--mint)">$20,000</strong> back on a $2,000,000 loan.
+  </p>
+  <div class="rv d3" style="margin-top:1.5rem;">
+    <a href="/rebate-and-credit-rewards#commercial" class="btn-txt">Calculate Your Rebate</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FINANCING TYPES
+══════════════════════════════════════════ -->
+<section class="sec" id="financing-types">
+  <div class="tag rv">Financing Types</div>
+  <h2 class="sec-title rv d1">Portfolio, commercial &amp;<br><em>specialty financing</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:720px;">
+    Beyond core business loans, our network covers a full spectrum of portfolio, property, and specialty financing products.
+  </p>
+
+  <div class="fin-type-grid">
+
+    <div class="fin-type-card rv d1">
+      <div class="fin-type-icon">📈</div>
+      <div class="fin-type-title">Portfolio &amp; Investor Financing</div>
+      <ul class="fin-type-items">
+        <li>
+          <strong>DSCR &amp; Investor Loans</strong>
+          <span>Uses property income to cover debt. Disregards personal income.</span>
+        </li>
+        <li>
+          <strong>Fix &amp; Flip</strong>
+          <span>Short-term bridge loans. Funds purchase and renovations.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="fin-type-card rv d2">
+      <div class="fin-type-icon">🏢</div>
+      <div class="fin-type-title">Residential Commercial Properties</div>
+      <ul class="fin-type-items">
+        <li>
+          <strong>Multi-Family</strong>
+          <span>Finances buildings with 5+ housing units.</span>
+        </li>
+        <li>
+          <strong>Apartments</strong>
+          <span>Sub-category of multi-family. Focuses on residential complexes.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="fin-type-card rv d3">
+      <div class="fin-type-icon">🏗️</div>
+      <div class="fin-type-title">Mixed &amp; Business Properties</div>
+      <ul class="fin-type-items">
+        <li>
+          <strong>Mixed Use</strong>
+          <span>Finances buildings combining residential and commercial spaces.</span>
+        </li>
+        <li>
+          <strong>Office / Office Buildings</strong>
+          <span>Funds spaces for professional services and corporate operations.</span>
+        </li>
+        <li>
+          <strong>Retail</strong>
+          <span>Capital for storefronts, shopping centers, and strip malls.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="fin-type-card rv d1">
+      <div class="fin-type-icon">🏭</div>
+      <div class="fin-type-title">Industrial &amp; Logistics</div>
+      <ul class="fin-type-items">
+        <li>
+          <strong>Industrial</strong>
+          <span>Loans for manufacturing facilities and heavy operations.</span>
+        </li>
+        <li>
+          <strong>Warehouse</strong>
+          <span>Specifically targets storage facilities and distribution centers.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="fin-type-card rv d2">
+      <div class="fin-type-icon">⭐</div>
+      <div class="fin-type-title">Special Purpose &amp; Specialty</div>
+      <ul class="fin-type-items">
+        <li>
+          <strong>Convenience Stores</strong>
+          <span>High-turnover retail funding. Often includes gas station infrastructure.</span>
+        </li>
+        <li>
+          <strong>Church Loans</strong>
+          <span>Specialty financing for religious institutions and non-profit properties.</span>
+        </li>
+        <li>
+          <strong>Restaurant</strong>
+          <span>High-risk financing for food service spaces and equipment.</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="fin-type-card rv d3" id="sba">
+      <div class="fin-type-icon">🏛️</div>
+      <div class="fin-type-title">Where SBA Fits</div>
+      <ul class="fin-type-items">
+        <li>
+          <strong>Office / Office Buildings</strong>
+          <span>Ideal for buying your own headquarters or corporate workspace.</span>
+        </li>
+        <li>
+          <strong>Retail / Convenience Stores</strong>
+          <span>Owner-operated storefronts, boutiques, or franchise locations.</span>
+        </li>
+        <li>
+          <strong>Industrial / Warehouse</strong>
+          <span>Manufacturers or distributors utilizing the space for operations.</span>
+        </li>
+        <li>
+          <strong>Restaurant</strong>
+          <span>Building purchase, kitchen buildouts, and heavy equipment.</span>
+        </li>
+        <li>
+          <strong>Mixed Use</strong>
+          <span>Eligible only if your business occupies more than 51% of total square footage.</span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="sba-callout rv d4">
+    <div class="credit-lbl" style="margin:0 0 0.8rem;">SBA 504 &amp; 7(a) Eligibility Rule</div>
+    <p style="font-size:0.95rem;color:rgba(245,240,232,0.78);line-height:1.8;">
+      <strong>To qualify for an SBA 504 or 7(a) loan, your small business must physically occupy at least 51% of the building.</strong> This requirement makes SBA loans an excellent fit for owner-operators purchasing their own commercial space — from offices and retail storefronts to industrial facilities and restaurants.
+    </p>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Secure Commercial Capital?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      One conversation.<br><em>Every solution.</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Let us structure the right commercial mortgage for your acquisition — with your commission rebate applied directly to reduce your closing costs.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">Commercial Mortgages</div>
+      <div class="stream">Owner-Occupied</div>
+      <div class="stream">Investor Properties</div>
+      <div class="stream">Commission Rebate</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
+      <a href="#commercial-apply" class="btn-g"><span>Chat With Us</span></a>
+      <a href="/rebate-and-credit-rewards#commercial" class="btn-txt">Review Your Rebate</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     APPLY — COMMERCIAL MORTGAGE CONTACT
+══════════════════════════════════════════ -->
+<section class="sec" id="commercial-apply">
+  <div class="tag rv" style="justify-content:center;">Get In Touch</div>
+  <h2 class="sec-title rv d1" style="text-align:center;">Talk to a specialist about<br><em>your commercial mortgage</em></h2>
+  <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+  <div class="rv d3" style="max-width:640px;margin:2rem auto 0;text-align:center;background:var(--glass);border:1px solid var(--glass-b);border-left:3px solid var(--mint);padding:3rem 2.5rem;">
+    <div style="font-size:2rem;margin-bottom:1rem;">💬</div>
+    <p class="body-txt" style="color:rgba(245,240,232,0.85);">
+      Chat with our agent to share your information — the right person on our team will contact you shortly, with your commission rebate applied directly to reduce your costs.
+    </p>
+  </div>
+</section>

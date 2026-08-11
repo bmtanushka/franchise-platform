@@ -1,0 +1,405 @@
+<!-- ════════════════════════════════════════════════════
+     foreign-nationals.html — Foreign Nationals & Investors
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── FEATURES TABLE ── */
+  .fn-table {
+    width: 100%; border-collapse: collapse; margin-top: 2rem;
+  }
+  .fn-table thead tr {
+    border-bottom: 2px solid var(--gold);
+  }
+  .fn-table th {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; padding: 0.9rem 1.2rem; text-align: left;
+  }
+  .fn-table tbody tr {
+    border-bottom: 1px solid var(--glass-b); transition: background 0.2s;
+  }
+  .fn-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+  .fn-table td {
+    padding: 1rem 1.2rem; font-size: 0.92rem;
+    color: rgba(245,240,232,0.75); line-height: 1.65; font-weight: 400;
+  }
+  .fn-table td:first-child {
+    color: var(--cream); font-weight: 500; font-size: 0.85rem;
+    letter-spacing: 0.06em; width: 220px;
+  }
+
+  /* ── LOAN TYPE ACCORDION ── */
+  .loan-accordion { margin-top: 3rem; display: flex; flex-direction: column; gap: 0; }
+  .loan-item {
+    border: 1px solid var(--glass-b); margin-top: -1px;
+    background: var(--glass); transition: background 0.3s;
+  }
+  .loan-item:first-child { margin-top: 0; }
+  .loan-item[open] {
+    background: rgba(255,255,255,0.06);
+    border-color: rgba(201,168,76,0.35);
+  }
+  .loan-item summary {
+    list-style: none; cursor: pointer;
+    padding: 1.6rem 2rem; display: flex; align-items: center; justify-content: space-between;
+    gap: 1.5rem;
+  }
+  .loan-item summary::-webkit-details-marker { display: none; }
+  .loan-sum-left { display: flex; align-items: center; gap: 1.5rem; }
+  .loan-num {
+    font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 300;
+    color: rgba(201,168,76,0.25); line-height: 1; flex-shrink: 0; min-width: 2.5rem;
+  }
+  .loan-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.35rem;
+    color: var(--gold-light); font-weight: 400; line-height: 1.3;
+  }
+  .loan-subtitle {
+    font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; font-weight: 400;
+  }
+  .loan-chevron {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 1px solid var(--glass-b); display: flex; align-items: center; justify-content: center;
+    transition: transform 0.3s, border-color 0.3s; color: var(--gold); font-size: 0.75rem;
+  }
+  .loan-item[open] .loan-chevron { transform: rotate(180deg); border-color: var(--gold); }
+  .loan-body {
+    padding: 0 2rem 2rem 6.2rem;
+    font-size: 0.95rem; color: rgba(245,240,232,0.75); line-height: 1.9;
+  }
+  .loan-body p + p { margin-top: 0.9rem; }
+  .loan-detail-row {
+    display: grid; grid-template-columns: 180px 1fr; gap: 0.6rem 1.5rem;
+    margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px solid var(--glass-b);
+  }
+  .loan-detail-label {
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--mint); font-weight: 500; padding-top: 0.1rem;
+  }
+  .loan-detail-val {
+    font-size: 0.9rem; color: rgba(245,240,232,0.78); line-height: 1.65;
+  }
+
+  /* ── HIGHLIGHT CALLOUT ── */
+  .fn-callout {
+    background: linear-gradient(135deg, rgba(42,82,64,0.3), rgba(24,46,36,0.65));
+    border: 1px solid var(--glass-b); border-left: 3px solid var(--mint);
+    padding: 1.8rem 2rem; margin-top: 2.5rem;
+    font-size: 0.95rem; color: rgba(245,240,232,0.78); line-height: 1.85;
+  }
+  .fn-callout strong { color: var(--gold-light); }
+
+  /* ── CONTENT SPLIT ── */
+  .content-split {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: center; margin-top: 3rem;
+  }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .img-ph {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.8rem; position: relative; overflow: hidden; min-height: 340px;
+  }
+  .img-ph::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(74,158,120,0.07), rgba(201,168,76,0.04));
+  }
+  .img-ph-icon { font-size: 2.2rem; position: relative; z-index: 1; opacity: 0.45; }
+  .img-ph-label {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); position: relative; z-index: 1; font-weight: 500; text-align: center; padding: 0 1rem;
+  }
+
+  @media(max-width:960px){
+    .content-split { grid-template-columns: 1fr; gap: 2.5rem; }
+    .loan-body { padding-left: 2rem; }
+    .loan-detail-row { grid-template-columns: 1fr; gap: 0.3rem; }
+    .fn-table td:first-child { width: auto; }
+  }
+  @media(max-width:600px){
+    .fn-table { font-size: 0.85rem; }
+    .fn-table td, .fn-table th { padding: 0.75rem 0.8rem; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / Foreign Nationals &amp; Investors</div>
+
+  <h1 class="hero-title">
+    US real estate.<br>
+    <em>Built for</em><br>
+    <span class="g">foreign nationals.</span>
+  </h1>
+
+  <p class="hero-body">
+    We match international real estate investors with specialized US lending experts — and inject money back into your acquisition through our commission rebate program. Seamless, legally compliant, and financially optimized from day one.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#loan-types" class="btn-g"><span>Explore Loan Options</span></a>
+    <a href="/rebate-and-credit-rewards#foreign-nationals" class="btn-txt">See Your Rebate</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PROGRAM OVERVIEW
+══════════════════════════════════════════ -->
+<section class="sec banded">
+  <div class="content-split">
+    <div>
+      <div class="tag rv">Program Overview</div>
+      <h2 class="sec-title rv d1">Your competitive edge<br>in <em>US property</em></h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Our Foreign Nationals program offers a rebate which offsets hidden costs by injecting money back into your US property acquisitions. We understand the nuances of financing for international real estate investors and match them with our lending experts for an easy transition to buying in the US.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        By receiving a commission rebate on international deals, you gain a massive competitive advantage in applying this to closing costs for your transaction. Our infrastructure ensures that your investments are seamless, legally compliant, and financially optimized from the very beginning.
+      </p>
+      <p class="body-txt rv d4" style="margin-top:1.2rem;">
+        Choose partners experienced in cross-border and nonstandard financing.
+      </p>
+      <div style="display:flex;flex-wrap:wrap;gap:0.8rem;margin-top:2rem;" class="rv d4">
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Compliance-First</span>
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Cross-Border Expertise</span>
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Commission Rebate</span>
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Specialized Lenders</span>
+      </div>
+    </div>
+    <div class="rv d3">
+      <div class="img-ph">
+        <div class="img-ph-icon">🌍</div>
+        <div class="img-ph-label">International investor meeting or US skyline</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     ABOUT FOREIGN NATIONAL MORTGAGES
+══════════════════════════════════════════ -->
+<section class="sec" id="about">
+  <div class="tag rv">About Foreign National Mortgages</div>
+  <h2 class="sec-title rv d1">How US lending works<br>for <em>non-citizens</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="rv d2" style="max-width:860px;">
+    <p class="body-txt">
+      Foreign national mortgage lending in the US relies on specialized loan products because standard conforming loans — like Fannie Mae or Freddie Mac — require US citizenship or permanent residency. US lenders classify "foreign nationals" as non-citizens who live and work outside the US but want to buy US real estate, or temporary visa holders living in the US.
+    </p>
+
+    <div class="fn-callout">
+      <strong>Key distinction:</strong> Standard conforming loans are not available to most foreign nationals. Specialized non-conforming and portfolio products fill this gap — and Luna Verde Corporate connects you directly to lenders who specialize in these structures.
+    </div>
+
+    <table class="fn-table" style="margin-top:3rem;">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Foreign National Lending</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Financial Structure</td>
+          <td>Strictly debt-based (loans).</td>
+        </tr>
+        <tr>
+          <td>Primary Vehicles</td>
+          <td>Syndicated bank loans, bilateral credit.</td>
+        </tr>
+        <tr>
+          <td>Key Risk Focus</td>
+          <td>Credit risk and country default risk.</td>
+        </tr>
+        <tr>
+          <td>Typical Providers</td>
+          <td>Commercial banks, central banks, and development lenders.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     LOAN TYPES
+══════════════════════════════════════════ -->
+<section class="sec banded" id="loan-types">
+  <div class="tag rv">Loan Products</div>
+  <h2 class="sec-title rv d1">Four primary mortgage<br>products for <em>foreign nationals</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:720px;">
+    The primary mortgage products available for foreign nationals fall into four distinct categories. Each serves a different investor profile — from rental income buyers to high-net-worth individuals and visa holders.
+  </p>
+
+  <div class="loan-accordion rv d3">
+
+    <details class="loan-item">
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">1</div>
+          <div>
+            <div class="loan-title">DSCR Loans — Investor Cash Flow Loans</div>
+            <div class="loan-subtitle">Most popular product for foreign nationals buying investment properties</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>DSCR (Debt Service Coverage Ratio) loans are the most popular product for foreign nationals buying investment properties. Qualification is based strictly on the real estate's ability to generate enough rental income to cover the monthly mortgage payment.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">How It Works</div>
+          <div class="loan-detail-val">Qualification is based strictly on the property's rental income versus the monthly mortgage cost (Principal, Interest, Taxes, Insurance, and Association dues).</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Qualification Metric</div>
+          <div class="loan-detail-val">Lenders look for a DSCR ratio of 1.0x or higher — meaning rental income matches or exceeds the mortgage cost.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Documentation</div>
+          <div class="loan-detail-val">No personal income verification, tax returns, or employment checks are required.</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="loan-item">
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">2</div>
+          <div>
+            <div class="loan-title">Asset Depletion / Asset Utilization Loans</div>
+            <div class="loan-subtitle">Designed for high-net-worth investors without US income or credit score</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>This product is designed for high-net-worth foreign nationals who hold significant liquid assets but do not have a US credit score or verifiable US income.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">How It Works</div>
+          <div class="loan-detail-val">The lender uses a specific formula to divide your total global liquid assets (cash, stocks, bonds) by a set number of months — typically 60 to 84 months — to calculate a "monthly income" equivalent.</div>
+        </div>
+        <div class="loan-detail-label" style="margin-top:1.2rem;font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--mint);font-weight:500;">Documentation</div>
+        <div class="loan-detail-val" style="font-size:0.9rem;color:rgba(245,240,232,0.78);line-height:1.65;margin-top:0.3rem;">Requires extensive verification of overseas asset accounts, often requiring translation and notarization.</div>
+      </div>
+    </details>
+
+    <details class="loan-item">
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">3</div>
+          <div>
+            <div class="loan-title">Bank Statement &amp; Foreign Income Verification Loans</div>
+            <div class="loan-subtitle">For self-employed or salaried foreign nationals buying a second home or vacation property</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>For foreign nationals who are self-employed or salaried in their home country and want to purchase a second home or vacation property in the US.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">How It Works</div>
+          <div class="loan-detail-val">Lenders evaluate your financial health using 12 to 24 months of international bank statements or an official employer letter from your home country.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Documentation</div>
+          <div class="loan-detail-val">Requires a certified translation of tax returns or CPA letters from your country of origin. Credit history is established via an international credit report or letters of reference from foreign banks.</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="loan-item">
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">4</div>
+          <div>
+            <div class="loan-title">Non-QM Standard Programs</div>
+            <div class="loan-subtitle">Flexible portfolio loans for temporary US visa holders</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>These are flexible portfolio loans kept on a lender's own balance sheet rather than sold to government entities. They accommodate foreign borrowers holding temporary US work visas.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">How It Works</div>
+          <div class="loan-detail-val">Borrowers can qualify using standard US income (W-2s or paystubs) but are placed in Non-QM pools because of their visa residency status.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Eligible Visas</div>
+          <div class="loan-detail-val">H-1B, L-1, O-1, E-2, and other temporary work or investor visa categories.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Documentation</div>
+          <div class="loan-detail-val">Standard US income documentation — W-2s or pay stubs — accepted. No foreign income verification required.</div>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REBATE TEASER
+══════════════════════════════════════════ -->
+<section class="sec" id="rebate">
+  <div class="tag rv">Commission Rebate Program</div>
+  <h2 class="sec-title rv d1">Optimize the Foreign National Loan<br>and <em>save money</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:720px;">
+    The average Foreign National Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong> — up to <strong style="color:var(--mint)">$20,000</strong> back, paid directly to you instead of a traditional broker.
+  </p>
+  <div class="rv d3" style="margin-top:1.5rem;">
+    <a href="/rebate-and-credit-rewards#foreign-nationals" class="btn-txt">Calculate Your Rebate</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Invest in US Property?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      One conversation.<br><em>Every solution.</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Let us match you with the right foreign national loan product and apply your commission rebate directly to closing costs. No unnecessary complexity — just a clear path to US property ownership.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">DSCR Loans</div>
+      <div class="stream">Asset Depletion</div>
+      <div class="stream">Bank Statement</div>
+      <div class="stream">Non-QM Programs</div>
+      <div class="stream">Commission Rebate</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
+      <a href="#apply" class="btn-g"><span>Chat With Us</span></a>
+      <a href="#loan-types" class="btn-txt">Review Loan Types</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     APPLY — FOREIGN NATIONAL CONTACT
+══════════════════════════════════════════ -->
+<section class="sec" id="apply">
+  <div class="tag rv" style="justify-content:center;">Get In Touch</div>
+  <h2 class="sec-title rv d1" style="text-align:center;">Talk to a specialist about<br><em>your US property goals</em></h2>
+  <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+  <div class="rv d3" style="max-width:640px;margin:2rem auto 0;text-align:center;background:var(--glass);border:1px solid var(--glass-b);border-left:3px solid var(--mint);padding:3rem 2.5rem;">
+    <div style="font-size:2rem;margin-bottom:1rem;">💬</div>
+    <p class="body-txt" style="color:rgba(245,240,232,0.85);">
+      Chat with our agent to share your information — the right person on our team will contact you shortly, with your commission rebate applied directly to reduce your closing costs.
+    </p>
+  </div>
+</section>

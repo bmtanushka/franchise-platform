@@ -1,0 +1,261 @@
+<!-- ════════════════════════════════════════════════════
+     how-it-works.html — How It Works
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── FLOW DIAGRAM ── */
+  .flow-wrap {
+    display: flex; align-items: stretch; gap: 0;
+    margin-top: 4rem;
+  }
+  .flow-step {
+    flex: 1; text-align: center; padding: 3rem 2rem;
+    background: var(--glass); border: 1px solid var(--glass-b);
+    transition: border-color 0.4s, background 0.4s;
+    position: relative; overflow: hidden;
+  }
+  .flow-step::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--mint), var(--gold));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .flow-step:hover::after { transform: scaleX(1); }
+  .flow-step:hover { border-color: rgba(201,168,76,0.4); background: rgba(255,255,255,0.07); }
+
+  .flow-badge {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4rem; font-weight: 300;
+    color: rgba(201,168,76,0.15); line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+  .flow-icon { font-size: 1.9rem; margin-bottom: 1rem; }
+  .flow-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.45rem; font-weight: 400;
+    color: var(--gold-light); margin-bottom: 0.8rem;
+  }
+  .flow-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.75; font-weight: 400; }
+
+  .flow-sep {
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    width: 52px; background: rgba(201,168,76,0.04); border-top: 1px solid var(--glass-b); border-bottom: 1px solid var(--glass-b);
+    font-family: 'Cormorant Garamond', serif; font-size: 1.6rem;
+    color: var(--gold); opacity: 0.45;
+  }
+
+  /* ── PROCESS DETAIL ROWS ── */
+  .process-row {
+    display: grid; grid-template-columns: 80px 1fr; gap: 2rem;
+    align-items: start; padding: 2rem 0;
+    border-bottom: 1px solid var(--glass-b);
+  }
+  .process-row:first-child { border-top: 1px solid var(--glass-b); }
+  .process-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3.5rem; font-weight: 300; color: rgba(201,168,76,0.25); line-height: 1;
+    text-align: right; padding-right: 1.5rem; border-right: 1px solid var(--glass-b);
+  }
+
+  /* ── VIDEO CARD (full-width variant) ── */
+  .vid-card-lg {
+    border: 1px solid var(--glass-b); background: var(--glass);
+    aspect-ratio: 16/6; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 1.5rem;
+    cursor: pointer; transition: all 0.4s; position: relative; overflow: hidden;
+    margin-top: 4rem;
+  }
+  .vid-card-lg::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(74,158,120,0.07), rgba(201,168,76,0.04));
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .vid-card-lg:hover::before { opacity: 1; }
+  .vid-card-lg:hover { border-color: rgba(201,168,76,0.38); }
+  .vid-card-lg:hover .play-ring { background: var(--gold); }
+  .vid-card-lg:hover .play-ring::after { border-left-color: var(--forest); }
+
+  @media (max-width: 960px) {
+    .flow-wrap { flex-direction: column; }
+    .flow-sep { width: auto; height: 40px; border: none; border-left: 1px solid var(--glass-b); border-right: 1px solid var(--glass-b); transform: rotate(90deg) scaleX(0.5); }
+    .process-row { grid-template-columns: 1fr; gap: 0.6rem; }
+    .process-num { font-size: 2rem; text-align: left; border-right: none; border-bottom: 1px solid var(--glass-b); padding-right: 0; padding-bottom: 0.5rem; margin-bottom: 0.5rem; }
+    .vid-card-lg { aspect-ratio: 16/9; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / How It Works</div>
+
+  <h1 class="hero-title">
+    One application.<br>
+    <em>Every solution.</em>
+  </h1>
+
+  <p class="hero-body">
+    Luna Verde Corporate simplifies complex financial decisions through a structured, step-by-step process — from a single intake to a matched outcome, guided by transparency and compliance at every stage.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#process" class="btn-g"><span>See the Process</span></a>
+    <a href="/#claim" class="btn-txt">Get Started</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     OVERVIEW
+══════════════════════════════════════════ -->
+<section class="sec banded">
+  <div class="intro-inner">
+    <div>
+      <div class="tag rv">The Luna Verde Corporate Model</div>
+      <h2 class="sec-title rv d1">Designed for <em>clarity</em><br>and confidence</h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Luna Verde Corporate simplifies complex financial decisions through a structured, step-by-step process. Clients begin with one application that allows us to assess needs across multiple service areas.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        From there, we match clients with appropriate options, partners, or professionally explaining timelines, expectations, and next steps.
+      </p>
+      <p class="body-txt rv d4" style="margin-top:1.2rem;">
+        Throughout the process, <strong style="color:var(--gold-light)">transparency and compliance</strong> guide every recommendation. Clients remain informed and in control at all times.
+      </p>
+    </div>
+    <div class="intro-pills">
+      <div class="pill rv d1"><div class="pill-ic">📋</div><div class="pill-title">One Application</div><div class="pill-body">A single intake covers all service areas — no redundant forms or repeat submissions.</div></div>
+      <div class="pill rv d2"><div class="pill-ic">🔍</div><div class="pill-title">Multi-Pillar Review</div><div class="pill-body">We assess your needs across credit, business, mortgage, and real estate simultaneously.</div></div>
+      <div class="pill rv d3"><div class="pill-ic">🤝</div><div class="pill-title">Vetted Matching</div><div class="pill-body">Connected only to partners and solutions appropriate for your specific profile.</div></div>
+      <div class="pill rv d4"><div class="pill-ic">🛡️</div><div class="pill-title">Compliance-First</div><div class="pill-body">Every recommendation is guided by regulatory compliance and full transparency.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FLOW DIAGRAM
+══════════════════════════════════════════ -->
+<section class="sec" id="process">
+  <div class="tag rv">The Process</div>
+  <h2 class="sec-title rv d1">Four steps to your <em>financial outcome</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="flow-wrap">
+    <div class="flow-step rv d1">
+      <div class="flow-badge">01</div>
+      <div class="flow-icon">📋</div>
+      <div class="flow-title">Application</div>
+      <p class="flow-desc">Complete one simple intake form. We capture your financial goals, current situation, and service needs — once, across all pillars.</p>
+    </div>
+    <div class="flow-sep rv d2">→</div>
+    <div class="flow-step rv d2">
+      <div class="flow-badge">02</div>
+      <div class="flow-icon">🔍</div>
+      <div class="flow-title">Review</div>
+      <p class="flow-desc">Our team assesses your profile across credit readiness, business funding, mortgage options, and real estate — simultaneously.</p>
+    </div>
+    <div class="flow-sep rv d3">→</div>
+    <div class="flow-step rv d3">
+      <div class="flow-badge">03</div>
+      <div class="flow-icon">🤝</div>
+      <div class="flow-title">Match</div>
+      <p class="flow-desc">We connect you with the appropriate partners, products, or pathways — with clear timelines, expectations, and next steps explained.</p>
+    </div>
+    <div class="flow-sep rv d4">→</div>
+    <div class="flow-step rv d4">
+      <div class="flow-badge">04</div>
+      <div class="flow-icon">✅</div>
+      <div class="flow-title">Outcome</div>
+      <p class="flow-desc">Move forward with clarity. Fully informed, fully compliant, and in control — from initial application through to closing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PROCESS DETAIL
+══════════════════════════════════════════ -->
+<section class="sec banded">
+  <div class="tag rv">Step by Step</div>
+  <h2 class="sec-title rv d1">What to expect at <em>each stage</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div style="margin-top:3rem;">
+    <div class="process-row rv d1">
+      <div class="process-num">01</div>
+      <div>
+        <div class="credit-lbl" style="margin-bottom:0.6rem;">Application</div>
+        <p class="body-txt">Submit one intake through our platform. You'll provide basic information about your financial goals, current credit profile, business status (if applicable), and property interests. This single form replaces what would otherwise require separate consultations with multiple providers.</p>
+      </div>
+    </div>
+    <div class="process-row rv d2">
+      <div class="process-num">02</div>
+      <div>
+        <div class="credit-lbl" style="margin-bottom:0.6rem;">Review</div>
+        <p class="body-txt">A qualified member of our team reviews your intake against our full service ecosystem. We identify which pillars apply to your situation — credit readiness, business capital, commercial mortgage, international financing, or residential real estate — and assess your eligibility and readiness across each.</p>
+      </div>
+    </div>
+    <div class="process-row rv d3">
+      <div class="process-num">03</div>
+      <div>
+        <div class="credit-lbl" style="margin-bottom:0.6rem;">Match</div>
+        <p class="body-txt">Based on your review, we match you with appropriate solutions, licensed partners, and vetted lenders. We explain all options clearly — including timelines, costs, and expected outcomes — so you can make informed decisions with full visibility into the process.</p>
+      </div>
+    </div>
+    <div class="process-row rv d4">
+      <div class="process-num">04</div>
+      <div>
+        <div class="credit-lbl" style="margin-bottom:0.6rem;">Outcome</div>
+        <p class="body-txt">We guide your transaction through to completion. Whether that's closing a mortgage, securing a business line of credit, or finalizing a real estate purchase, our team ensures every step is compliant, documented, and in your best interest. You leave informed, supported, and ready for what comes next.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     VIDEO EXPLAINER
+══════════════════════════════════════════ -->
+<section class="sec">
+  <div class="tag rv">Video Explainer</div>
+  <h2 class="sec-title rv d1">See how it <em>works</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:680px;">
+    Watch a short walkthrough of the Luna Verde Corporate process — from your first application to a matched financial outcome.
+  </p>
+
+  <div class="vid-card-lg rv d3" id="how-video">
+    <div class="play-ring"></div>
+    <div class="vid-lbl">How It Works — Process Walkthrough</div>
+    <p style="font-size:0.8rem;color:var(--muted);position:relative;z-index:1;margin-top:-0.5rem;">Add your video URL to activate this placeholder</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Start?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      One application.<br><em>Multiple solutions.</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Start your intake today and let us do the work of identifying the right capital, mortgage, and real estate solutions for your goals.
+    </p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;margin-top:2.5rem;" class="rv d3">
+      <a href="/#claim" class="btn-g"><span>Start Your Application</span></a>
+      <a href="/about-us" class="btn-txt">Learn About Us</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Video placeholder click
+  document.getElementById('how-video').addEventListener('click', function(){
+    this.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted);font-size:0.85rem;z-index:1;position:relative;"><div style="font-size:2.5rem;margin-bottom:1rem">🎬</div><em>How It Works — Process Walkthrough</em><br><span style="font-size:0.73rem;opacity:0.55;margin-top:0.6rem;display:block;">Add your video URL to activate this placeholder.</span></div>';
+  });
+</script>

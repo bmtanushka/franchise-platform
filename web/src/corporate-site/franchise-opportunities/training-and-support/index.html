@@ -1,0 +1,284 @@
+<!-- ════════════════════════════════════════════════════
+     franchise-opportunities/training-and-support/index.html
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── SECTION LAYOUT: text + image ── */
+  .content-split {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: center; margin-top: 3rem;
+  }
+  .content-split.flip { direction: rtl; }
+  .content-split.flip > * { direction: ltr; }
+
+  /* ── SUPPORT CARDS ── */
+  .support-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .support-card {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    padding: 2rem 2.2rem; position: relative; overflow: hidden;
+    transition: transform 0.4s, background 0.4s, border-color 0.4s;
+  }
+  .support-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--mint), var(--gold));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .support-card:hover::after { transform: scaleX(1); }
+  .support-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.07); border-color: rgba(201,168,76,0.3); }
+  .support-card-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .support-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 400; color: var(--gold-light);
+    margin-bottom: 0.7rem;
+  }
+  .support-card-body { font-size: 0.92rem; color: var(--muted); line-height: 1.75; }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .img-ph {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.8rem; position: relative; overflow: hidden;
+    min-height: 280px;
+  }
+  .img-ph::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(74,158,120,0.07), rgba(201,168,76,0.04));
+  }
+  .img-ph-icon { font-size: 2.2rem; position: relative; z-index: 1; opacity: 0.45; }
+  .img-ph-label {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); position: relative; z-index: 1; font-weight: 500; text-align: center; padding: 0 1rem;
+  }
+  .img-ph.tall { min-height: 360px; }
+  .img-ph.short { min-height: 200px; }
+
+  /* ── HIGHLIGHT CALLOUT BOX ── */
+  .highlight-box {
+    background: linear-gradient(135deg, rgba(42,82,64,0.3), rgba(24,46,36,0.65));
+    border: 1px solid var(--glass-b); border-left: 3px solid var(--mint);
+    padding: 1.8rem 2rem; margin-top: 2rem;
+    font-size: 0.95rem; color: rgba(245,240,232,0.82); line-height: 1.85;
+  }
+  .highlight-box strong { color: var(--gold-light); }
+
+  @media (max-width: 960px) {
+    .content-split { grid-template-columns: 1fr; gap: 2.5rem; direction: ltr; }
+    .content-split.flip { direction: ltr; }
+    .support-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / Training &amp; Support</div>
+
+  <h1 class="hero-title">
+    You're never in business<br>
+    <em>by yourself</em><br>
+    <span class="g">we make sure of it</span>
+  </h1>
+
+  <p class="hero-body">
+    Starting a new business can feel overwhelming, but at Luna Verde Corporate we make sure you never do it alone. Our personalized franchise training, ongoing support, and dedicated AI system equip you with everything you need to confidently launch, manage, and scale your business — regardless of your past coaching experience.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#training" class="btn-g"><span>Explore Training</span></a>
+    <a href="/#claim" class="btn-txt">Request Information</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PARTNER WITH US — FRANCHISE TRAINING
+══════════════════════════════════════════ -->
+<section class="sec banded" id="training">
+  <div class="tag rv">Franchise Training</div>
+  <h2 class="sec-title rv d1">Partner with Us: Franchise Training<br><em>Built for You</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="content-split">
+    <div class="rv d2">
+      <p class="body-txt">
+        Starting a new business can feel overwhelming, but at Luna Verde Corporate, we make sure you never do it alone. Our personalized franchise training and ongoing support and dedicated AI system equip you with everything you need to confidently launch, manage, and scale your business — regardless of your past coaching experience.
+      </p>
+      <p class="body-txt" style="margin-top:1.4rem;">
+        From your very first day, you'll have access to a proven system designed by experienced franchise professionals who understand the challenges of building a consulting business from the ground up.
+      </p>
+      <div class="highlight-box rv d3">
+        <strong>Your success is our success.</strong> Every training module, resource, and support channel is designed with one goal: helping you thrive as a Luna Verde Corporate franchise owner.
+      </div>
+    </div>
+    <div class="rv d3">
+      <div class="img-ph tall">
+        <div class="img-ph-icon">🤝</div>
+        <div class="img-ph-label">Partners shaking hands at a business meeting</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FRANCHISE PARTNERSHIP & GROWTH SUPPORT
+══════════════════════════════════════════ -->
+<section class="sec" id="support">
+  <div class="tag rv">Partnership &amp; Growth</div>
+  <h2 class="sec-title rv d1">Franchise Partnership &amp;<br><em>Growth Support</em></h2>
+  <div class="rule rv d2"></div>
+
+  <p class="body-txt rv d2" style="max-width:680px;">
+    We can help you succeed with ongoing franchise management and continuous access to a full suite of support resources designed to keep your business growing.
+  </p>
+
+  <div class="support-grid" style="margin-top:3.5rem;">
+    <div class="support-card rv d1">
+      <div class="support-card-icon">🌐</div>
+      <div class="support-card-title">Dedicated Regional Support</div>
+      <div class="support-card-body">Expert staff on hand to help you navigate and overcome operational challenges at every stage of your business journey.</div>
+    </div>
+    <div class="support-card rv d2">
+      <div class="support-card-icon">🎯</div>
+      <div class="support-card-title">Mentorship Programs</div>
+      <div class="support-card-body">Experienced guidance from seasoned franchise owners and business advisors to keep your business growth on track.</div>
+    </div>
+    <div class="support-card rv d3">
+      <div class="support-card-icon">⚙️</div>
+      <div class="support-card-title">Technical Assistance</div>
+      <div class="support-card-body">Hands-on resources and expert technical support to effectively manage your day-to-day franchise operations.</div>
+    </div>
+    <div class="support-card rv d4">
+      <div class="support-card-icon">💻</div>
+      <div class="support-card-title">Online Virtual Industry Networking</div>
+      <div class="support-card-body">Regular online virtual connections, regional online virtual meetings, and online virtual training sessions to keep you connected and up to date with market trends.</div>
+    </div>
+  </div>
+
+  <div class="content-split flip" style="margin-top:5rem;">
+    <div class="rv d2">
+      <div class="tag" style="margin-top:0;">The Support Ecosystem</div>
+      <h3 class="sub-heading">Connected, informed,<br>and <em>always growing</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        Our virtual networking infrastructure ensures you're never isolated. Whether it's a question about operations, a client situation, or a market shift, you'll have direct access to people who've navigated it before.
+      </p>
+      <ul class="credit-list" style="margin-top:1.8rem;">
+        <li>Regional support experts available for real-time guidance.</li>
+        <li>Peer mentorship from experienced franchise operators.</li>
+        <li>Structured technical resources for operational clarity.</li>
+        <li>Virtual sessions covering industry trends and best practices.</li>
+      </ul>
+    </div>
+    <div class="rv d3">
+      <div class="img-ph tall">
+        <div class="img-ph-icon">📊</div>
+        <div class="img-ph-label">Virtual meeting and collaboration overview</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CORE TRAINING HIGHLIGHTS
+══════════════════════════════════════════ -->
+<section class="sec banded" id="core-training">
+  <div class="tag rv">Core Training</div>
+  <h2 class="sec-title rv d1">Kickstart your consulting business<br>with an <em>intensive program</em></h2>
+  <div class="rule rv d2"></div>
+
+  <p class="body-txt rv d2" style="max-width:680px;">
+    Our intensive online virtual training program is designed to give you every skill, system, and strategy you need to hit the ground running as a Luna Verde Corporate franchise owner.
+  </p>
+
+  <div class="intro-pills" style="margin-top:3.5rem;">
+    <div class="pill rv d1">
+      <div class="pill-ic">🧠</div>
+      <div class="pill-title">Hands-on Immersion</div>
+      <div class="pill-body">Learn how to operate your Luna Verde Corporate franchise and manage client relationships directly from seasoned business advisors.</div>
+    </div>
+    <div class="pill rv d2">
+      <div class="pill-ic">📘</div>
+      <div class="pill-title">Business Mastery</div>
+      <div class="pill-body">Gain comprehensive, actionable knowledge of the proven Luna Verde Corporate business model built for sustainable consulting success.</div>
+    </div>
+    <div class="pill rv d3">
+      <div class="pill-ic">🎯</div>
+      <div class="pill-title">Client Strategy</div>
+      <div class="pill-body">Learn targeted approaches to effectively assess and meet the needs of your consulting clients across all five business sectors.</div>
+    </div>
+    <div class="pill rv d4">
+      <div class="pill-ic">🔧</div>
+      <div class="pill-title">Systems Setup</div>
+      <div class="pill-body">Master the specific, repeatable systems and processes required for operational success from day one.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     ONGOING SUPPORT
+══════════════════════════════════════════ -->
+<section class="sec" id="ongoing">
+  <div class="credit-grid">
+    <div>
+      <div class="tag rv">Ongoing Support</div>
+      <h2 class="sec-title rv d1">Post-training guidance<br><em>beyond launch day</em></h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Transition smoothly into ownership. You're in business for yourself, but not by yourself. Navigate your franchise with virtual mentorship that guarantees a smooth transition into ownership.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        Our ongoing support infrastructure doesn't stop after your initial training. As your business grows and the market evolves, we grow and evolve with you — providing continuous guidance, updated training materials, and access to the full Luna Verde Corporate network.
+      </p>
+      <ul class="credit-list" style="margin-top:2rem;" class="rv d4">
+        <li class="rv d2">Virtual mentorship from experienced franchise operators.</li>
+        <li class="rv d3">Continuously updated training as regulations and systems evolve.</li>
+        <li class="rv d4">Access to the full Luna Verde Corporate franchise network and resources.</li>
+        <li class="rv d5">AI-powered tools and automation to reduce operational complexity.</li>
+      </ul>
+    </div>
+    <div class="rv d2" style="display:flex;flex-direction:column;gap:1.5rem;">
+      <div class="img-ph tall">
+        <div class="img-ph-icon">🖥️</div>
+        <div class="img-ph-label">Online virtual training session via video platform</div>
+      </div>
+      <div class="highlight-box" style="margin-top:0;">
+        <strong>Delivered virtually via Zoom</strong> — our entire training and support program is remote-friendly, letting you learn, collaborate, and grow from anywhere without the need for physical presence.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Start?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      Training built to launch you<br><em>with confidence</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Request our franchise information package to learn more about the Luna Verde Corporate training program, support structure, and what it takes to get started.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">Hands-on Immersion</div>
+      <div class="stream">Business Mastery</div>
+      <div class="stream">Client Strategy</div>
+      <div class="stream">Ongoing Mentorship</div>
+      <div class="stream">Virtual Delivery</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
+      <a href="/#claim" class="btn-g"><span>Request Franchise Information</span></a>
+      <a href="/franchise-opportunities/investment/" class="btn-txt">View Investment Details</a>
+    </div>
+  </div>
+</section>

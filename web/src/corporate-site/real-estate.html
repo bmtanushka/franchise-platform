@@ -1,0 +1,118 @@
+<!-- ════════════════════════════════════════════════════
+     real-estate.html — Real Estate
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / Real Estate</div>
+
+  <h1 class="hero-title">
+    Buying a home or expanding<br>
+    <em>your residential</em><br>
+    <span class="g">investment portfolio.</span>
+  </h1>
+
+  <p class="hero-body">
+    Buying a home or expanding your residential investment portfolio here in the U.S. or abroad should be a rewarding
+    financial milestone, not a fee-heavy burden. We apply our commission-sharing model across every real estate sector.
+  </p>
+
+  <div class="hero-cta">
+    <a href="/rebate-and-credit-rewards#real-estate" class="btn-g"><span>See Your Rebate</span></a>
+    <a href="#apply" class="btn-txt">Chat With Us</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REAL ESTATE
+══════════════════════════════════════════ -->
+<section class="sec" id="rebate">
+  <div class="tag rv">Real Estate</div>
+  <h2 class="sec-title rv d1">Buying a home or expanding your<br><em>residential investment portfolio</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:820px;">
+    Buying a home or expanding your residential investment portfolio here in the U.S. or abroad should be a rewarding
+    financial milestone, not a fee-heavy burden. We apply our commission-sharing model to all the real estate sectors to
+    ensure everyday buyers and seasoned investors get the best possible financial start. This rebate can be used
+    directly to offset costly closing fees, lower your mortgage rate, or fund immediate home upgrades. Traditional real
+    estate brokerages rarely share their profits, but we believe that the buyer deserves the ultimate reward for making
+    the investment. Your real estate transaction becomes an optimized financial strategy that builds instant wealth from
+    day one.
+  </p>
+
+  <p class="body-txt rv d3" style="max-width:820px;">
+    Stacking a possible <strong style="color:var(--gold-light)">$3,000</strong> commission rebate with a possible <strong style="color:var(--gold-light)">$2,000</strong> lender credit unlocks a <strong style="color:var(--mint)">$5,000</strong> dual-force advantage on a $400,000 home.
+  </p>
+  <div class="rv d3" style="margin-top:1.5rem;">
+    <a href="/rebate-and-credit-rewards#real-estate" class="btn-txt">Calculate Your Rebate</a>
+  </div>
+
+  <div class="video-grid rv d4">
+    <div class="vid-card" id="vid1">
+      <div class="play-ring"></div>
+      <div class="vid-lbl">Buying a House Video</div>
+    </div>
+    <div class="vid-card" id="vid2">
+      <div class="play-ring"></div>
+      <div class="vid-lbl">Selling a Home Video</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Buy or Invest?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      One conversation.<br><em>Every solution.</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Let us match you with the right real estate and mortgage solution — with your combined commission and mortgage
+      rebate applied directly at closing.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">Home Purchase</div>
+      <div class="stream">Investment Portfolio</div>
+      <div class="stream">Mortgage Credit</div>
+      <div class="stream">Commission Rebate</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
+      <a href="#apply" class="btn-g"><span>Chat With Us</span></a>
+      <a href="/rebate-and-credit-rewards#real-estate" class="btn-txt">Review Your Rebate</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     APPLY — REAL ESTATE CONTACT
+══════════════════════════════════════════ -->
+<section class="sec" id="apply">
+  <div class="tag rv" style="justify-content:center;">Get In Touch</div>
+  <h2 class="sec-title rv d1" style="text-align:center;">Talk to a specialist about<br><em>your real estate goals</em></h2>
+  <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+  <div class="rv d3" style="max-width:640px;margin:2rem auto 0;text-align:center;background:var(--glass);border:1px solid var(--glass-b);border-left:3px solid var(--mint);padding:3rem 2.5rem;">
+    <div style="font-size:2rem;margin-bottom:1rem;">💬</div>
+    <p class="body-txt" style="color:rgba(245,240,232,0.85);">
+      Chat with our agent to share your information — the right person on our team will contact you shortly, with your commission and mortgage rebates applied directly to reduce your closing costs.
+    </p>
+  </div>
+</section>
+
+<script>
+  // Video placeholders
+  ['vid1', 'vid2'].forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function () {
+      var lbl = this.querySelector('.vid-lbl').textContent;
+      this.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;z-index:1;position:relative;"><div style="font-size:2rem;margin-bottom:0.8rem">🎬</div><em>' + lbl + '</em><br><span style="font-size:0.73rem;opacity:0.55;margin-top:0.5rem;display:block;">Add your video URL to activate this placeholder.</span></div>';
+    });
+  });
+</script>

@@ -1,0 +1,301 @@
+<!-- ════════════════════════════════════════════════════
+     franchise-opportunities/investment/index.html
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── INVESTMENT HIGHLIGHT CARD ── */
+  .invest-card {
+    background: linear-gradient(135deg, rgba(42,82,64,0.45), rgba(24,46,36,0.7));
+    border: 1px solid var(--glass-b); padding: 3.5rem;
+    position: relative; overflow: hidden;
+  }
+  .invest-card::before {
+    content: '$'; position: absolute; right: -10px; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Cormorant Garamond', serif; font-size: 9rem;
+    font-weight: 300; color: rgba(74,158,120,0.07);
+    line-height: 1; pointer-events: none;
+  }
+  .invest-price {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 4.5rem; font-weight: 300; color: var(--gold-light); line-height: 1;
+  }
+  .invest-price-range {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 3rem; font-weight: 300; color: var(--gold-light); line-height: 1.1;
+  }
+  .invest-lbl {
+    font-size: 0.8rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--mint); margin: 0.6rem 0 2rem; font-weight: 500;
+  }
+
+  /* ── WHY CHOOSE PILLS ── */
+  .why-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.5rem; margin-top: 3.5rem;
+  }
+  .why-card {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    padding: 2rem 2.2rem; position: relative; overflow: hidden;
+    transition: transform 0.4s, background 0.4s, border-color 0.4s;
+  }
+  .why-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--gold), var(--mint));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .why-card:hover::after { transform: scaleX(1); }
+  .why-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.07); border-color: rgba(201,168,76,0.3); }
+  .why-card-icon { font-size: 1.8rem; margin-bottom: 1rem; }
+  .why-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem; font-weight: 400; color: var(--gold-light); margin-bottom: 0.6rem;
+  }
+  .why-card-body { font-size: 0.92rem; color: var(--muted); line-height: 1.75; }
+
+  /* ── DISCLOSURE CALLOUT ── */
+  .disclosure-callout {
+    background: linear-gradient(135deg, rgba(42,82,64,0.3), rgba(24,46,36,0.65));
+    border: 1px solid var(--glass-b); border-left: 3px solid var(--gold);
+    padding: 1.8rem 2rem; margin-top: 1.5rem;
+    font-size: 0.92rem; color: rgba(245,240,232,0.78); line-height: 1.8;
+  }
+  .disclosure-callout strong { color: var(--gold-light); }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .img-ph {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.8rem; position: relative; overflow: hidden;
+    min-height: 280px;
+  }
+  .img-ph::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(74,158,120,0.07), rgba(201,168,76,0.04));
+  }
+  .img-ph-icon { font-size: 2.2rem; position: relative; z-index: 1; opacity: 0.45; }
+  .img-ph-label {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); position: relative; z-index: 1; font-weight: 500; text-align: center; padding: 0 1rem;
+  }
+  .img-ph.tall { min-height: 360px; }
+
+  @media (max-width: 960px) {
+    .why-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde Corporate / Investment</div>
+
+  <h1 class="hero-title">
+    A franchise built<br>
+    <em>for your ambition</em><br>
+    <span class="g">at a competitive cost</span>
+  </h1>
+
+  <p class="hero-body">
+    The franchise market has grown to over $936B. As the need for expert financial and business consulting surges, Luna Verde Corporate offers a premier opportunity for growth with low initial costs and high return potential.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#why-choose" class="btn-g"><span>Explore the Investment</span></a>
+    <a href="/#claim" class="btn-txt">Request Information</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WHY CHOOSE LUNA VERDE 5
+══════════════════════════════════════════ -->
+<section class="sec banded" id="why-choose">
+  <div class="tag rv">Why Luna Verde Corporate</div>
+  <h2 class="sec-title rv d1">Why Choose a<br><em>Luna Verde Corporate Franchise?</em></h2>
+  <div class="rule rv d2"></div>
+
+  <p class="body-txt rv d2" style="max-width:680px;">
+    The franchise market has grown to over $936B. As the need for expert financial and business consulting surges, Luna Verde Corporate offers a premier opportunity for growth in five high-demand business sectors.
+  </p>
+
+  <div class="why-grid">
+    <div class="why-card rv d1">
+      <div class="why-card-icon">🌐</div>
+      <div class="why-card-title">Online Virtual Flexibility</div>
+      <div class="why-card-body">Eliminate commercial real estate costs with our adaptable, remote-friendly model. Operate your franchise entirely online from anywhere.</div>
+    </div>
+    <div class="why-card rv d2">
+      <div class="why-card-icon">🚀</div>
+      <div class="why-card-title">Accelerated Success</div>
+      <div class="why-card-body">Leverage our streamlined, proven systems to launch quickly and scale efficiently without the trial and error of building from scratch.</div>
+    </div>
+    <div class="why-card rv d3">
+      <div class="why-card-icon">💰</div>
+      <div class="why-card-title">Low Cost, High Potential</div>
+      <div class="why-card-body">Start your entrepreneurial journey with low initial costs and high return potential in a thriving, growing market.</div>
+    </div>
+    <div class="why-card rv d4">
+      <div class="why-card-icon">🛡️</div>
+      <div class="why-card-title">Recession-Resistant Market</div>
+      <div class="why-card-body">Build a stable business serving high-demand clients across our lucrative five business sectors, even in challenging economic climates.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     INITIAL FRANCHISE FEE
+══════════════════════════════════════════ -->
+<section class="sec" id="franchise-fee">
+  <div class="credit-grid">
+    <div>
+      <div class="tag rv">Initial Investment</div>
+      <h2 class="sec-title rv d1">What Does It Cost to Own<br>a <em>Luna Verde Corporate</em> Franchise?</h2>
+      <div class="rule rv d2"></div>
+
+      <h3 class="sub-heading rv d2" style="font-size:1.5rem;margin-bottom:1rem;">Initial Franchise Investment Breakdown</h3>
+
+      <p class="body-txt rv d3">
+        Investing in a Luna Verde Corporate franchise requires an initial franchise fee of $3,900. This fee covers a wide range of expenses that ensure you're ready to open and operate your franchise with confidence, including:
+      </p>
+
+      <ul class="credit-list" style="margin-top:2rem;">
+        <li class="rv d2">
+          <strong style="color:var(--gold-light);margin-right:0.3rem;">Initial Franchise Training</strong> — Gain comprehensive knowledge of how to run your business, work with clients, and implement our proven business model.
+        </li>
+        <li class="rv d3">
+          <strong style="color:var(--gold-light);margin-right:0.3rem;">Materials and Resources</strong> — Receive all the materials and resources you'll need to launch your business from day one.
+        </li>
+        <li class="rv d4">
+          <strong style="color:var(--gold-light);margin-right:0.3rem;">Ongoing Franchise Support</strong> — Enjoy continuous guidance and support from the Luna Verde Corporate team and the extensive United Franchise Group network.
+        </li>
+      </ul>
+
+      <div class="disclosure-callout rv d4">
+        <strong>Financial Requirements:</strong> Available liquid capital of $10,000 is required to qualify as a Luna Verde Corporate franchise owner.
+      </div>
+    </div>
+
+    <div class="rv d2" style="display:flex;flex-direction:column;gap:2rem;">
+      <div class="invest-card">
+        <div class="invest-price">$3,900</div>
+        <div class="invest-lbl">Initial Franchise Fee</div>
+        <ul class="credit-list">
+          <li>Comprehensive franchise training program</li>
+          <li>All materials and launch resources included</li>
+          <li>Access to United Franchise Group network</li>
+          <li>Ongoing support from the LVC team</li>
+        </ul>
+      </div>
+      <div class="invest-card" style="padding:2rem 2.5rem;">
+        <div class="credit-lbl" style="margin-bottom:0.8rem;">Financial Requirement</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:300;color:var(--cream);line-height:1;">$10,000</div>
+        <div style="font-size:0.85rem;color:var(--muted);margin-top:0.5rem;">Available Liquid Capital Required</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     TOTAL FRANCHISE INVESTMENT
+══════════════════════════════════════════ -->
+<section class="sec banded" id="total-investment">
+  <div class="credit-grid">
+    <div class="rv d2">
+      <div class="invest-card" style="border-left:3px solid var(--gold);">
+        <div class="invest-price-range">$6,950 – $29,000</div>
+        <div class="invest-lbl">Total Franchise Investment Range</div>
+        <ul class="credit-list">
+          <li>Highly competitive cost relative to brand profit potential</li>
+          <li>Virtual model eliminates physical office space costs</li>
+          <li>Remote business management reduces ongoing overhead</li>
+          <li>Designed to maximize cost-efficiency from launch</li>
+        </ul>
+      </div>
+    </div>
+
+    <div>
+      <div class="tag rv">Total Investment</div>
+      <h2 class="sec-title rv d1">A highly competitive cost<br>for <em>exceptional potential</em></h2>
+      <div class="rule rv d2"></div>
+
+      <p class="body-txt rv d2">
+        The initial investment required to launch a Luna Verde Corporate franchise falls between $6,950 and $29,000. This is a highly competitive cost when evaluated against the brand's profit potential.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        Our franchise structure is designed to maximize cost-efficiency by utilizing a virtual operational model, eliminating physical office space requirements and enabling remote business management.
+      </p>
+      <p class="body-txt rv d4" style="margin-top:1.2rem;">
+        When you factor in the elimination of commercial rent, the low initial fee, and the earning potential across five business pillars, the Luna Verde Corporate franchise represents an exceptional value in the consulting franchise market.
+      </p>
+
+      <div class="disclosure-callout rv d4" style="border-left-color:var(--mint);">
+        <strong>Why the range?</strong> Investment varies based on your market, the level of initial marketing, and specific operational choices. Our team will walk you through a personalized breakdown during the franchise discovery process.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     INVESTMENT COMPARISON
+══════════════════════════════════════════ -->
+<section class="sec" id="value">
+  <div class="tag rv">Value Proposition</div>
+  <h2 class="sec-title rv d1">Built to maximize<br><em>return on investment</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="intro-pills" style="margin-top:3rem;">
+    <div class="pill rv d1">
+      <div class="pill-ic">🏠</div>
+      <div class="pill-title">No Office Required</div>
+      <div class="pill-body">Our fully virtual model eliminates commercial real estate costs — one of the largest expenses for traditional franchise businesses.</div>
+    </div>
+    <div class="pill rv d2">
+      <div class="pill-ic">📈</div>
+      <div class="pill-title">Multiple Income Streams</div>
+      <div class="pill-body">Earn across five distinct business pillars rather than relying on a single revenue source, reducing risk and increasing earning potential.</div>
+    </div>
+    <div class="pill rv d3">
+      <div class="pill-ic">⚡</div>
+      <div class="pill-title">Fast to Launch</div>
+      <div class="pill-body">Proven systems and comprehensive training allow you to get to market quickly — without the months of setup traditional businesses require.</div>
+    </div>
+    <div class="pill rv d4">
+      <div class="pill-ic">🔄</div>
+      <div class="pill-title">Recession-Resistant</div>
+      <div class="pill-body">Financial and business consulting demand remains high even in difficult economic conditions, providing stability across market cycles.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Invest?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      Start your franchise journey<br><em>at a competitive cost</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Request our franchise information package to learn more about the Luna Verde Corporate investment structure, income potential, and what it takes to get started.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">$3,900 Franchise Fee</div>
+      <div class="stream">$6,950 – $29,000 Total</div>
+      <div class="stream">Virtual Model</div>
+      <div class="stream">No Office Costs</div>
+      <div class="stream">Multiple Income Streams</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
+      <a href="/#claim" class="btn-g"><span>Request Franchise Information</span></a>
+      <a href="/franchise-opportunities/training-and-support/" class="btn-txt">View Training &amp; Support</a>
+    </div>
+  </div>
+</section>
