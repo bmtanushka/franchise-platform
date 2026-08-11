@@ -309,19 +309,29 @@ next — nothing currently queued.
 
 ## Known gaps / things to revisit
 
-- `OPENAI_API_KEY` is not set anywhere yet (user needs to add it via
-  Railway dashboard for both `agent` and their own key). Without it, the
-  chat agent runs on a deterministic fallback (exact/substring matching
-  instead of an LLM call) for both question phrasing and answer
-  extraction — functionally complete but not the "natural language"
-  experience the brief describes. Once a real key is set, no code changes
-  are needed, just redeploy.
-- `AUTH_SECRET` is set on Railway `web` (different value than the local
-  `.env.local` one, generated during this session).
+- `OPENAI_API_KEY` is set on Railway `agent` — the chat agent uses real
+  OpenAI tool-calling for both question phrasing and answer extraction in
+  production, not the deterministic fallback (that fallback still exists
+  in `agent/app/openai_helper.py` and kicks in automatically if the key
+  is ever unset, e.g. local dev without one).
+- `AUTH_SECRET` and `AUTH_URL` are both set on Railway `web` (different
+  `AUTH_SECRET` value than the local `.env.local` one). `AUTH_URL` is
+  required in production — Auth.js's automatic host-detection picks up an
+  incorrect `x-forwarded-host` behind Railway's proxy otherwise, which
+  broke sign-out redirects until this was set explicitly.
 - No `chat_sessions.status = 'abandoned'` detection yet — messages are all
   logged regardless, so the raw data for later drop-off analysis exists,
   but nothing marks a session abandoned after inactivity.
-- Dashboard is intentionally a single page that branches by role, not the
-  "four dashboard shells" the brief describes — enough to prove scoping
-  end-to-end without overbuilding before the lead pipeline UI (step 6)
-  gives it real content to show.
+- Dashboard now has a proper shell (`web/src/app/dashboard/layout.tsx` —
+  top bar + role-filtered left sidebar, nav config in
+  `web/src/lib/dashboard-nav.ts`) with content split into real routes
+  (`/dashboard` Overview with analytics, `/dashboard/leads`,
+  `/dashboard/leads/[id]`, `/dashboard/franchisees` and
+  `/dashboard/providers` for super_admin/franchisor only,
+  `/dashboard/profile` for franchisee/service_provider) — this replaces
+  the earlier single-page-that-branches-by-role version. Overview's three
+  charts (status breakdown, service-type breakdown, 30-day trend) come
+  from `getLeadAnalytics()` in `web/src/lib/db/leads.ts`, same
+  role-scoping pattern as every other query. Colors follow the `dataviz`
+  skill's palette — an ordinal blue ramp for pipeline progress
+  (`web/src/components/charts/chart-theme.tsx`), not arbitrary hues.

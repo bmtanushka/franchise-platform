@@ -232,3 +232,79 @@ export async function getLeadDetail(ctx: SessionContext, leadId: string): Promis
     };
   });
 }
+
+const WON_LIKE_STATUSES: LeadStatus[] = ["won", "rebate_received", "rebate_paid"];
+const ACTIVE_STATUSES: LeadStatus[] = ["new", "qualified", "assigned_to_provider", "in_progress"];
+
+export type LeadAnalytics = {
+  totalLeads: number;
+  wonCount: number;
+  activeCount: number;
+  totalDealValueWon: string;
+  byStatus: { status: LeadStatus; count: number }[];
+  byServiceType: { serviceTypeKey: string; serviceTypeLabel: string; count: number }[];
+  last30Days: { date: string; count: number }[];
+};
+
+/**
+ * Aggregate counts behind the dashboard Overview charts. Same role-scoping
+ * as listLeads — one shared WHERE fragment reused across every query here.
+ */
+export async function getLeadAnalytics(ctx: SessionContext): Promise<LeadAnalytics> {
+  return withTenantContext(ctx, async (tx) => {
+    const scope =
+      ctx.role === "franchisee"
+        ? tx`tenant_id = ${ctx.tenantId}`
+        : ctx.role === "service_provider"
+          ? tx`assigned_provider_id = ${ctx.providerId}`
+          : tx`true`;
+
+    const statusRows = await tx<{ status: LeadStatus; count: number }[]>`
+      select status, count(*)::int as count
+      from leads
+      where ${scope}
+      group by status
+    `;
+
+    const serviceRows = await tx<{ service_type_key: string; service_type_label: string; count: number }[]>`
+      select st.key as service_type_key, st.name as service_type_label, count(*)::int as count
+      from leads l
+      join service_types st on st.id = l.service_type_id
+      where ${scope}
+      group by st.key, st.name
+      order by count desc
+    `;
+
+    const dailyRows = await tx<{ date: string; count: number }[]>`
+      select to_char(date_trunc('day', created_at), 'YYYY-MM-DD') as date, count(*)::int as count
+      from leads
+      where ${scope} and created_at > now() - interval '30 days'
+      group by 1
+      order by 1
+    `;
+
+    const totalsRow = await tx<{ total: number; total_deal_value: string }[]>`
+      select
+        count(*)::int as total,
+        coalesce(sum(deal_value) filter (where status = any(${WON_LIKE_STATUSES})), 0) as total_deal_value
+      from leads
+      where ${scope}
+    `;
+
+    const statusCounts = new Map(statusRows.map((r) => [r.status, r.count]));
+
+    return {
+      totalLeads: totalsRow[0].total,
+      wonCount: WON_LIKE_STATUSES.reduce((sum, s) => sum + (statusCounts.get(s) ?? 0), 0),
+      activeCount: ACTIVE_STATUSES.reduce((sum, s) => sum + (statusCounts.get(s) ?? 0), 0),
+      totalDealValueWon: totalsRow[0].total_deal_value,
+      byStatus: statusRows,
+      byServiceType: serviceRows.map((r) => ({
+        serviceTypeKey: r.service_type_key,
+        serviceTypeLabel: r.service_type_label,
+        count: r.count,
+      })),
+      last30Days: dailyRows,
+    };
+  });
+}

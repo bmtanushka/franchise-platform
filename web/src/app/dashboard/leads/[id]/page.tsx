@@ -38,10 +38,10 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   const detailEntries = Object.entries(lead.details).filter(([, v]) => v !== null && v !== undefined && v !== "");
 
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 space-y-8 p-6">
+    <div className="mx-auto w-full max-w-2xl space-y-8">
       <div>
-        <Link href="/dashboard" className="text-sm opacity-60 hover:opacity-100">
-          ← Back to dashboard
+        <Link href="/dashboard/leads" className="text-sm opacity-60 hover:opacity-100">
+          ← Back to leads
         </Link>
       </div>
 
@@ -115,6 +115,6 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           ))}
         </ul>
       </section>
-    </main>
+    </div>
   );
 }
