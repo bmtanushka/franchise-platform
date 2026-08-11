@@ -37,6 +37,14 @@ Authorization must be enforced in two layers:
 
 ## Domains and multi-tenancy
 
+The real franchisor brand is **Luna Verde** (Luna Verde Corporate / Luna
+Verde Business Network), currently live at
+`https://lunaverdebusinessnetwork.com/`. Its full marketing site (source:
+`Web-pages/Corporate/`, a self-contained header+page+footer HTML build —
+see "Franchisor corporate site" below) is now served from this app for
+the franchisor tenant. DNS for the real domain hasn't been pointed at
+Railway yet — production is still reached via the Railway-issued URL.
+
 Two root domains, both pointed at the same web service (currently
 placeholders — treat as literal until real domains are provided):
 
@@ -77,6 +85,35 @@ Single codebase renders every tenant's site differently:
   content model; a franchisee's `template_id` picks which layout component
   renders it. This is how we'll later support fully custom sites for
   franchisees who want one — same data, different `component_key`.
+
+### Franchisor corporate site (Luna Verde)
+
+The franchisor's site doesn't go through `site_content`/`StandardTemplate`
+at all — it's the real, bespoke Luna Verde marketing site, supplied as
+standalone HTML files (`web/src/corporate-site/`, copied from
+`Web-pages/Corporate/`) built on the convention: every page = **header
+partial + page-specific sections + footer partial**, all CSS inline in the
+header partial, no external assets.
+
+Serving mechanism (not React/JSX):
+- `src/proxy.ts` — for a franchisor-type tenant, if the request path is
+  one of the known corporate paths (`src/lib/corporate-site.ts`'s
+  `PAGE_REGISTRY`), rewrites to `/corp<path>`.
+- `src/app/corp/[[...slug]]/route.ts` — a Route Handler (not a page) that
+  reads the registry, concatenates header+content+footer, and returns it
+  as a raw `text/html` response, re-checking `tenant.type === "franchisor"`
+  itself as defense in depth.
+
+This is deliberately **not** ported to JSX: the pages are self-contained
+HTML/CSS/JS (nav scroll behavior, dropdowns, rebate sliders, scroll-reveal
+all live in inline `<script>` tags in the header/footer partials). A raw
+HTTP response preserves that exactly; rendering the same markup through
+React (e.g. via `dangerouslySetInnerHTML`) would silently drop every
+`<script>` tag. Add a new corporate page by dropping the HTML file into
+`web/src/corporate-site/` and adding one entry to `PAGE_REGISTRY`.
+
+The corporate nav's "Franchisee Portal" link is redirected (in
+`proxy.ts`) straight to `/login` rather than served as a static page.
 
 ## Lead lifecycle
 
