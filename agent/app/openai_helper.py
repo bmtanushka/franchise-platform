@@ -150,7 +150,12 @@ def _fallback_extract(field: Field, user_message: str) -> ExtractionResult:
 
     if field["type"] == "enum":
         lowered = text.lower().replace(" ", "_").replace("-", "_")
-        for candidate in field["enum_values"]:
+        if lowered in field["enum_values"]:
+            return ExtractionResult(ok=True, value=lowered)
+        # Substring fallback (e.g. "yeah just refinancing" -> "refinance"),
+        # but check longest candidates first so e.g. "credit" can't shadow
+        # "business_credit" — "credit" is a substring of it.
+        for candidate in sorted(field["enum_values"], key=len, reverse=True):
             if candidate in lowered or lowered in candidate:
                 return ExtractionResult(ok=True, value=candidate)
         return ExtractionResult(ok=False)
