@@ -7,6 +7,7 @@ export type SessionContext = {
   role: Role;
   tenantId: string | null;
   providerId: string | null;
+  userId: string | null;
 };
 
 /**

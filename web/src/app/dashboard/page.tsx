@@ -4,6 +4,7 @@ import { listTenants } from "@/lib/db/tenants";
 import { getFranchiseeProfile } from "@/lib/db/site-content";
 import { getServiceProviderById } from "@/lib/db/providers";
 import { SignOutButton } from "./sign-out-button";
+import { LeadsSection } from "./leads-section";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -12,11 +13,11 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const { role, tenantId, providerId, name, email } = session.user;
+  const { id, role, tenantId, providerId, name, email } = session.user;
 
   return (
-    <main className="mx-auto w-full max-w-2xl flex-1 p-6">
-      <div className="mb-6 flex items-center justify-between">
+    <main className="mx-auto w-full max-w-4xl flex-1 space-y-8 p-6">
+      <div className="mb-2 flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold">Dashboard</h1>
           <p className="text-sm opacity-70">
@@ -29,6 +30,8 @@ export default async function DashboardPage() {
       {(role === "super_admin" || role === "franchisor") && <AllTenantsView role={role} />}
       {role === "franchisee" && tenantId && <FranchiseeView tenantId={tenantId} />}
       {role === "service_provider" && providerId && <ProviderView providerId={providerId} />}
+
+      <LeadsSection ctx={{ role, tenantId: tenantId ?? null, providerId: providerId ?? null, userId: id }} />
     </main>
   );
 }

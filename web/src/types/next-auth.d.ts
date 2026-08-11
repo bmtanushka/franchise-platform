@@ -4,6 +4,7 @@ import type { Role } from "@/lib/db/context";
 declare module "next-auth" {
   interface Session {
     user: {
+      id: string;
       role: Role;
       tenantId: string | null;
       providerId?: string | null;

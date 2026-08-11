@@ -47,6 +47,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token;
     },
     session: async ({ session, token }) => {
+      session.user.id = token.sub ?? "";
       session.user.role = token.role as Role;
       session.user.tenantId = (token.tenantId as string | null | undefined) ?? null;
       session.user.providerId = (token.providerId as string | null | undefined) ?? null;

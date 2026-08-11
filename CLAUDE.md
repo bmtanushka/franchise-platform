@@ -263,14 +263,27 @@ Cloudflare R2 + a `documents` table linked to `leads`).
    for all 5 services at once (`agent/app/question_sets.py`) rather than
    one-then-extend. Tested end-to-end on production including a full
    mortgage and a full credit conversation through to a created lead.
-6. Build the lead status pipeline UI: franchisor assignment to providers,
-   provider status updates, franchisee/franchisor lead visibility.
+6. ✅ Lead status pipeline UI, added to the shared `/dashboard` page
+   (`web/src/app/dashboard/leads-section.tsx`): franchisor/super_admin see
+   all leads and can assign an unassigned one to a provider (Server
+   Action, `web/src/lib/actions/leads.ts`); providers see only their
+   assigned leads and can move status to `in_progress`/`won`/`lost`/
+   `disqualified` with an optional deal value; franchisees get read-only
+   visibility into their own tenant's leads. `leads_provider_update` RLS
+   policy added (migration 005) — the original schema only gave providers
+   SELECT. Every change still logs to `lead_status_history` with
+   `changed_by`. Tested end-to-end with a real browser (franchisor assign
+   → provider update to `won` with deal value → franchisee sees the
+   result read-only, no rebate created yet).
 7. Build rebate calculation on `won` status and the pending/paid toggle.
 
-Next up: step 6, the lead status pipeline UI. `leads`/`lead_status_history`
-already exist and are being written to by the chat agent (status
-`qualified`) — next is franchisor-side assignment to a service_provider
-and status updates from there.
+Next up: step 7, rebate calculation. On a lead's status → `won`, insert a
+`rebates` row using `rebate_rules` *only* if the lead's owning tenant is
+type `franchisee` (franchisor-owned leads never get one) — that check
+currently isn't done anywhere, so `updateLeadStatus` in
+`web/src/lib/db/leads.ts` is the place to add it. Also needs the
+pending/paid toggle UI, most naturally on the franchisor/franchisee
+dashboard views.
 
 ## Known gaps / things to revisit
 
