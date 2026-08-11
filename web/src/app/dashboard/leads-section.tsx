@@ -67,7 +67,9 @@ export async function LeadsSection({ ctx }: { ctx: SessionContext }) {
                   <td className="px-3 py-2">
                     {(ctx.role === "super_admin" || ctx.role === "franchisor") &&
                       !lead.assignedProviderId && <AssignForm leadId={lead.id} providers={providers} />}
-                    {ctx.role === "service_provider" && <UpdateStatusForm leadId={lead.id} />}
+                    {ctx.role === "service_provider" && (
+                      <UpdateStatusForm leadId={lead.id} currentStatus={lead.status} currentDealValue={lead.dealValue} />
+                    )}
                   </td>
                 )}
               </tr>
@@ -116,11 +118,31 @@ function AssignForm({
   );
 }
 
-function UpdateStatusForm({ leadId }: { leadId: string }) {
+function UpdateStatusForm({
+  leadId,
+  currentStatus,
+  currentDealValue,
+}: {
+  leadId: string;
+  currentStatus: LeadStatus;
+  currentDealValue: string | null;
+}) {
+  // Defaults the dropdown to the lead's current status (when it's one of
+  // the provider-settable ones) so submitting to just update the deal
+  // value doesn't silently regress e.g. "won" back to "in_progress" —
+  // the select would otherwise default to whichever option is listed
+  // first regardless of the lead's actual state.
+  const defaultStatus = PROVIDER_NEXT_STATUSES.includes(currentStatus) ? currentStatus : "in_progress";
+
   return (
     <form action={updateLeadStatusAction} className="flex flex-wrap gap-1.5">
       <input type="hidden" name="leadId" value={leadId} />
-      <select name="status" required className="rounded border border-black/15 bg-transparent px-1.5 py-1 text-xs dark:border-white/20">
+      <select
+        name="status"
+        required
+        defaultValue={defaultStatus}
+        className="rounded border border-black/15 bg-transparent px-1.5 py-1 text-xs dark:border-white/20"
+      >
         {PROVIDER_NEXT_STATUSES.map((status) => (
           <option key={status} value={status}>
             {STATUS_LABEL[status]}
@@ -132,6 +154,7 @@ function UpdateStatusForm({ leadId }: { leadId: string }) {
         name="dealValue"
         placeholder="Deal value"
         step="0.01"
+        defaultValue={currentDealValue ?? ""}
         className="w-24 rounded border border-black/15 bg-transparent px-1.5 py-1 text-xs dark:border-white/20"
       />
       <button type="submit" className="rounded bg-black px-2 py-1 text-xs text-white dark:bg-white dark:text-black">
