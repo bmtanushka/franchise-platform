@@ -208,19 +208,48 @@ Cloudflare R2 + a `documents` table linked to `leads`).
 2. ✅ Run the two migration files against Railway Postgres. All 14 tables
    created, RLS policies applied, franchisor root tenant + 5 service types
    seeded.
-3. Build the tenant-resolution middleware (hostname → tenant lookup) and
-   get the franchisor root site and one test franchisee site rendering
-   from the same codebase with different contact details.
-4. Wire up auth with role claims and the RLS `set_config` wrapper; build
-   the four dashboard shells with placeholder data to prove scoping works.
-5. Build the FastAPI agent service with one service's question set
-   end-to-end (conversation → tool-call extraction → lead written →
-   chat history logged), then extend to the remaining 4 services.
+3. ✅ Tenant-resolution proxy (`web/src/proxy.ts` — Next.js 16 renamed
+   `middleware.ts` to `proxy.ts`) resolves hostname → tenant via the
+   `domains` table and injects tenant context via headers. Franchisor root
+   site and a test franchisee (`va1`) both render from the same
+   `StandardTemplate` component with different content/contact details.
+   Real subdomain routing (`*.franchiseenetwork.com`) needs an actual
+   domain — until then, `va1` is only reachable at `va1.localhost:3000`
+   in local dev (Railway auto-domains can't have sub-subdomains added).
+4. ✅ NextAuth (Credentials) login wired with role/tenant_id in the JWT;
+   `withTenantContext` in `web/src/lib/db/context.ts` is the shared
+   `set_config` wrapper. One shared `/dashboard` page renders differently
+   per role (four roles all tested end-to-end, seeded via
+   `web/scripts/seed.mjs`).
+5. ✅ FastAPI agent (`/agent`) does the full conversation → tool-call
+   extraction → lead written → chat history logged loop, data-driven
+   for all 5 services at once (`agent/app/question_sets.py`) rather than
+   one-then-extend. Tested end-to-end on production including a full
+   mortgage and a full credit conversation through to a created lead.
 6. Build the lead status pipeline UI: franchisor assignment to providers,
    provider status updates, franchisee/franchisor lead visibility.
 7. Build rebate calculation on `won` status and the pending/paid toggle.
 
-Next up: step 3, the tenant-resolution middleware. This needs the `web`
-app to actually talk to Postgres (`DATABASE_URL` is already wired via
-Railway variable references) — pick a query layer (raw `pg`/`postgres.js`,
-or an ORM) before writing the data-access functions the brief requires.
+Next up: step 6, the lead status pipeline UI. `leads`/`lead_status_history`
+already exist and are being written to by the chat agent (status
+`qualified`) — next is franchisor-side assignment to a service_provider
+and status updates from there.
+
+## Known gaps / things to revisit
+
+- `OPENAI_API_KEY` is not set anywhere yet (user needs to add it via
+  Railway dashboard for both `agent` and their own key). Without it, the
+  chat agent runs on a deterministic fallback (exact/substring matching
+  instead of an LLM call) for both question phrasing and answer
+  extraction — functionally complete but not the "natural language"
+  experience the brief describes. Once a real key is set, no code changes
+  are needed, just redeploy.
+- `AUTH_SECRET` is set on Railway `web` (different value than the local
+  `.env.local` one, generated during this session).
+- No `chat_sessions.status = 'abandoned'` detection yet — messages are all
+  logged regardless, so the raw data for later drop-off analysis exists,
+  but nothing marks a session abandoned after inactivity.
+- Dashboard is intentionally a single page that branches by role, not the
+  "four dashboard shells" the brief describes — enough to prove scoping
+  end-to-end without overbuilding before the lead pipeline UI (step 6)
+  gives it real content to show.
