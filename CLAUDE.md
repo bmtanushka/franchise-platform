@@ -202,10 +202,12 @@ Cloudflare R2 + a `documents` table linked to `leads`).
 ## Roadmap
 
 1. ✅ Scaffold the repo structure above, initialize Next.js and FastAPI apps.
-   Railway project/service creation is a manual step for the user (needs
-   interactive account login) — `railway.toml` files are in place to make
-   that fast once services exist.
-2. Run the two migration files against Railway Postgres.
+   GitHub repo (`bmtanushka/franchise-platform`) and Railway project
+   (`franchise-platform`, 3 services: `web`, `agent`, `Postgres`) are both
+   live — `web` and `agent` auto-deploy on push to `main`.
+2. ✅ Run the two migration files against Railway Postgres. All 14 tables
+   created, RLS policies applied, franchisor root tenant + 5 service types
+   seeded.
 3. Build the tenant-resolution middleware (hostname → tenant lookup) and
    get the franchisor root site and one test franchisee site rendering
    from the same codebase with different contact details.
@@ -218,6 +220,7 @@ Cloudflare R2 + a `documents` table linked to `leads`).
    provider status updates, franchisee/franchisor lead visibility.
 7. Build rebate calculation on `won` status and the pending/paid toggle.
 
-Next up: step 2 (run migrations against Railway Postgres) once a Railway
-Postgres instance exists, or step 3 (tenant-resolution middleware), which
-can start locally against any Postgres instance.
+Next up: step 3, the tenant-resolution middleware. This needs the `web`
+app to actually talk to Postgres (`DATABASE_URL` is already wired via
+Railway variable references) — pick a query layer (raw `pg`/`postgres.js`,
+or an ORM) before writing the data-access functions the brief requires.
