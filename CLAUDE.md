@@ -303,6 +303,32 @@ Cloudflare R2 + a `documents` table linked to `leads`).
    role-scoping as the list view (a provider/franchisee opening a lead
    they're not authorized for gets a 404, verified with real browser
    sessions for both).
+8. ✅ Dashboard redesign: proper shell (top bar + role-filtered left
+   sidebar, `web/src/app/dashboard/layout.tsx` +
+   `web/src/lib/dashboard-nav.ts`) with content split into real routes
+   instead of one page branching by role — `/dashboard` is now an
+   analytics Overview (stat tiles + status/service-type/30-day-trend
+   charts from `getLeadAnalytics()`, colors per the `dataviz` skill's
+   ordinal-ramp-for-pipeline-stages approach), plus dedicated
+   `/dashboard/leads`, `/dashboard/franchisees`, `/dashboard/providers`,
+   `/dashboard/profile` pages.
+9. ✅ Franchisor/super_admin can create franchisee and service-provider
+   accounts directly from the dashboard ("Add franchisee" / "Add
+   provider" on their respective list pages →
+   `web/src/app/dashboard/franchisees/new`, `.../providers/new`).
+   `web/src/lib/db/accounts.ts` creates the tenant + `franchisee_profile`
+   + login `users` row (or `users` + `service_providers` row) in one
+   transaction; the Server Actions
+   (`web/src/lib/actions/accounts.ts`) use `useActionState` so a
+   duplicate subdomain/email surfaces as an inline form error
+   ("That subdomain is already taken") instead of a crash, caught via the
+   `tenants_slug_key` / `users_email_key` Postgres unique-violation codes.
+   New franchisees get the default "standard" `site_templates` row
+   automatically. The admin sets the new account's login password
+   directly in the form (shared with the owner out of band) — no
+   email-invite flow. Verified end-to-end: created accounts can log in
+   immediately with the entered contact details showing correctly, and
+   franchisee/provider roles are blocked from the `/new` pages.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.

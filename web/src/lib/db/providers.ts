@@ -26,6 +26,13 @@ export async function listServiceProviders(role: Role): Promise<ServiceProvider[
   return rows.map((row) => ({ id: row.id, companyName: row.company_name, serviceTypes: row.service_types }));
 }
 
+export type ServiceType = { key: string; name: string };
+
+export async function listServiceTypes(): Promise<ServiceType[]> {
+  const rows = await sql<ServiceType[]>`select key, name from service_types order by name`;
+  return rows;
+}
+
 export async function getServiceProviderById(providerId: string): Promise<ServiceProvider | null> {
   const rows = await sql<{ id: string; company_name: string; service_types: string[] }[]>`
     select id, company_name, service_types
