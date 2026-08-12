@@ -1,0 +1,118 @@
+<!-- ════════════════════════════════════════════════════
+     TEMPLATE — New Page
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+
+     HOW TO USE:
+       1. Copy _partials/header.html → update <title> at top
+       2. Paste this file's content in between
+       3. Copy _partials/footer.html to close
+
+     In the CMS: set Global Header + Global Footer,
+     then build your page sections using the classes below.
+════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════
+     HERO  (every page should open with this)
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde 5 / PAGE NAME</div>
+
+  <h1 class="hero-title">
+    Hero headline<br>
+    <em>italic accent</em><br>
+    <span class="g">gold accent</span>
+  </h1>
+
+  <p class="hero-body">
+    Supporting paragraph describing this page's core value proposition in 2–3 sentences.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#claim" class="btn-g"><span>Primary CTA</span></a>
+    <a href="#section1" class="btn-txt">Secondary Link</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION — Light background (.sec)
+     Use: .sec for standard dark-green background
+          .sec.banded for the slightly lighter band
+══════════════════════════════════════════ -->
+<section class="sec banded" id="section1">
+  <div class="tag rv">Section Label</div>
+  <h2 class="sec-title rv d1">Section title with <em>italic</em> accent</h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:800px;">
+    Body text goes here. Keep paragraphs focused and scannable.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION — Two-column grid
+══════════════════════════════════════════ -->
+<section class="sec" id="section2">
+  <div class="intro-inner">
+    <div>
+      <div class="tag rv">Left Column Label</div>
+      <h2 class="sec-title rv d1">Left column <em>heading</em></h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">Left column body text.</p>
+    </div>
+    <div class="intro-pills">
+      <!-- Repeat .pill blocks as needed -->
+      <div class="pill rv d1">
+        <div class="pill-ic">🏦</div>
+        <div class="pill-title">Feature Title</div>
+        <div class="pill-body">Short description of this feature or benefit.</div>
+      </div>
+      <div class="pill rv d2">
+        <div class="pill-ic">💼</div>
+        <div class="pill-title">Feature Title</div>
+        <div class="pill-body">Short description of this feature or benefit.</div>
+      </div>
+      <div class="pill rv d3">
+        <div class="pill-ic">🏢</div>
+        <div class="pill-title">Feature Title</div>
+        <div class="pill-body">Short description of this feature or benefit.</div>
+      </div>
+      <div class="pill rv d4">
+        <div class="pill-ic">🌍</div>
+        <div class="pill-title">Feature Title</div>
+        <div class="pill-body">Short description of this feature or benefit.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     SECTION — Rebate slider widget
+     Rebate/lender-credit calculators live on rebate-and-lender-credits.html.
+     Add a "Calculate Your Rebate" link there instead of embedding a new
+     .rebate-block on this page — copy the pattern from business.html.
+══════════════════════════════════════════ -->
+<!-- <section class="sec banded" id="rebate"> ... </section> -->
+
+<!-- ══════════════════════════════════════════
+     SECTION — Franchise / CTA band
+══════════════════════════════════════════ -->
+<section class="franchise-band" id="cta">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Call to Action Label</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      CTA headline with <em>italic</em> accent
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">Supporting text for the call to action.</p>
+    <div style="margin-top:2.5rem;">
+      <a href="contact.html" class="btn-g rv d3"><span>Get Started</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- Page-specific scripts go here -->
+<script>
+  // Add any page-specific JS here (sliders, video placeholders, etc.)
+</script>

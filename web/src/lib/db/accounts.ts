@@ -78,6 +78,52 @@ export async function createFranchisee(
   }
 }
 
+export type UpdateFranchiseeInput = {
+  name: string;
+  slug: string;
+  status: "active" | "onboarding" | "suspended";
+  templateId: string;
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  businessHours: string | null;
+  localBlurb: string | null;
+};
+
+/**
+ * Franchisor/super_admin editing a franchisee on their behalf — the full
+ * set of fields, including identity (name/slug/status) that the
+ * franchisee can't touch themselves (see updateTenantTemplate /
+ * updateFranchiseeProfile in site-content.ts for the self-service
+ * equivalent, which deliberately excludes these).
+ */
+export async function updateFranchiseeAdmin(
+  actingRole: Role,
+  tenantId: string,
+  input: UpdateFranchiseeInput,
+): Promise<void> {
+  assertCanCreateAccounts(actingRole);
+
+  try {
+    await sql.begin(async (tx) => {
+      await tx`
+        update tenants
+        set name = ${input.name}, slug = ${input.slug}, status = ${input.status}, template_id = ${input.templateId}, updated_at = now()
+        where id = ${tenantId}
+      `;
+
+      await tx`
+        update franchisee_profile
+        set phone = ${input.phone}, email = ${input.email}, address = ${input.address},
+            business_hours = ${input.businessHours}, local_blurb = ${input.localBlurb}, updated_at = now()
+        where tenant_id = ${tenantId}
+      `;
+    });
+  } catch (err) {
+    rethrowAsConflict(err);
+  }
+}
+
 export type CreateServiceProviderInput = {
   companyName: string;
   serviceTypes: string[];

@@ -1,0 +1,290 @@
+<!-- ════════════════════════════════════════════════════
+     partner-with-us.html
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── PARTNER TYPE CARDS ── */
+  .partner-cards {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1rem; margin-top: 3rem;
+  }
+  .partner-card {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    padding: 2rem 1.4rem; text-align: center;
+    position: relative; overflow: hidden; transition: all 0.3s;
+  }
+  .partner-card::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--mint), var(--gold));
+    transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+  }
+  .partner-card:hover::after { transform: scaleX(1); }
+  .partner-card:hover { border-color: rgba(201,168,76,0.4); background: rgba(16,40,44,0.06); transform: translateY(-3px); }
+  .partner-card-icon { font-size: 1.7rem; margin-bottom: 0.9rem; }
+  .partner-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem; color: var(--gold-light); font-weight: 400; line-height: 1.35;
+  }
+
+  /* ── CONTENT SPLIT ── */
+  .content-split {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: center; margin-top: 3rem;
+  }
+
+  /* ── IMAGE PLACEHOLDER ── */
+  .img-ph {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0.8rem; position: relative; overflow: hidden; min-height: 340px;
+  }
+  .img-ph::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(59,167,160,0.07), rgba(201,168,76,0.04));
+  }
+  .img-ph-icon { font-size: 2.2rem; position: relative; z-index: 1; opacity: 0.45; }
+  .img-ph-label {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); position: relative; z-index: 1; font-weight: 500; text-align: center; padding: 0 1rem;
+  }
+
+  /* ── PARTNER FORM ── */
+  .partner-form-wrap {
+    background: linear-gradient(135deg, rgba(245,240,232,0.3), rgba(255,255,255,0.65));
+    border: 1px solid var(--glass-b); padding: 3rem 3.5rem;
+  }
+  .form-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 1.4rem; margin-top: 2.2rem;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 0.55rem; }
+  .form-group.full { grid-column: 1 / -1; }
+  .form-label {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--mint); font-weight: 500;
+  }
+  .form-input, .form-select, .form-textarea {
+    background: rgba(16,40,44,0.03); border: 1px solid var(--glass-b);
+    color: var(--cream); padding: 0.9rem 1.1rem;
+    font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;
+    outline: none; transition: border-color 0.3s, background 0.3s; width: 100%;
+    -webkit-appearance: none; appearance: none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: rgba(201,168,76,0.55); background: rgba(16,40,44,0.05);
+  }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--muted); opacity: 0.55; }
+  .form-select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23b8933f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1.1rem center; padding-right: 2.5rem; }
+  .form-select option { background: #faf7f0; color: var(--cream); }
+  .form-textarea { resize: vertical; min-height: 120px; line-height: 1.65; }
+
+  /* ── VALUES ROW ── */
+  .values-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .value-item {
+    padding: 2rem 1.8rem;
+    background: var(--glass); border: 1px solid var(--glass-b);
+    border-left: 3px solid var(--gold);
+  }
+  .value-icon { font-size: 1.5rem; margin-bottom: 0.8rem; }
+  .value-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; color: var(--gold-light); margin-bottom: 0.5rem; font-weight: 400;
+  }
+  .value-body { font-size: 0.88rem; color: var(--muted); line-height: 1.7; font-weight: 400; }
+
+  @media(max-width:960px){
+    .partner-cards { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
+    .content-split { grid-template-columns: 1fr; gap: 2.5rem; }
+    .form-grid { grid-template-columns: 1fr; }
+    .partner-form-wrap { padding: 2rem; }
+    .values-row { grid-template-columns: 1fr; }
+  }
+  @media(max-width:600px){
+    .partner-cards { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde 5 / Partner With Us</div>
+
+  <h1 class="hero-title">
+    Empower Your Clients.<br>
+    <em>Elevate Your</em><br>
+    <span class="g">Business.</span>
+  </h1>
+
+  <p class="hero-body">
+    In today's competitive market, delivering a seamless experience requires a powerful alignment between various professionals and elite financing solutions. By partnering with us, you gain a dedicated franchise ally committed to protecting your relationships and expanding your business.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#partner-form" class="btn-g"><span>Become a Partner</span></a>
+    <a href="#who-we-partner" class="btn-txt">Learn More</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     WHO WE PARTNER WITH
+══════════════════════════════════════════ -->
+<section class="sec banded" id="who-we-partner">
+  <div class="content-split">
+    <div>
+      <div class="tag rv">Who We Partner With</div>
+      <h2 class="sec-title rv d1">Built on <em>transparency</em><br>and trust</h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        Luna Verde 5 collaborates with professionals who value transparency and client-first solutions. Our partner network includes real estate professionals, lenders, CPAs, attorneys, and international advisors.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        Partnerships are structured to respect licensing laws and referral regulations. The goal is mutual growth through ethical collaboration — not just transactions, but long-term professional relationships.
+      </p>
+      <div class="badge-row rv d4" style="display:flex;flex-wrap:wrap;gap:0.8rem;margin-top:1.8rem;">
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Compliance-First</span>
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Ethical Collaboration</span>
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Mutual Growth</span>
+        <span style="padding:0.5rem 1.1rem;border:1px solid var(--glass-b);background:var(--glass);color:var(--cream);font-size:0.8rem;letter-spacing:0.06em;font-weight:500;">Referral Compliant</span>
+      </div>
+    </div>
+    <div class="rv d3">
+      <div class="img-ph">
+        <div class="img-ph-icon">🤝</div>
+        <div class="img-ph-label">Handshake or collaborative meeting</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Partner Type Cards -->
+  <div class="partner-cards" style="margin-top:5rem;">
+    <div class="partner-card rv d1">
+      <div class="partner-card-icon">🏠</div>
+      <div class="partner-card-title">Realtors &amp; Brokers</div>
+    </div>
+    <div class="partner-card rv d2">
+      <div class="partner-card-icon">🏦</div>
+      <div class="partner-card-title">Lenders &amp; Capital Partners</div>
+    </div>
+    <div class="partner-card rv d3">
+      <div class="partner-card-icon">📋</div>
+      <div class="partner-card-title">Title &amp; Escrow Companies</div>
+    </div>
+    <div class="partner-card rv d4">
+      <div class="partner-card-icon">🌐</div>
+      <div class="partner-card-title">Business Networking Partners</div>
+    </div>
+    <div class="partner-card rv d5">
+      <div class="partner-card-icon">🔗</div>
+      <div class="partner-card-title">Affiliate Programs</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     LET'S BUILD TOGETHER
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner" style="max-width:780px;">
+    <div class="tag rv" style="justify-content:center;">Let's Build Together</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      We invest in your<br><em>long-term success</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      We do not just transact business — we invest in your long-term professional success. Our partner relationships are designed to create value for both sides while always keeping the client's best interest at the center.
+    </p>
+    <div class="values-row rv d3" style="text-align:left;margin-top:3rem;">
+      <div class="value-item">
+        <div class="value-icon">🛡️</div>
+        <div class="value-title">Your Relationships Protected</div>
+        <div class="value-body">We work alongside you, never around you. Your client relationships stay yours.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">📈</div>
+        <div class="value-title">Expand Your Offerings</div>
+        <div class="value-body">Give clients access to capital, mortgage, and real estate solutions through one trusted partner.</div>
+      </div>
+      <div class="value-item">
+        <div class="value-icon">✦</div>
+        <div class="value-title">Compliance Built In</div>
+        <div class="value-body">All referral structures are reviewed for regulatory alignment so you can collaborate with confidence.</div>
+      </div>
+    </div>
+    <div class="rv d4" style="margin-top:3rem;">
+      <a href="#partner-form" class="btn-g"><span>Partner With Us</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PARTNER FORM
+══════════════════════════════════════════ -->
+<section class="sec banded" id="partner-form">
+  <div class="tag rv">Get In Touch</div>
+  <h2 class="sec-title rv d1">Tell us about <em>your business</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:620px;">
+    Fill out the form below and a member of our team will reach out to discuss how we can build a mutually beneficial partnership.
+  </p>
+
+  <div class="rv d3" style="margin-top:3rem;">
+    <div class="partner-form-wrap">
+      <div class="credit-lbl" style="margin:0 0 0.4rem;">Partner Inquiry Form</div>
+      <p style="font-size:0.88rem;color:var(--muted);line-height:1.6;">All fields are required. We'll be in touch within one business day.</p>
+
+      <form class="form-grid" action="#" method="POST">
+        <div class="form-group">
+          <label class="form-label" for="pw-name">Name</label>
+          <input class="form-input" type="text" id="pw-name" name="name" placeholder="Full name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="pw-email">Email</label>
+          <input class="form-input" type="email" id="pw-email" name="email" placeholder="you@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="pw-cell">Cell</label>
+          <input class="form-input" type="tel" id="pw-cell" name="cell" placeholder="(555) 000-0000" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="pw-company">Company</label>
+          <input class="form-input" type="text" id="pw-company" name="company" placeholder="Company name" required>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label" for="pw-type">Service Provider Type</label>
+          <select class="form-select" id="pw-type" name="service_type" required>
+            <option value="" disabled selected>Select your partner type</option>
+            <option value="realtors-brokers">Realtors &amp; Brokers</option>
+            <option value="lenders-capital">Lenders &amp; Capital Partners</option>
+            <option value="title-escrow">Title &amp; Escrow Companies</option>
+            <option value="business-networking">Business Networking Partners</option>
+            <option value="affiliate">Affiliate Programs</option>
+          </select>
+        </div>
+
+        <div class="form-group full">
+          <label class="form-label" for="pw-message">What Are You Looking For?</label>
+          <textarea class="form-textarea" id="pw-message" name="message" placeholder="Briefly describe what you're looking for in a partnership…" required></textarea>
+        </div>
+
+        <div class="form-group full" style="margin-top:0.5rem;">
+          <button type="submit" class="btn-g" style="border:none;cursor:pointer;display:inline-block;width:fit-content;">
+            <span>Submit Partner Inquiry</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>

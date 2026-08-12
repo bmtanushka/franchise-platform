@@ -3,7 +3,12 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { requireSessionContext } from "@/lib/auth/session-context";
-import { createFranchisee, createServiceProvider, AccountConflictError } from "@/lib/db/accounts";
+import {
+  createFranchisee,
+  createServiceProvider,
+  updateFranchiseeAdmin,
+  AccountConflictError,
+} from "@/lib/db/accounts";
 
 export type AccountFormState = { error: string | null };
 
@@ -35,6 +40,34 @@ export async function createFranchiseeAction(
   } catch (err) {
     if (err instanceof AccountConflictError) return { error: err.message };
     return { error: "Something went wrong creating this franchisee. Please try again." };
+  }
+
+  revalidatePath("/dashboard/franchisees");
+  redirect("/dashboard/franchisees");
+}
+
+export async function updateFranchiseeAdminAction(
+  _prevState: AccountFormState,
+  formData: FormData,
+): Promise<AccountFormState> {
+  const ctx = await requireSessionContext();
+  const tenantId = String(formData.get("tenantId"));
+
+  try {
+    await updateFranchiseeAdmin(ctx.role, tenantId, {
+      name: String(formData.get("name")).trim(),
+      slug: String(formData.get("slug")).trim().toLowerCase(),
+      status: String(formData.get("status")) as "active" | "onboarding" | "suspended",
+      templateId: String(formData.get("templateId")),
+      phone: optionalString(formData.get("phone")),
+      email: optionalString(formData.get("email")),
+      address: optionalString(formData.get("address")),
+      businessHours: optionalString(formData.get("businessHours")),
+      localBlurb: optionalString(formData.get("localBlurb")),
+    });
+  } catch (err) {
+    if (err instanceof AccountConflictError) return { error: err.message };
+    return { error: "Something went wrong saving these changes. Please try again." };
   }
 
   revalidatePath("/dashboard/franchisees");

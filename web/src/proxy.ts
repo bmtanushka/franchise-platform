@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getTenantByDomain } from "@/lib/db/tenants";
 import { CORPORATE_PATHS, normalizeCorporatePath } from "@/lib/corporate-site";
+import { FRANCHISEE_SITE_PATHS, normalizeFranchiseeSitePath } from "@/lib/franchisee-site";
 
 // Proxy defaults to the Node.js runtime in Next.js 16, which is required
 // here since tenant resolution needs a real Postgres connection.
@@ -43,6 +44,14 @@ export async function proxy(request: NextRequest) {
 
     if (CORPORATE_PATHS.has(pathname)) {
       const rewriteUrl = new URL(`/corp${pathname === "/" ? "" : pathname}`, request.url);
+      return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
+    }
+  }
+
+  if (tenant.type === "franchisee" && tenant.templateComponentKey === "luna-verde-franchisee") {
+    const franchiseePath = normalizeFranchiseeSitePath(request.nextUrl.pathname);
+    if (FRANCHISEE_SITE_PATHS.has(franchiseePath)) {
+      const rewriteUrl = new URL(`/franchisee-site${franchiseePath === "/" ? "" : franchiseePath}`, request.url);
       return NextResponse.rewrite(rewriteUrl, { request: { headers: requestHeaders } });
     }
   }

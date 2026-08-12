@@ -28,9 +28,16 @@ export default async function FranchiseesPage() {
         {tenants.map((t) => (
           <li key={t.id} className="flex items-center justify-between px-4 py-3 text-sm">
             <span>{t.name}</span>
-            <span className="opacity-60">
-              {t.type} · {t.slug} · {t.status}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="opacity-60">
+                {t.type} · {t.slug} · {t.status}
+              </span>
+              {t.type === "franchisee" && (
+                <Link href={`/dashboard/franchisees/${t.id}/edit`} className="text-xs underline opacity-70 hover:opacity-100">
+                  Edit
+                </Link>
+              )}
+            </div>
           </li>
         ))}
       </ul>

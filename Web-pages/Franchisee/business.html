@@ -1,0 +1,333 @@
+<!-- ════════════════════════════════════════════════════
+     business.html — Business Financing & Lines of Credit
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── LOAN ACCORDION ── */
+  .loan-accordion { margin-top: 3rem; display: flex; flex-direction: column; }
+  .loan-item {
+    border: 1px solid var(--glass-b); margin-top: -1px;
+    background: var(--glass); transition: background 0.3s;
+  }
+  .loan-item:first-child { margin-top: 0; }
+  .loan-item[open] {
+    background: rgba(16,40,44,0.05);
+    border-color: rgba(201,168,76,0.35);
+  }
+  .loan-item summary {
+    list-style: none; cursor: pointer;
+    padding: 1.6rem 2rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;
+  }
+  .loan-item summary::-webkit-details-marker { display: none; }
+  .loan-sum-left { display: flex; align-items: center; gap: 1.5rem; }
+  .loan-num {
+    font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 300;
+    color: rgba(201,168,76,0.25); line-height: 1; flex-shrink: 0; min-width: 2.5rem;
+  }
+  .loan-title {
+    font-family: 'Cormorant Garamond', serif; font-size: 1.35rem;
+    color: var(--gold-light); font-weight: 400; line-height: 1.3;
+  }
+  .loan-subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; font-weight: 400; }
+  .loan-chevron {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 1px solid var(--glass-b); display: flex; align-items: center; justify-content: center;
+    transition: transform 0.3s, border-color 0.3s; color: var(--gold); font-size: 0.75rem;
+  }
+  .loan-item[open] .loan-chevron { transform: rotate(180deg); border-color: var(--gold); }
+  .loan-body { padding: 0 2rem 2rem 6.2rem; font-size: 0.95rem; color: rgba(16,40,44,0.75); line-height: 1.9; }
+  .loan-body p + p { margin-top: 0.9rem; }
+  .loan-detail-row {
+    display: grid; grid-template-columns: 180px 1fr; gap: 0.6rem 1.5rem;
+    margin-top: 1.4rem; padding-top: 1.4rem; border-top: 1px solid var(--glass-b);
+  }
+  .loan-detail-label {
+    font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--mint); font-weight: 500; padding-top: 0.1rem;
+  }
+  .loan-detail-val { font-size: 0.9rem; color: rgba(16,40,44,0.78); line-height: 1.65; }
+
+  /* ── BUSINESS STAGE GRID ── */
+  .stage-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .stage-card {
+    background: var(--glass); border: 1px solid var(--glass-b);
+    padding: 2rem 1.8rem; border-left: 3px solid var(--gold);
+  }
+  .stage-badge {
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--gold); font-weight: 500; margin-bottom: 0.7rem;
+  }
+  .stage-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem; color: var(--gold-light); margin-bottom: 0.8rem; font-weight: 400;
+  }
+  .stage-body { font-size: 0.88rem; color: var(--muted); line-height: 1.75; font-weight: 400; }
+
+  @media(max-width:960px){
+    .stage-grid { grid-template-columns: 1fr; }
+    .loan-body { padding-left: 2rem; }
+    .loan-detail-row { grid-template-columns: 1fr; gap: 0.3rem; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde 5 / Business Financing</div>
+
+  <h1 class="hero-title">
+    Securing the right<br>
+    <em>business capital</em><br>
+    <span class="g">with a rebate advantage.</span>
+  </h1>
+
+  <p class="hero-body">
+    From lines of credit to SBA loans, equipment financing, and merchant cash advances — we structure credit facilities that fuel your cash flow while returning a portion of our broker's compensation directly to you.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#lines-of-credit" class="btn-g"><span>Explore Financing Options</span></a>
+    <a href="/rebate-and-lender-credits#business" class="btn-txt">See Your Rebate</a>
+    <a href="#apply" class="btn-txt">Start Your Application</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     OVERVIEW
+══════════════════════════════════════════ -->
+<section class="sec banded" id="overview">
+  <div class="intro-inner">
+    <div>
+      <div class="tag rv">Business Financing Overview</div>
+      <h2 class="sec-title rv d1">Capital structured<br>for <em>real growth</em></h2>
+      <div class="rule rv d2"></div>
+      <p class="body-txt rv d2">
+        The most popular business financing products across the global market are Business Lines of Credit, Traditional Term Loans, and SBA Loans. Data from the Federal Reserve's Small Business Credit Survey and corporate banking trends show that businesses overwhelmingly favor these three types, followed closely by equipment and short-term tech-driven funding.
+      </p>
+      <p class="body-txt rv d3" style="margin-top:1.2rem;">
+        Our financing rebate program alters the traditional lending model by reducing the standard origination costs and fees tied to business credit. Whether you need equipment financing, working capital, a merchant cash advance, start-up funding, or invoice factoring — we ensure your business borrowing is affordable, flexible, and financially rewarding.
+      </p>
+      <div class="biz-tags rv d4" style="margin-top:1.5rem;">
+        <span class="biz-tag">Equipment Financing</span>
+        <span class="biz-tag">Working Capital</span>
+        <span class="biz-tag">Merchant Cash Advance</span>
+        <span class="biz-tag">Start-up Funding</span>
+        <span class="biz-tag">Invoice Factoring</span>
+      </div>
+    </div>
+    <div class="intro-pills">
+      <div class="pill rv d1"><div class="pill-ic">💳</div><div class="pill-title">Lines of Credit</div><div class="pill-body">Supreme flexibility — the safety net for cash flow and seasonal gaps.</div></div>
+      <div class="pill rv d2"><div class="pill-ic">📋</div><div class="pill-title">Term Loans & SBA</div><div class="pill-body">Lowest rates and predictable payments for major planned investments.</div></div>
+      <div class="pill rv d3"><div class="pill-ic">⚙️</div><div class="pill-title">Equipment Financing</div><div class="pill-body">Asset-secured loans approved faster, with lower credit requirements.</div></div>
+      <div class="pill rv d4"><div class="pill-ic">⚡</div><div class="pill-title">Fast Capital (MCA)</div><div class="pill-body">Revenue-based funding deposited within 24 hours when speed is critical.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FINANCING PRODUCTS
+══════════════════════════════════════════ -->
+<section class="sec" id="products">
+  <div class="tag rv">Financing Products</div>
+  <h2 class="sec-title rv d1">The four most popular<br><em>business financing types</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="loan-accordion rv d3">
+
+    <details class="loan-item" id="lines-of-credit" open>
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">1</div>
+          <div>
+            <div class="loan-title">Business Lines of Credit</div>
+            <div class="loan-subtitle">Most Popular Overall — supreme flexibility for cash flow and operations</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>This is the most widely used product because of its supreme flexibility. Businesses use it as a safety net — it solves the number-one problem small businesses face: uneven cash flow and seasonal revenue drops.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Why It's Popular</div>
+          <div class="loan-detail-val">Businesses use it as a safety net. It solves the number-one problem small businesses face: uneven cash flow and seasonal revenue drops.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Primary Use</div>
+          <div class="loan-detail-val">Paying unexpected bills, covering payroll during slow months, or buying inventory quickly when a supplier offers a discount.</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="loan-item" id="term-loans" open>
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">2</div>
+          <div>
+            <div class="loan-title">Traditional Term Loans &amp; SBA Loans</div>
+            <div class="loan-subtitle">Most Popular for Growth — planned investments at the lowest possible rates</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>When businesses need to make a major, planned investment, they turn to standard term financing. They offer predictable monthly payments and the lowest possible interest rates.</p>
+        <p>SBA loans — specifically the 7(a) program — are incredibly popular for businesses that cannot get standard bank approval because the government guarantee lowers the lender's risk.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Why It's Popular</div>
+          <div class="loan-detail-val">Predictable monthly payments and the lowest possible interest rates. SBA government guarantees open doors for businesses that can't qualify for standard bank loans.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Primary Use</div>
+          <div class="loan-detail-val">Business expansion, buying out a competitor, refinancing higher-interest debt, or funding long-term marketing campaigns.</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="loan-item" id="equipment" open>
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">3</div>
+          <div>
+            <div class="loan-title">Equipment Financing</div>
+            <div class="loan-subtitle">Most Popular for Asset Purchases — trucking, construction, healthcare, manufacturing</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>This product dominates industries that require physical tools to operate, such as trucking, construction, healthcare, and manufacturing.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Why It's Popular</div>
+          <div class="loan-detail-val">Highly accessible. Because the equipment itself acts as the security collateral, lenders approve these loans much faster — and with lower credit requirements — than standard bank loans.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Primary Use</div>
+          <div class="loan-detail-val">Buying commercial vehicles, medical devices, software systems, or heavy machinery.</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="loan-item" id="merchant-cash" open>
+      <summary>
+        <div class="loan-sum-left">
+          <div class="loan-num">4</div>
+          <div>
+            <div class="loan-title">Merchant Cash Advances &amp; Revenue-Based Financing</div>
+            <div class="loan-subtitle">Most Popular for Speed — cash deposited within 24 hours based on daily sales</div>
+          </div>
+        </div>
+        <div class="loan-chevron">▾</div>
+      </summary>
+      <div class="loan-body">
+        <p>While highly expensive, online alternative lending has surged in popularity over the last decade. E-commerce businesses, restaurants, and retail shops use them because they can get cash deposited into their bank accounts within 24 hours based entirely on their daily sales data, bypassing strict bank credit checks.</p>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Why It's Popular</div>
+          <div class="loan-detail-val">Absolute speed and ease of access. Approval is based on daily sales data — no strict bank credit checks required.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Primary Use</div>
+          <div class="loan-detail-val">Emergency repairs, fast inventory turnover, or survival capital during a crisis.</div>
+        </div>
+        <div class="loan-detail-row">
+          <div class="loan-detail-label">Important Note</div>
+          <div class="loan-detail-val">MCAs carry higher costs than traditional loans. Best used when speed is critical and alternatives are not available within the required timeframe.</div>
+        </div>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     BUSINESS STAGE BREAKDOWN
+══════════════════════════════════════════ -->
+<section class="sec banded" id="stages">
+  <div class="tag rv">Popularity by Business Stage</div>
+  <h2 class="sec-title rv d1">The right product for<br><em>every stage of growth</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:720px;">
+    The optimal financing product depends heavily on where your business is in its lifecycle. Each stage has different access to capital — and different needs.
+  </p>
+
+  <div class="stage-grid">
+    <div class="stage-card rv d1">
+      <div class="stage-badge">Stage 1</div>
+      <div class="stage-title">Startups (0–2 years)</div>
+      <div class="stage-body">Rely heavily on SBA Microloans, Business Credit Cards, and Equipment Leasing because they lack the financial history for traditional bank loans.</div>
+    </div>
+    <div class="stage-card rv d2">
+      <div class="stage-badge">Stage 2</div>
+      <div class="stage-title">Growing Businesses (3+ years)</div>
+      <div class="stage-body">Shift toward Business Lines of Credit and SBA 7(a) Loans to stabilize daily operations and fund physical expansions.</div>
+    </div>
+    <div class="stage-card rv d3">
+      <div class="stage-badge">Stage 3</div>
+      <div class="stage-title">Mature Enterprises</div>
+      <div class="stage-body">Utilize Syndicated Bank Loans, Commercial Real Estate Mortgages, and Asset-Backed Revolving Credit to optimize large-scale capital structures.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REBATE
+══════════════════════════════════════════ -->
+<section class="sec banded" id="rebate">
+  <div class="tag rv">Commission Rebate Program</div>
+  <h2 class="sec-title rv d1">Unlock your business capital<br>and <em>save money</em></h2>
+  <div class="rule rv d2"></div>
+  <p class="body-txt rv d2" style="max-width:720px;">
+    The average Business Capital Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong> — up to <strong style="color:var(--mint)">$5,000</strong> back, paid directly to you instead of a traditional broker.
+  </p>
+  <div style="margin-top:1.5rem;" class="rv d3">
+    <a href="/rebate-and-lender-credits#business" class="btn-txt">Calculate Your Rebate</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Secure Capital?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      One application.<br><em>Every business solution.</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Start your intake today and let us identify the right business financing — with your commission rebate applied directly to reduce your costs.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">Lines of Credit</div>
+      <div class="stream">Term Loans &amp; SBA</div>
+      <div class="stream">Equipment Financing</div>
+      <div class="stream">Merchant Cash Advance</div>
+      <div class="stream">Commission Rebate</div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
+      <a href="#apply" class="btn-g"><span>Start Your Application</span></a>
+      <a href="#products" class="btn-txt">Review Financing Types</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     APPLY — CHAT WITH AN AGENT
+══════════════════════════════════════════ -->
+<section class="sec" id="apply">
+  <div class="tag rv" style="justify-content:center;">Start Your Application</div>
+  <h2 class="sec-title rv d1" style="text-align:center;">Tell us about<br><em>your business</em></h2>
+  <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+
+  <div class="rv d3" style="max-width:640px;margin:0 auto;padding:2.5rem;text-align:center;background:var(--glass);border:1px solid var(--glass-b);">
+    <div style="font-size:2rem;margin-bottom:1rem;">💬</div>
+    <p class="body-txt" style="margin:0;">Chat with our agent to provide information and our right person will contact you.</p>
+  </div>
+</section>

@@ -1,0 +1,308 @@
+<!-- ════════════════════════════════════════════════════
+     rebate-and-lender-credits.html — Rebate & Lender Credits
+     Structure: [_partials/header.html] + THIS FILE + [_partials/footer.html]
+
+     Consolidates the interactive rebate/lender-credit calculators that
+     previously lived on business.html, commercial-mortgages.html,
+     foreign-nationals.html and real-estate.html.
+════════════════════════════════════════════════════ -->
+
+<!-- ══════════════════════════════════════════
+     HERO
+══════════════════════════════════════════ -->
+<section class="hero">
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="hero-eyebrow">Luna Verde 5 / Rebate &amp; Lender Credits</div>
+
+  <h1 class="hero-title">
+    Every calculator.<br>
+    <em>One place</em><br>
+    <span class="g">to see your savings.</span>
+  </h1>
+
+  <p class="hero-body">
+    Whichever solution you're using — business capital, commercial mortgages, foreign national loans, or real estate — calculate your possible commission rebate or lender credit right here.
+  </p>
+
+  <div class="hero-cta">
+    <a href="#business" class="btn-g"><span>Business Capital</span></a>
+    <a href="#commercial" class="btn-txt">Commercial</a>
+    <a href="#foreign-nationals" class="btn-txt">Foreign Nationals</a>
+    <a href="#real-estate" class="btn-txt">Real Estate</a>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     BUSINESS CAPITAL
+══════════════════════════════════════════ -->
+<section class="sec banded" id="business">
+  <div class="tag rv">Business Financing &amp; Lines of Credit</div>
+  <h2 class="sec-title rv d1">Business Capital <em>Commission Rebate</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="rebate-block rv d3">
+    <div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average Business Capital Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong>. Example, on a $100,000 loan amount you would get back $1,000.00. Check out how much you can save using the slider below.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Savings up to <strong style="color:var(--mint)">$5,000</strong> by using our Business Capital Commission Rebate Advantage. We pass the savings directly back to you, into your pocket, not to traditional big brokerages.
+      </p>
+      <div style="margin-top:1.5rem;" class="rv d3">
+        <a href="/business" class="btn-txt">Explore Business Financing Details</a>
+      </div>
+    </div>
+    <div class="rebate-widget">
+      <div class="rebate-compare">
+        <div>
+          <div class="rc-label">Traditional Broker / Lender</div>
+          <div class="rc-trad">$0</div>
+        </div>
+        <div class="rc-yours">
+          <div class="rc-label">Your Rebate from using our system</div>
+          <div class="rc-amount" id="biz-disp">$500</div>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-lbs"><span>0</span><span>Loan Amount</span><span>$500,000</span></div>
+        <input type="range" class="rslider" id="biz-sl" min="0" max="500000" value="50000" step="1000">
+        <div class="slider-result">
+          <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="biz-loan">$50,000</div></div>
+          <div><div class="sr-label" style="text-align:right">Your Rebate (1%)</div><div class="sr-val-r" id="biz-reb">$500</div></div>
+        </div>
+      </div>
+      <div class="rebate-caption">Savings up to <span class="hi">$5,000</span> by using our Business Capital Commission Rebate Advantage. We pass the savings directly <strong>back to you</strong>, into your pocket, not to traditional big brokerages.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     COMMERCIAL MORTGAGES
+══════════════════════════════════════════ -->
+<section class="sec" id="commercial">
+  <div class="tag rv">Commercial Mortgages</div>
+  <h2 class="sec-title rv d1">Commercial Mortgage <em>Commission Rebate</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="rebate-block flip rv d3">
+    <div class="rebate-widget">
+      <div class="rebate-compare">
+        <div>
+          <div class="rc-label">Traditional Broker / Lender</div>
+          <div class="rc-trad">$0</div>
+        </div>
+        <div class="rc-yours">
+          <div class="rc-label">Your Rebate from using our system</div>
+          <div class="rc-amount" id="com-disp">$5,000</div>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-lbs"><span>0</span><span>Loan Amount</span><span>$2,000,000</span></div>
+        <input type="range" class="rslider" id="com-sl" min="0" max="2000000" value="500000" step="5000">
+        <div class="slider-result">
+          <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="com-loan">$500,000</div></div>
+          <div><div class="sr-label" style="text-align:right">Your Rebate (1%)</div><div class="sr-val-r" id="com-reb">$5,000</div></div>
+        </div>
+      </div>
+      <div class="rebate-caption">Savings up to <span class="hi">$20,000</span> by using our Commercial Mortgage Commission Rebate Advantage. We pass the savings directly <strong>back to you</strong>, into your pocket, not to traditional big brokerages.</div>
+    </div>
+    <div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average Commercial Mortgage Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong>. Example, on a $500,000 loan amount you would get back $5,000.00. Check out how much you can save using the slider below.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Savings up to <strong style="color:var(--mint)">$20,000</strong> by using our Commercial Mortgage Commission Rebate Advantage. We pass the savings directly back to you, into your pocket, not to traditional big brokerages.
+      </p>
+      <div style="margin-top:1.5rem;" class="rv d3">
+        <a href="/commercial-mortgages" class="btn-txt">Explore Commercial Mortgage Details</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     FOREIGN NATIONALS
+══════════════════════════════════════════ -->
+<section class="sec banded" id="foreign-nationals">
+  <div class="tag rv">Foreign Nationals &amp; Investors</div>
+  <h2 class="sec-title rv d1">Foreign National <em>Commission Rebate</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="rebate-block rv d3">
+    <div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average Foreign National Commission Rebate is <strong style="color:var(--gold-light)">1 Percent of the Loan Amount</strong>. Example, on a $500,000 loan amount you would get back $5,000.00. Check out how much you can save using the slider below.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Savings up to <strong style="color:var(--mint)">$20,000</strong> by using our Foreign National Commission Rebate Advantage. We pass the savings directly back to you, into your pocket, not to traditional big brokerages.
+      </p>
+      <div style="margin-top:1.5rem;" class="rv d3">
+        <a href="/foreign-nationals" class="btn-txt">Explore Loan Options &amp; Details</a>
+      </div>
+    </div>
+    <div class="rebate-widget">
+      <div class="rebate-compare">
+        <div>
+          <div class="rc-label">Traditional Broker / Lender</div>
+          <div class="rc-trad">$0</div>
+        </div>
+        <div class="rc-yours">
+          <div class="rc-label">Your Rebate from using our system</div>
+          <div class="rc-amount" id="fn-disp">$5,000</div>
+        </div>
+      </div>
+      <div class="slider-wrap">
+        <div class="slider-lbs"><span>0</span><span>Loan Amount</span><span>$2,000,000</span></div>
+        <input type="range" class="rslider" id="fn-sl" min="0" max="2000000" value="500000" step="5000">
+        <div class="slider-result">
+          <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="fn-loan">$500,000</div></div>
+          <div><div class="sr-label" style="text-align:right">Your Rebate (1%)</div><div class="sr-val-r" id="fn-reb">$5,000</div></div>
+        </div>
+      </div>
+      <div class="rebate-caption">Savings up to <span class="hi">$20,000</span> by using our Foreign National Commission Rebate Advantage. We pass the savings directly <strong>back to you</strong>, into your pocket, not to traditional big brokerages.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     REAL ESTATE
+══════════════════════════════════════════ -->
+<section class="sec" id="real-estate">
+  <div class="tag rv">Real Estate</div>
+  <h2 class="sec-title rv d1">Real Estate <em>Commission &amp; Lender Credit</em></h2>
+  <div class="rule rv d2"></div>
+
+  <div class="rebate-block rv d3">
+    <div>
+      <div class="tag">Unlock your Real Estate Property Solutions and Save Money</div>
+      <h3 class="sub-heading">using our <em>Commission Rebate Program!</em></h3>
+      <div class="rule"></div>
+      <p class="body-txt">
+        The average real estate commission rebate and mortgage credit can reach <strong style="color:var(--gold-light)">$3,000 and $2,000</strong>, offering a possible combined savings of <strong style="color:var(--gold-light)">$6,000.00</strong> on a $400,000 home.
+      </p>
+      <p class="body-txt" style="margin-top:1rem;">
+        Our savings system Advantage opens the door to possible savings of up to <strong style="color:var(--mint)">$20,000</strong> by allowing you to utilize our available real estate and mortgage savings programs wherever offered and allowable. While final amounts depend on specific transaction details and local availability, our goal is to help pass these potential savings directly into your pocket rather than leaving them with traditional big brokerages.
+      </p>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding:1rem 0;border-bottom:1px solid var(--glass-b);border-top:1px solid var(--glass-b);">
+        <div style="font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);">Traditional Lender Keeps Everything</div>
+        <div style="font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);">Your Rebate from our system</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:rgba(16,40,44,0.22);text-decoration:line-through;">$0</span>
+        <span style="font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--gold-light);">$20,000</span>
+      </div>
+      <div style="margin-top:1.5rem;">
+        <a href="/real-estate" class="btn-txt">Explore Real Estate Details</a>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+      <!-- Calculator 1: Real Estate Commission -->
+      <div class="rebate-widget">
+        <div class="rebate-widget-title">Possible Real Estate Commission Rebate Calculator</div>
+        <div class="rebate-compare">
+          <div>
+            <div class="rc-label">Traditional Broker Keeps Everything</div>
+            <div class="rc-trad">$0 back</div>
+          </div>
+          <div class="rc-yours">
+            <div class="rc-label">Possible Commission Rebate</div>
+            <div class="rc-amount" id="re-disp">$3,000</div>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-lbs"><span>$0</span><span>Enter Your Home Price</span><span>$1,000,000</span></div>
+          <input type="range" class="rslider" id="re-sl" min="0" max="1000000" value="400000" step="5000">
+          <div class="slider-result">
+            <div><div class="sr-label">Home Price</div><div class="sr-val-l" id="re-home">$400,000</div></div>
+            <div><div class="sr-label" style="text-align:right">Possible Commission Rebate</div><div class="sr-val-r" id="re-reb">$3,000</div></div>
+          </div>
+        </div>
+        <div class="rebate-caption">Possible Real Estate agent commission rebate — returned to you at closing. Up to <span class="hi">$10,000</span>.<br/>*Where applicable by law</div>
+      </div>
+
+      <!-- Calculator 2: Mortgage Rebate -->
+      <div class="rebate-widget">
+        <div class="rebate-widget-title">Lender Credit Calculator</div>
+        <div class="rebate-compare">
+          <div>
+            <div class="rc-label">Traditional Lender Keeps</div>
+            <div class="rc-trad">$0 back</div>
+          </div>
+          <div class="rc-yours">
+            <div class="rc-label">Possible Lender Credit</div>
+            <div class="rc-amount" id="mort-disp">$2,400</div>
+          </div>
+        </div>
+        <div class="slider-wrap">
+          <div class="slider-lbs"><span>$0</span><span>Enter Your Loan Amount</span><span>$1,000,000</span></div>
+          <input type="range" class="rslider" id="mort-sl" min="0" max="1000000" value="320000" step="5000">
+          <div class="slider-result">
+            <div><div class="sr-label">Loan Amount</div><div class="sr-val-l" id="mort-loan">$320,000</div></div>
+            <div><div class="sr-label" style="text-align:right">Possible Mortgage Rebate (0.5%)</div><div class="sr-val-r" id="mort-reb">$2,400</div></div>
+          </div>
+        </div>
+        <div class="rebate-caption">0.5% of your loan amount returned to you. Up to <span class="hi">$10,000</span> — paid directly at closing.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     CTA
+══════════════════════════════════════════ -->
+<section class="franchise-band">
+  <div class="franchise-inner">
+    <div class="tag rv" style="justify-content:center;">Ready to Get Started?</div>
+    <h2 class="sec-title rv d1" style="font-size:clamp(2.2rem,4vw,4rem);">
+      One application.<br><em>Every solution.</em>
+    </h2>
+    <div class="rule rv d2" style="margin:1.8rem auto;"></div>
+    <p class="body-txt rv d2">
+      Whichever calculator brought you here — let us match you with the right financing or property solution, with your commission rebate or lender credit applied directly to reduce your costs.
+    </p>
+    <div class="stream-row rv d3">
+      <div class="stream">Business Capital</div>
+      <div class="stream">Commercial Mortgages</div>
+      <div class="stream">Foreign Nationals</div>
+      <div class="stream">Real Estate</div>
+      <div class="stream">Commission Rebate</div>
+    </div>
+    <a href="/#claim" class="btn-g rv d4"><span>Start Your Application</span></a>
+  </div>
+</section>
+
+<script>
+  var fmt = function(n){ return '$' + Math.round(n).toLocaleString('en-US'); };
+
+  function bindSlider(slId, loanId, rebId, dispId, rateFn, cap) {
+    var sl = document.getElementById(slId);
+    var upd = function() {
+      var v = +sl.value;
+      var r = rateFn(v);
+      if(cap) r = Math.min(r, cap);
+      var pct = ((v - +sl.min) / (+sl.max - +sl.min)) * 100;
+      sl.style.background = 'linear-gradient(90deg, var(--mint) ' + pct + '%, rgba(16,40,44,0.12) ' + pct + '%)';
+      if(document.getElementById(loanId)) document.getElementById(loanId).textContent = fmt(v);
+      if(document.getElementById(rebId))  document.getElementById(rebId).textContent  = fmt(r);
+      if(document.getElementById(dispId)) document.getElementById(dispId).textContent = fmt(r);
+    };
+    sl.addEventListener('input', upd);
+    upd();
+  }
+
+  bindSlider('biz-sl','biz-loan','biz-reb','biz-disp', function(v){ return v*0.01; }, 5000);
+  bindSlider('com-sl','com-loan','com-reb','com-disp', function(v){ return v*0.01; }, 20000);
+  bindSlider('fn-sl', 'fn-loan', 'fn-reb', 'fn-disp',  function(v){ return v*0.01; }, 20000);
+  bindSlider('re-sl',   're-home',  're-reb',   're-disp',   function(v){ return (v/400000)*3000; }, 10000);
+  bindSlider('mort-sl', 'mort-loan','mort-reb', 'mort-disp', function(v){ return v*0.0050; },         10000);
+</script>

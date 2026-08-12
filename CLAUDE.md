@@ -329,6 +329,46 @@ Cloudflare R2 + a `documents` table linked to `leads`).
    email-invite flow. Verified end-to-end: created accounts can log in
    immediately with the entered contact details showing correctly, and
    franchisee/provider roles are blocked from the `/new` pages.
+10. ✅ Second, real franchisee site template (`web/src/franchisee-site/`,
+    copied from `Web-pages/Franchisee/`) — same raw-HTML mechanism as the
+    corporate site (`web/src/lib/franchisee-site.ts` +
+    `src/app/franchisee-site/[[...slug]]/route.ts`, rewritten to from
+    `proxy.ts` when `tenant.type === "franchisee"` and their
+    `template_id` points at the new `site_templates` row
+    (`component_key = 'luna-verde-franchisee'`, migration 007) rather
+    than `standard`). Unlike the corporate site, this template is shared
+    across every franchisee that picks it, so the placeholder brand name
+    ("Luna Verde 5", including the styled `<em>` logo variant) and the
+    franchisee_profile contact fields are substituted into the
+    header/footer/page HTML at render time instead of being fixed
+    content — see `renderFranchiseeSitePage()`. Needed its own copy of
+    the corporate site's `chat-widget.js` `<script>` tag in the footer
+    partial (same reason: raw HTML bypasses React, so the React
+    `ChatWidget` never mounts) and a `white-space:nowrap` fix on `.logo`
+    since real tenant names run longer than the "Luna Verde 5" placeholder.
+
+    Template selection: `site_templates` now has two rows (`standard`,
+    `luna-verde-franchisee`); which one a tenant uses is just
+    `tenants.template_id`, changeable via either edit flow below —
+    already-extensible per the brief's original design, no new schema.
+
+    Two edit flows, deliberately different scopes:
+    - **Franchisee self-service** (`/dashboard/profile/edit`,
+      `web/src/lib/actions/profile.ts`): template picker + the brief's
+      whitelisted contact fields only (phone/email/address/hours/blurb,
+      via the pre-existing `updateFranchiseeProfile`). Cannot rename the
+      business or change its subdomain.
+    - **Franchisor/super_admin** (`/dashboard/franchisees/[id]/edit`,
+      `updateFranchiseeAdmin` in `web/src/lib/db/accounts.ts`): everything
+      the self-service form has, plus name/slug/status — an "Edit" link
+      per franchisee row on `/dashboard/franchisees`.
+
+    Verified end-to-end: admin changes a franchisee's template + contact
+    info → site immediately reflects it (brand name, phone, address,
+    blurb all substituted correctly); franchisee's own edit hits the same
+    underlying data; switching back to "Standard" correctly reverts to
+    the React `StandardTemplate` (proxy's dual-path rewrite logic tested
+    both directions, not just one).
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.

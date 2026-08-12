@@ -87,3 +87,21 @@ export async function updateFranchiseeProfile(
     where tenant_id = ${tenantId}
   `;
 }
+
+export type SiteTemplateOption = { id: string; name: string; componentKey: string };
+
+export async function listSiteTemplates(): Promise<SiteTemplateOption[]> {
+  const rows = await sql<{ id: string; name: string; component_key: string }[]>`
+    select id, name, component_key from site_templates order by name
+  `;
+  return rows.map((r) => ({ id: r.id, name: r.name, componentKey: r.component_key }));
+}
+
+/**
+ * Franchisee self-service template picker — choosing a layout is treated
+ * the same as editing their own contact details (no franchisor approval
+ * needed), unlike renaming the business or changing its subdomain.
+ */
+export async function updateTenantTemplate(tenantId: string, templateId: string): Promise<void> {
+  await sql`update tenants set template_id = ${templateId}, updated_at = now() where id = ${tenantId}`;
+}

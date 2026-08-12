@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
 import { getFranchiseeProfile } from "@/lib/db/site-content";
@@ -11,7 +12,15 @@ export default async function ProfilePage() {
     const profile = await getFranchiseeProfile(tenantId);
     return (
       <div className="mx-auto w-full max-w-2xl space-y-4">
-        <h1 className="text-lg font-semibold">Your site contact details</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-lg font-semibold">Your site contact details</h1>
+          <Link
+            href="/dashboard/profile/edit"
+            className="rounded-md bg-black px-3 py-1.5 text-sm text-white dark:bg-white dark:text-black"
+          >
+            Edit
+          </Link>
+        </div>
         <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-lg border border-black/10 p-4 text-sm dark:border-white/15">
           <dt className="opacity-60">Phone</dt>
           <dd>{profile?.phone ?? "—"}</dd>
