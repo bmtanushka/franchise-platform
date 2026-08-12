@@ -464,19 +464,79 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     rejection, and signing in with the new password afterward — all test
     account passwords reverted back to `Passw0rd!` afterward.
 
+14. ✅ Three email notifications, all through the Resend integration (or,
+    for the agent service, a small equivalent using a plain HTTPS call
+    rather than the SDK — see below):
+    - **Lead assigned → provider.** Hooked directly into
+      `assignLeadToProvider` (`web/src/lib/db/leads.ts`), so it fires for
+      both the table's assign form and the kanban's inline assign
+      dropdown without needing a separate hook per caller.
+    - **Lead created → franchisee.** Franchisor-site leads are owned by
+      the franchisor outright and never routed to a franchisee, so this
+      only fires when the created lead's tenant is actually a franchisee
+      — hooked into the agent service's `_finalize_lead`
+      (`agent/app/chat.py`), right after `db.create_lead`. This is the
+      one notification that lives in the Python agent, not the Next.js
+      app, because that's where leads actually get created — the agent
+      writes directly to Postgres and was never routed through the web
+      app's Server Actions.
+    - **Daily digest → every login account, 6am ET.** Reuses
+      `getLeadAnalytics` per recipient (`web/src/lib/jobs/daily-summary.ts`)
+      so each person's counts are scoped exactly the way their dashboard
+      already scopes them — a franchisee never sees another tenant's
+      numbers here either, same two-layer rule as everywhere else. Runs
+      as an in-process `node-cron` job registered once from
+      `web/src/instrumentation.ts` rather than a separate Railway cron
+      service, since `web` already runs as one long-lived process; the
+      job fires hourly and checks the real America/New_York clock itself
+      rather than a fixed UTC hour, so 6am stays correct across the DST
+      change without a config update twice a year. Assumes a single
+      `web` replica — if this service is ever scaled out, every replica
+      would fire its own 6am job and recipients would get duplicates.
+
+    Both the assignment and lead-created emails are best-effort: wrapped
+    in try/except (Python) or try/catch (TS) so a failed or unconfigured
+    send can never break the assignment or the chat agent's lead capture
+    itself — same principle as everywhere else `RESEND_API_KEY` is
+    optional. The agent needs its own `RESEND_API_KEY` now too (same
+    Resend account/key as `web`, see "Known gaps").
+
+    Verified end-to-end locally: drove a full chat conversation on a
+    franchisee subdomain (`va1.localhost`) through to a created lead and
+    confirmed the franchisee-notification log line; assigned that lead to
+    a provider via the dashboard and confirmed the provider-notification
+    log line; temporarily wired a manual-trigger route to run the daily
+    job on demand (removed after) and confirmed every recipient's count
+    matched their actual scoped data — franchisor/super_admin saw the
+    platform-wide total, the franchisee saw only their tenant's leads,
+    each provider saw only their own assigned count. Re-verified the chat
+    → lead-creation path and the assignment path on production too
+    (`web-production-80ea6d.up.railway.app`); the franchisee-notification
+    path itself could only be re-verified locally, since production has
+    no reachable franchisee subdomain to drive a chat session on (see the
+    existing `va1.web-production-80ea6d...` gap in "Known gaps") — the
+    code path is identical either way, only the trigger differs.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
 ## Known gaps / things to revisit
 
-- `RESEND_API_KEY` is **not** set on Railway `web` yet — forgot-password
-  reset links are only landing in the Railway deploy logs right now, not
-  real inboxes (confirmed via `railway logs --service web`). Set
-  `RESEND_API_KEY` (and optionally `RESEND_FROM_EMAIL` once a sending
-  domain is verified in Resend — until then it falls back to their
-  sandbox `onboarding@resend.dev`, which only delivers to the email on
-  the Resend account) to turn on real delivery. No code change needed,
-  same on/off-by-env-var pattern as `OPENAI_API_KEY` below.
+- `RESEND_API_KEY` is **not** set on Railway `web` OR `agent` yet —
+  forgot-password reset links, the lead-assigned/lead-created
+  notifications, and the daily digest are all only landing in each
+  service's Railway deploy logs right now, not real inboxes (confirmed
+  via `railway logs --service web` / `--service agent`). Set
+  `RESEND_API_KEY` on **both** services (same Resend account/key works
+  for both — `web` sends password-reset/lead-assigned/daily-digest,
+  `agent` sends the franchisee lead-created notification) and
+  `APP_PUBLIC_URL` on `agent` (same value as `web`'s
+  `NEXT_PUBLIC_APP_URL`, needed to build the "View this lead" link) to
+  turn on real delivery. Optionally also `RESEND_FROM_EMAIL` on both once
+  a sending domain is verified in Resend — until then it falls back to
+  their sandbox `onboarding@resend.dev`, which only delivers to the email
+  on the Resend account. No code change needed, same on/off-by-env-var
+  pattern as `OPENAI_API_KEY` below.
 - `OPENAI_API_KEY` is set on Railway `agent` — the chat agent uses real
   OpenAI tool-calling for both question phrasing and answer extraction in
   production, not the deterministic fallback (that fallback still exists
