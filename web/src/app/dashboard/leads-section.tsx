@@ -1,6 +1,6 @@
 import { listLeads } from "@/lib/db/leads";
 import { listServiceProviders } from "@/lib/db/providers";
-import { LeadsTable } from "@/components/dashboard/leads-table";
+import { LeadsViewSwitcher } from "@/components/dashboard/leads-view-switcher";
 import { cardClass } from "@/lib/dashboard-ui";
 import type { Role } from "@/lib/db/context";
 import type { SessionContext } from "@/lib/db/context";
@@ -26,7 +26,7 @@ export async function LeadsSection({ ctx }: { ctx: SessionContext }) {
   return (
     <section className="space-y-3">
       <h2 className="font-heading text-base font-semibold text-ink">{sectionTitle(ctx.role)}</h2>
-      <LeadsTable leads={leads} providers={providers} role={ctx.role} />
+      <LeadsViewSwitcher leads={leads} providers={providers} role={ctx.role} />
     </section>
   );
 }

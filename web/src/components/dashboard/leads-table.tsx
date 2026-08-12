@@ -5,17 +5,10 @@ import { useMemo, useState } from "react";
 import type { Lead, LeadStatus } from "@/lib/db/leads";
 import { assignLeadAction, updateLeadStatusAction } from "@/lib/actions/leads";
 import { STATUS_LABEL } from "@/lib/lead-status-labels";
+import { PROVIDER_NEXT_STATUSES, NEXT_REBATE_STATUS } from "@/lib/lead-status-rules";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { inputClass, secondaryButtonClass, linkClass } from "@/lib/dashboard-ui";
 import type { Role } from "@/lib/db/context";
-
-const PROVIDER_NEXT_STATUSES: LeadStatus[] = ["in_progress", "won", "lost", "disqualified"];
-
-// won -> rebate_received -> rebate_paid, franchisor-only (see leads.ts).
-const NEXT_REBATE_STATUS: Partial<Record<LeadStatus, LeadStatus>> = {
-  won: "rebate_received",
-  rebate_received: "rebate_paid",
-};
 
 const thClass = "px-4 py-3 text-left font-body text-xs font-semibold uppercase tracking-[0.03em] text-slate";
 const thSortableClass = "text-left font-body text-xs font-semibold uppercase tracking-[0.03em] text-slate";

@@ -29,3 +29,33 @@ export async function updateLeadStatusAction(formData: FormData): Promise<void> 
   revalidatePath("/dashboard");
   redirect("/dashboard");
 }
+
+// Non-redirecting counterparts for the kanban board's drag-and-drop and
+// inline assign controls, which are plain function calls from a client
+// component (not <form action={...}> submissions) and need to stay on the
+// page and report success/failure instead of navigating away.
+export async function moveLeadStatusAction(
+  leadId: string,
+  status: LeadStatus,
+  dealValue?: number,
+): Promise<{ error: string | null }> {
+  const ctx = await requireSessionContext();
+  try {
+    await updateLeadStatus(ctx, leadId, status, { dealValue });
+    revalidatePath("/dashboard/leads");
+    return { error: null };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to update status." };
+  }
+}
+
+export async function assignLeadInlineAction(leadId: string, providerId: string): Promise<{ error: string | null }> {
+  const ctx = await requireSessionContext();
+  try {
+    await assignLeadToProvider(ctx, leadId, providerId);
+    revalidatePath("/dashboard/leads");
+    return { error: null };
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : "Failed to assign lead." };
+  }
+}
