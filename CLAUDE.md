@@ -387,6 +387,23 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     the React `StandardTemplate` (proxy's dual-path rewrite logic tested
     both directions, not just one).
 
+11. ✅ Leads table filtering/sorting/date column
+    (`web/src/components/dashboard/leads-table.tsx`, a client component —
+    the old `leads-section.tsx` is now a thin Server Component that just
+    fetches data and delegates rendering). Search box (name/email
+    substring), status filter, service-type filter, all combinable, plus
+    a live "N of M" count and a "Clear filters" link. Every column header
+    is clickable to sort (ascending/descending toggle, arrow indicator);
+    the clickable area fills the full header cell, not just the label
+    text — an initial version only wired the click handler to the
+    inline-sized text, so most of the header was dead space. Added a
+    "Captured" column showing the lead's `created_at` date (full
+    timestamp on hover). Same role-scoped `leads` data as before, no
+    schema or query changes. Verified end-to-end on production:
+    full-cell header clicks correctly toggle sort order, and status/
+    service filters return exactly the matching rows (confirmed against
+    real data, not just no-crash).
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
