@@ -404,6 +404,37 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     service filters return exactly the matching rows (confirmed against
     real data, not just no-crash).
 
+12. ✅ Kanban board view for leads, alongside the table
+    (`web/src/components/dashboard/leads-kanban.tsx`), with a Table/Kanban
+    toggle (`leads-view-switcher.tsx`) on `/dashboard/leads`. One column
+    per `lead_status`, color-accented to match `StatusBadge`'s tone;
+    cards are draggable between columns. Dragging calls the same
+    `updateLeadStatus`/`assignLeadToProvider` functions the table's forms
+    use, through new non-redirecting server actions
+    (`moveLeadStatusAction`, `assignLeadInlineAction` in
+    `web/src/lib/actions/leads.ts` — plain function calls from a client
+    component rather than `<form action>` submissions, so they return
+    `{error}` and don't `redirect()`). Which columns a card can be
+    dropped on is gated per role to match exactly what the table already
+    exposes — not the wider set `updateLeadStatus`'s guards would
+    technically allow — so the two views never let you do something in
+    one that's unavailable in the other: providers can drop into
+    in_progress/won/lost/disqualified; franchisor/super_admin only get
+    the won→rebate_received→rebate_paid chain (one step at a time, same
+    as the table's rebate-advance button); franchisees are fully
+    read-only (no draggable cards, no assign dropdowns). Unassigned cards
+    get an inline "Assign to..." picker instead of a drag target, since
+    assignment needs a provider chosen, not just a status. Dropping onto
+    "Won" prompts for a deal value. The shared status-transition rules
+    (`PROVIDER_NEXT_STATUSES`, `NEXT_REBATE_STATUS`) were pulled out to
+    `web/src/lib/lead-status-rules.ts` so table and kanban can't drift
+    apart. Verified end-to-end on production per role: franchisor sees
+    all 9 columns with inline assign; provider drag from In progress to
+    Won with the deal-value prompt persisted correctly after a full page
+    reload; an invalid drop (provider dragging an Assigned card into
+    Qualified) was correctly rejected client-side; franchisee kanban view
+    has zero draggable cards and zero assign controls.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
