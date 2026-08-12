@@ -23,6 +23,18 @@ const COLUMN_ORDER: LeadStatus[] = [
   "disqualified",
 ];
 
+// service_provider only ever sees leads already assigned to them
+// (listLeads scopes by assigned_provider_id) — a lead can't reach them
+// before assigned_to_provider, so "New"/"Qualified" would always be
+// permanently empty, dead columns on their board. Hide those two for
+// that role; every other role can have leads in any status.
+function visibleColumns(role: Role): LeadStatus[] {
+  if (role === "service_provider") {
+    return COLUMN_ORDER.filter((s) => s !== "new" && s !== "qualified");
+  }
+  return COLUMN_ORDER;
+}
+
 const COLUMN_ACCENT: Record<string, string> = {
   info: "border-t-info-text",
   warning: "border-t-warning-text",
@@ -70,12 +82,14 @@ export function LeadsKanban({
 
   useEffect(() => setLeads(leadsProp), [leadsProp]);
 
+  const columns = useMemo(() => visibleColumns(role), [role]);
+
   const byStatus = useMemo(() => {
     const map = new Map<LeadStatus, Lead[]>();
-    for (const status of COLUMN_ORDER) map.set(status, []);
+    for (const status of columns) map.set(status, []);
     for (const lead of leads) map.get(lead.status)?.push(lead);
     return map;
-  }, [leads]);
+  }, [leads, columns]);
 
   const showTenant = role === "super_admin" || role === "franchisor";
   const canAssign = role === "super_admin" || role === "franchisor";
@@ -128,7 +142,7 @@ export function LeadsKanban({
         </div>
       )}
       <div className="flex gap-3 overflow-x-auto pb-2">
-        {COLUMN_ORDER.map((status) => {
+        {columns.map((status) => {
           const columnLeads = byStatus.get(status) ?? [];
           const isDropTarget = dragOverStatus === status;
           const draggedLead = leads.find((l) => l.id === dragLeadId);
