@@ -33,6 +33,20 @@ export async function listServiceTypes(): Promise<ServiceType[]> {
   return rows;
 }
 
+/** Login email for a provider's account — used to send the lead-assigned notification. */
+export async function getProviderContactEmail(
+  providerId: string,
+): Promise<{ email: string; companyName: string } | null> {
+  const rows = await sql<{ email: string; company_name: string }[]>`
+    select u.email, sp.company_name
+    from service_providers sp
+    join users u on u.id = sp.user_id
+    where sp.id = ${providerId}
+    limit 1
+  `;
+  return rows.length > 0 ? { email: rows[0].email, companyName: rows[0].company_name } : null;
+}
+
 export async function getServiceProviderById(providerId: string): Promise<ServiceProvider | null> {
   const rows = await sql<{ id: string; company_name: string; service_types: string[] }[]>`
     select id, company_name, service_types

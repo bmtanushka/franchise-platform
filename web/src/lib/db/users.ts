@@ -90,3 +90,36 @@ export async function getUserById(id: string): Promise<AuthUser | null> {
 export async function updateUserPassword(userId: string, passwordHash: string): Promise<void> {
   await sql`update users set password_hash = ${passwordHash}, updated_at = now() where id = ${userId}`;
 }
+
+export type SummaryRecipient = {
+  id: string;
+  email: string;
+  fullName: string | null;
+  role: Role;
+  tenantId: string | null;
+  providerId: string | null;
+};
+
+/**
+ * Every login account, for the daily digest — one row per user regardless
+ * of role, with providerId resolved the same way getProviderIdForUser does
+ * (needed to build a SessionContext per recipient so getLeadAnalytics
+ * applies the exact same role-scoping it uses everywhere else).
+ */
+export async function listSummaryRecipients(): Promise<SummaryRecipient[]> {
+  const rows = await sql<
+    { id: string; email: string; full_name: string | null; role: Role; tenant_id: string | null; provider_id: string | null }[]
+  >`
+    select u.id, u.email, u.full_name, u.role, u.tenant_id, sp.id as provider_id
+    from users u
+    left join service_providers sp on sp.user_id = u.id
+  `;
+  return rows.map((row) => ({
+    id: row.id,
+    email: row.email,
+    fullName: row.full_name,
+    role: row.role,
+    tenantId: row.tenant_id,
+    providerId: row.provider_id,
+  }));
+}

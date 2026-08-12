@@ -1,6 +1,7 @@
 from typing import Any, Optional
 
-from . import db
+from . import db, email
+from .config import settings
 from .openai_helper import extract_answer, phrase_intro, phrase_question
 from .question_sets import Field, SERVICE_LABELS, get_question_set
 
@@ -103,7 +104,7 @@ async def _handle_field_answer(session: dict[str, Any], tenant_name: str, user_m
         await db.insert_chat_message(session_id, "assistant", reply)
         return {"session_id": session_id, "reply": reply, "done": False}
 
-    return await _finalize_lead(session["tenant_id"], session_id, service_key, question_set, new_answers)
+    return await _finalize_lead(session["tenant_id"], session_id, service_key, question_set, new_answers, tenant_name)
 
 
 async def _finalize_lead(
@@ -112,6 +113,7 @@ async def _finalize_lead(
     service_key: str,
     question_set: list[Field],
     answers: dict[str, Any],
+    tenant_name: str,
 ) -> dict[str, Any]:
     lead_fields, details = _split_answers(question_set, answers)
     service_type_id = await db.get_service_type_id(service_key)
@@ -129,6 +131,25 @@ async def _finalize_lead(
         source_session_id=session_id,
     )
     await db.complete_chat_session(session_id, lead_id)
+
+    # Franchisor-site leads are owned by the franchisor outright, never a
+    # franchisee (see CLAUDE.md) — only notify when this lead actually
+    # belongs to a franchisee tenant. Best-effort: a failed/unconfigured
+    # email must never break lead capture itself.
+    try:
+        tenant_type = await db.get_tenant_type(tenant_id)
+        if tenant_type == "franchisee":
+            owner_email = await db.get_franchisee_owner_email(tenant_id)
+            if owner_email:
+                await email.send_lead_created_email(
+                    owner_email,
+                    tenant_name=tenant_name,
+                    full_name=lead_fields.get("full_name"),
+                    service_label=SERVICE_LABELS.get(service_key, service_key),
+                    lead_url=f"{settings.app_public_url}/dashboard/leads/{lead_id}",
+                )
+    except Exception as exc:  # noqa: BLE001 - notification must never break lead capture
+        print(f"[email] Failed to send lead-created notification: {exc}")
 
     closing = (
         f"Thanks, {lead_fields.get('full_name', 'there')} — we've got everything we need. "

@@ -145,6 +145,21 @@ async def create_lead(
     return lead_id
 
 
+async def get_tenant_type(tenant_id: str) -> Optional[str]:
+    pool = await get_pool()
+    row = await pool.fetchrow("select type from tenants where id = $1", UUID(tenant_id))
+    return row["type"] if row else None
+
+
+async def get_franchisee_owner_email(tenant_id: str) -> Optional[str]:
+    pool = await get_pool()
+    row = await pool.fetchrow(
+        "select email from users where tenant_id = $1 and role = 'franchisee' limit 1",
+        UUID(tenant_id),
+    )
+    return row["email"] if row else None
+
+
 async def count_user_messages(session_id: str) -> int:
     pool = await get_pool()
     row = await pool.fetchrow(

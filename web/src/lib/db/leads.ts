@@ -1,4 +1,6 @@
 import { withTenantContext, SessionContext } from "./context";
+import { getProviderContactEmail } from "./providers";
+import { sendLeadAssignedEmail } from "@/lib/email";
 
 export type LeadStatus =
   | "new"
@@ -122,6 +124,25 @@ export async function assignLeadToProvider(
       values (${leadId}, 'assigned_to_provider', ${ctx.userId}, 'Assigned to provider')
     `;
   });
+
+  // Best-effort notification — a failed/unconfigured email must never
+  // undo or fail the assignment itself, which is why this runs after the
+  // transaction commits rather than inside it.
+  try {
+    const provider = await getProviderContactEmail(providerId);
+    const lead = await getLeadDetail(ctx, leadId);
+    if (provider && lead) {
+      await sendLeadAssignedEmail(provider.email, {
+        companyName: provider.companyName,
+        leadContactName: lead.fullName,
+        serviceTypeLabel: lead.serviceTypeLabel,
+        tenantName: lead.tenantName,
+        leadUrl: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/leads/${leadId}`,
+      });
+    }
+  } catch (err) {
+    console.error("[email] Failed to send lead-assigned notification:", err);
+  }
 }
 
 const PROVIDER_SETTABLE_STATUSES: LeadStatus[] = ["in_progress", "won", "lost", "disqualified"];
