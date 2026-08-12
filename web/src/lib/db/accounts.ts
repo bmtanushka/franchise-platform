@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import type postgres from "postgres";
 import { sql } from "./client";
 import type { Role } from "./context";
 
@@ -6,6 +7,34 @@ import type { Role } from "./context";
 // leads/chat_messages/rebates do per the brief) — this role check is the
 // only gate, same pattern as listServiceProviders in providers.ts.
 const ACCOUNT_CREATOR_ROLES = new Set<Role>(["super_admin", "franchisor"]);
+
+// Real wildcard domain (*.lv-5.com) pointed at Railway — see CLAUDE.md.
+// Every franchisee's subdomain lives here; local dev keeps its separate
+// `{slug}.localhost:3000` domains rows untouched (different domain_type
+// query below only ever touches the lv-5.com one).
+const FRANCHISEE_ROOT_DOMAIN = "lv-5.com";
+
+/**
+ * Keeps the domains table in sync with a franchisee's current slug —
+ * delete-then-insert rather than update-in-place so it works whether or
+ * not a row already exists yet (e.g. tenants created before this domain
+ * existed), without needing to know the previous slug.
+ */
+async function syncFranchiseeDomain(
+  tx: postgres.TransactionSql,
+  tenantId: string,
+  slug: string,
+): Promise<void> {
+  await tx`
+    delete from domains
+    where tenant_id = ${tenantId} and domain like ${"%." + FRANCHISEE_ROOT_DOMAIN}
+  `;
+  await tx`
+    insert into domains (domain, tenant_id, domain_type, verified)
+    values (${`${slug}.${FRANCHISEE_ROOT_DOMAIN}`}, ${tenantId}, 'subdomain', true)
+    on conflict (domain) do update set tenant_id = excluded.tenant_id, verified = true
+  `;
+}
 
 export class AccountConflictError extends Error {
   constructor(public field: "slug" | "email") {
@@ -71,6 +100,8 @@ export async function createFranchisee(
         values (${input.loginEmail}, 'franchisee', ${tenant.id}, ${input.ownerFullName}, ${passwordHash})
       `;
 
+      await syncFranchiseeDomain(tx, tenant.id as string, input.slug);
+
       return { tenantId: tenant.id as string };
     });
   } catch (err) {
@@ -118,6 +149,8 @@ export async function updateFranchiseeAdmin(
             business_hours = ${input.businessHours}, local_blurb = ${input.localBlurb}, updated_at = now()
         where tenant_id = ${tenantId}
       `;
+
+      await syncFranchiseeDomain(tx, tenantId, input.slug);
     });
   } catch (err) {
     rethrowAsConflict(err);

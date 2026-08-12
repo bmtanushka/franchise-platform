@@ -47,6 +47,23 @@ see "Franchisor corporate site" below) is now served from this app for
 the franchisor tenant. DNS for the real domain hasn't been pointed at
 Railway yet — production is still reached via the Railway-issued URL.
 
+The real franchisee wildcard domain is **`lv-5.com`** (`*.lv-5.com`,
+replacing the brief's `*.franchiseenetwork.com` placeholder below) —
+`{slug}.lv-5.com` per franchisee, e.g. `va1.lv-5.com`. Wired up on the
+Railway side (`*.lv-5.com` added as a custom domain on `web`), but DNS
+hasn't been pointed at Railway yet by the registrar — needs 3 records at
+whoever holds `lv-5.com`: a `*` CNAME to Railway's traffic-routing target,
+an `_acme-challenge` CNAME for the wildcard SSL cert, and a
+`_railway-verify` TXT for domain-ownership verification (get the current
+exact values with `railway domain status <domain-id> --service web`,
+since the CNAME targets are project-specific and were generated when the
+domain was added — don't reuse the ones from a past session). Every
+franchisee's `{slug}.lv-5.com` row in `domains` is kept in sync
+automatically on create/rename (`syncFranchiseeDomain()` in
+`web/src/lib/db/accounts.ts`, delete-then-insert keyed off the tenant's
+current slug) — this is separate from, and doesn't touch, that tenant's
+local-dev `{slug}.localhost:3000` row.
+
 Two root domains, both pointed at the same web service (currently
 placeholders — treat as literal until real domains are provided):
 
