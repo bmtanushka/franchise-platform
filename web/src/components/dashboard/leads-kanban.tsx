@@ -26,12 +26,24 @@ const COLUMN_ORDER: LeadStatus[] = [
 // service_provider only ever sees leads already assigned to them
 // (listLeads scopes by assigned_provider_id) — a lead can't reach them
 // before assigned_to_provider, so "New"/"Qualified" would always be
-// permanently empty, dead columns on their board. Hide those two for
-// that role; every other role can have leads in any status.
+// permanently empty, dead columns on their board; hide those two. Also
+// reordered so the statuses they can actually drag into (in_progress/
+// won/lost/disqualified — PROVIDER_NEXT_STATUSES) sit together right
+// after Assigned for fast access, with rebate_received/rebate_paid
+// pushed to the end since providers can only ever view those, never
+// move a card into them (franchisor-only, see NEXT_REBATE_STATUS).
+const PROVIDER_COLUMN_ORDER: LeadStatus[] = [
+  "assigned_to_provider",
+  "in_progress",
+  "won",
+  "lost",
+  "disqualified",
+  "rebate_received",
+  "rebate_paid",
+];
+
 function visibleColumns(role: Role): LeadStatus[] {
-  if (role === "service_provider") {
-    return COLUMN_ORDER.filter((s) => s !== "new" && s !== "qualified");
-  }
+  if (role === "service_provider") return PROVIDER_COLUMN_ORDER;
   return COLUMN_ORDER;
 }
 
