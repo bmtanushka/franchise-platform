@@ -55,3 +55,38 @@ export async function getProviderIdForUser(userId: string): Promise<string | nul
   `;
   return rows.length > 0 ? rows[0].id : null;
 }
+
+/** Looks up the caller's own account by session id — used by the change-password flow. */
+export async function getUserById(id: string): Promise<AuthUser | null> {
+  const rows = await sql<
+    {
+      id: string;
+      email: string;
+      role: Role;
+      tenant_id: string | null;
+      full_name: string | null;
+      password_hash: string | null;
+    }[]
+  >`
+    select id, email, role, tenant_id, full_name, password_hash
+    from users
+    where id = ${id}
+    limit 1
+  `;
+
+  if (rows.length === 0) return null;
+
+  const row = rows[0];
+  return {
+    id: row.id,
+    email: row.email,
+    role: row.role,
+    tenantId: row.tenant_id,
+    fullName: row.full_name,
+    passwordHash: row.password_hash,
+  };
+}
+
+export async function updateUserPassword(userId: string, passwordHash: string): Promise<void> {
+  await sql`update users set password_hash = ${passwordHash}, updated_at = now() where id = ${userId}`;
+}

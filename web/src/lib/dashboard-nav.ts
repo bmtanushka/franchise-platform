@@ -15,7 +15,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Leads", href: "/dashboard/leads", icon: ListChecks, roles: ALL_ROLES },
   { label: "Franchisees", href: "/dashboard/franchisees", icon: Building2, roles: ["super_admin", "franchisor"] },
   { label: "Providers", href: "/dashboard/providers", icon: Briefcase, roles: ["super_admin", "franchisor"] },
-  { label: "My Profile", href: "/dashboard/profile", icon: UserCircle, roles: ["franchisee", "service_provider"] },
+  { label: "My Profile", href: "/dashboard/profile", icon: UserCircle, roles: ALL_ROLES },
 ];
 
 export function navItemsForRole(role: Role): NavItem[] {
