@@ -50,19 +50,29 @@ Railway yet — production is still reached via the Railway-issued URL.
 The real franchisee wildcard domain is **`lv-5.com`** (`*.lv-5.com`,
 replacing the brief's `*.franchiseenetwork.com` placeholder below) —
 `{slug}.lv-5.com` per franchisee, e.g. `va1.lv-5.com`. Wired up on the
-Railway side (`*.lv-5.com` added as a custom domain on `web`), but DNS
-hasn't been pointed at Railway yet by the registrar — needs 3 records at
-whoever holds `lv-5.com`: a `*` CNAME to Railway's traffic-routing target,
-an `_acme-challenge` CNAME for the wildcard SSL cert, and a
-`_railway-verify` TXT for domain-ownership verification (get the current
-exact values with `railway domain status <domain-id> --service web`,
-since the CNAME targets are project-specific and were generated when the
-domain was added — don't reuse the ones from a past session). Every
+Railway side (`*.lv-5.com` added as a custom domain on `web`) and DNS is
+now live — `railway domain status "*.lv-5.com" --service web` shows
+`Verified: yes` and a valid certificate, so franchisee subdomains resolve
+for real, not just at `{slug}.localhost:3000` in local dev anymore. Every
 franchisee's `{slug}.lv-5.com` row in `domains` is kept in sync
 automatically on create/rename (`syncFranchiseeDomain()` in
 `web/src/lib/db/accounts.ts`, delete-then-insert keyed off the tenant's
 current slug) — this is separate from, and doesn't touch, that tenant's
 local-dev `{slug}.localhost:3000` row.
+
+The bare apex **`lv-5.com`** (no subdomain) is being added as a second
+root domain for the franchisor tenant, alongside
+`lunaverdebusinessnetwork.com` below — same tenant, just another way in.
+Blocked on upgrading the Railway plan (the trial tier caps custom domains
+at 1 per service, and `*.lv-5.com` already uses the only slot on `web`);
+once added, its `domains` row should point at the franchisor tenant id
+(`14e9cf8f-9d26-45ba-bd6d-0be3ca9548d7` as of this writing) with
+`domain_type = 'root'`, same pattern as the other two root rows
+(`localhost:3000`, the Railway service domain). Tenant resolution
+(`getTenantByDomain` in `web/src/lib/db/tenants.ts`) matches purely on
+the `host` header string — `domain_type` is descriptive metadata only,
+not read by the resolution query — so no code change is needed once the
+row exists.
 
 Two root domains, both pointed at the same web service (currently
 placeholders — treat as literal until real domains are provided):
