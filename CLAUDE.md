@@ -435,11 +435,48 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     Qualified) was correctly rejected client-side; franchisee kanban view
     has zero draggable cards and zero assign controls.
 
+13. ✅ Self-service password management: change-password on
+    `/dashboard/profile` for every role (`ChangePasswordForm`,
+    `web/src/lib/actions/auth.ts`'s `changePasswordAction` — verifies the
+    current password via bcrypt before updating), plus a full
+    forgot-password email flow (`/forgot-password` requests a link,
+    `/reset-password?token=...` sets a new one). Required giving
+    super_admin/franchisor a `/dashboard/profile` page too — they'd never
+    had one, since "My Profile" was previously franchisee/service_provider
+    only in `dashboard-nav.ts`; now `ALL_ROLES`. Reset tokens
+    (`password_reset_tokens`, migration 008) store only a sha256 hash of
+    the raw token (mirrors how `password_hash` itself is stored), expire
+    after 1 hour, and are atomically consumed via `UPDATE ... RETURNING`
+    so a reused or double-clicked link can't work twice — verified by
+    replaying the same link and confirming the second attempt is
+    rejected. `requestPasswordResetAction` always returns the same
+    generic message whether or not the email is registered, so the
+    endpoint can't be used to enumerate accounts (verified: an existing
+    and a nonexistent email produce identical responses). Emails send via
+    Resend (`web/src/lib/email.ts`, needs `RESEND_API_KEY`); when unset,
+    the reset link is logged server-side instead of failing — same
+    fallback pattern as the chat agent's `OPENAI_API_KEY` — which is the
+    current state on Railway (`RESEND_API_KEY` not yet set there, see
+    "Known gaps" below). Verified end-to-end both locally and on
+    production: change-password's wrong-current-password and
+    passwords-don't-match error states, a full reset via a token pulled
+    from the server log (local) / Railway logs (prod), the single-use
+    rejection, and signing in with the new password afterward — all test
+    account passwords reverted back to `Passw0rd!` afterward.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
 ## Known gaps / things to revisit
 
+- `RESEND_API_KEY` is **not** set on Railway `web` yet — forgot-password
+  reset links are only landing in the Railway deploy logs right now, not
+  real inboxes (confirmed via `railway logs --service web`). Set
+  `RESEND_API_KEY` (and optionally `RESEND_FROM_EMAIL` once a sending
+  domain is verified in Resend — until then it falls back to their
+  sandbox `onboarding@resend.dev`, which only delivers to the email on
+  the Resend account) to turn on real delivery. No code change needed,
+  same on/off-by-env-var pattern as `OPENAI_API_KEY` below.
 - `OPENAI_API_KEY` is set on Railway `agent` — the chat agent uses real
   OpenAI tool-calling for both question phrasing and answer extraction in
   production, not the deterministic fallback (that fallback still exists
