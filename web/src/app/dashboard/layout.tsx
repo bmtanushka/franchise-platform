@@ -17,7 +17,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <TopBar name={name ?? null} email={email ?? null} role={role} />
       <div className="flex flex-1">
         <Sidebar role={role} />
-        <main className="flex-1 overflow-x-auto p-6">{children}</main>
+        <main className="flex-1 overflow-x-auto bg-background p-6 font-body text-ink">{children}</main>
       </div>
     </div>
   );

@@ -1,8 +1,36 @@
 @import "tailwindcss";
 
+/* Dashboard style kit — financial/professional tone. Deliberately a
+   single fixed light theme (no dark mode) per the kit; doesn't affect
+   the corporate/franchisee site templates, which are raw HTML with
+   their own inline styles and never touch these tokens. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f8f7;
+  --foreground: #1b211d;
+
+  --forest: #164b3c;
+  --moss: #2c7a5b;
+  --sage-tint: #e7f1ec;
+  --gold: #b8863b;
+  --ink: #1b211d;
+  --slate: #667169;
+  --surface: #ffffff;
+  --border: #dee5e0;
+
+  --success: #22a35e;
+  --success-bg: #e4f6ec;
+  --success-text: #166534;
+  --warning: #d97706;
+  --warning-bg: #fdf0dd;
+  --warning-text: #92400e;
+  --error: #dc2626;
+  --error-bg: #fdecec;
+  --error-text: #991b1b;
+  --info: #2563eb;
+  --info-bg: #e8effd;
+  --info-text: #1e3a8a;
+  --neutral-bg: #eef1ef;
+  --neutral-text: #3f4642;
 }
 
 @theme inline {
@@ -10,13 +38,33 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-forest: var(--forest);
+  --color-moss: var(--moss);
+  --color-sage-tint: var(--sage-tint);
+  --color-gold: var(--gold);
+  --color-ink: var(--ink);
+  --color-slate: var(--slate);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+
+  --color-success: var(--success);
+  --color-success-bg: var(--success-bg);
+  --color-success-text: var(--success-text);
+  --color-warning: var(--warning);
+  --color-warning-bg: var(--warning-bg);
+  --color-warning-text: var(--warning-text);
+  --color-error: var(--error);
+  --color-error-bg: var(--error-bg);
+  --color-error-text: var(--error-text);
+  --color-info: var(--info);
+  --color-info-bg: var(--info-bg);
+  --color-info-text: var(--info-text);
+  --color-neutral-bg: var(--neutral-bg);
+  --color-neutral-text: var(--neutral-text);
+
+  --font-heading: var(--font-manrope);
+  --font-body: var(--font-inter);
 }
 
 body {

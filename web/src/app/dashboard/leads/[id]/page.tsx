@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
 import { getLeadDetail } from "@/lib/db/leads";
-import { STATUS_LABEL } from "@/lib/lead-status-labels";
+import { StatusBadge } from "@/components/dashboard/status-badge";
+import { cardClass, linkClass } from "@/lib/dashboard-ui";
 
 function prettifyKey(key: string): string {
   return key.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
@@ -40,57 +41,59 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   return (
     <div className="mx-auto w-full max-w-2xl space-y-8">
       <div>
-        <Link href="/dashboard/leads" className="text-sm opacity-60 hover:opacity-100">
+        <Link href="/dashboard/leads" className={linkClass}>
           ← Back to leads
         </Link>
       </div>
 
       <div>
-        <h1 className="text-lg font-semibold">{lead.fullName ?? "Lead"}</h1>
-        <p className="text-sm opacity-70">
+        <h1 className="font-heading text-2xl font-bold text-ink">{lead.fullName ?? "Lead"}</h1>
+        <p className="font-body text-sm text-slate">
           {lead.serviceTypeLabel} · {lead.tenantName}
         </p>
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-medium opacity-70">Status</h2>
-        <div className="flex items-center gap-3 rounded-lg border border-black/10 p-4 dark:border-white/15">
-          <span className="rounded-full bg-black/5 px-2.5 py-1 text-xs dark:bg-white/10">
-            {STATUS_LABEL[lead.status]}
-          </span>
-          {lead.dealValue && <span className="text-sm opacity-70">Deal value: ${lead.dealValue}</span>}
+        <h2 className="font-heading text-base font-semibold text-ink">Status</h2>
+        <div className={`${cardClass} flex items-center gap-3 p-4`}>
+          <StatusBadge status={lead.status} />
+          {lead.dealValue && (
+            <span className="font-body text-sm text-slate">
+              Deal value: <span className="font-medium tabular-nums text-gold">${lead.dealValue}</span>
+            </span>
+          )}
           {lead.assignedProviderName && (
-            <span className="text-sm opacity-70">Provider: {lead.assignedProviderName}</span>
+            <span className="font-body text-sm text-slate">Provider: {lead.assignedProviderName}</span>
           )}
         </div>
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-medium opacity-70">Contact details</h2>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-lg border border-black/10 p-4 text-sm dark:border-white/15">
-          <dt className="opacity-60">Name</dt>
-          <dd>{prettifyValue(lead.fullName)}</dd>
-          <dt className="opacity-60">Email</dt>
-          <dd>{prettifyValue(lead.contactEmail)}</dd>
-          <dt className="opacity-60">Phone</dt>
-          <dd>{prettifyValue(lead.contactPhone)}</dd>
-          <dt className="opacity-60">Postcode</dt>
-          <dd>{prettifyValue(lead.postcode)}</dd>
-          <dt className="opacity-60">Consent to contact</dt>
-          <dd>{prettifyValue(lead.consentToContact)}</dd>
+        <h2 className="font-heading text-base font-semibold text-ink">Contact details</h2>
+        <dl className={`${cardClass} grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-4 font-body text-sm`}>
+          <dt className="text-slate">Name</dt>
+          <dd className="text-ink">{prettifyValue(lead.fullName)}</dd>
+          <dt className="text-slate">Email</dt>
+          <dd className="text-ink">{prettifyValue(lead.contactEmail)}</dd>
+          <dt className="text-slate">Phone</dt>
+          <dd className="text-ink">{prettifyValue(lead.contactPhone)}</dd>
+          <dt className="text-slate">Postcode</dt>
+          <dd className="text-ink">{prettifyValue(lead.postcode)}</dd>
+          <dt className="text-slate">Consent to contact</dt>
+          <dd className="text-ink">{prettifyValue(lead.consentToContact)}</dd>
         </dl>
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-medium opacity-70">Collected details</h2>
+        <h2 className="font-heading text-base font-semibold text-ink">Collected details</h2>
         {detailEntries.length === 0 ? (
-          <p className="text-sm opacity-60">No additional details collected.</p>
+          <p className="font-body text-sm text-slate">No additional details were collected for this lead.</p>
         ) : (
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-lg border border-black/10 p-4 text-sm dark:border-white/15">
+          <dl className={`${cardClass} grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-4 font-body text-sm`}>
             {detailEntries.map(([key, value]) => (
               <div className="contents" key={key}>
-                <dt className="opacity-60">{prettifyKey(key)}</dt>
-                <dd>{prettifyValue(value)}</dd>
+                <dt className="text-slate">{prettifyKey(key)}</dt>
+                <dd className="text-ink">{prettifyValue(value)}</dd>
               </div>
             ))}
           </dl>
@@ -98,17 +101,15 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-sm font-medium opacity-70">Status history</h2>
-        <ul className="divide-y divide-black/10 rounded-lg border border-black/10 dark:divide-white/10 dark:border-white/15">
+        <h2 className="font-heading text-base font-semibold text-ink">Status history</h2>
+        <ul className={`${cardClass} divide-y divide-border`}>
           {lead.statusHistory.map((entry, i) => (
-            <li key={i} className="flex items-center justify-between px-4 py-3 text-sm">
-              <div>
-                <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10">
-                  {STATUS_LABEL[entry.status]}
-                </span>
-                {entry.note && <span className="ml-2 opacity-70">{entry.note}</span>}
+            <li key={i} className="flex items-center justify-between px-4 py-3 font-body text-sm">
+              <div className="flex items-center gap-2">
+                <StatusBadge status={entry.status} />
+                {entry.note && <span className="text-slate">{entry.note}</span>}
               </div>
-              <div className="text-xs opacity-60">
+              <div className="text-xs text-slate">
                 {entry.changedByName ?? "System"} · {new Date(entry.changedAt).toLocaleString()}
               </div>
             </li>

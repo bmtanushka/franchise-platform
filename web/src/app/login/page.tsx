@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { cardClass, inputClass, labelClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -30,15 +31,13 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center p-6">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-sm space-y-4 rounded-lg border border-black/10 p-6 dark:border-white/15"
-      >
-        <h1 className="text-lg font-semibold">Sign in</h1>
+    <main className="flex flex-1 items-center justify-center bg-background p-6">
+      <form onSubmit={handleSubmit} className={`${cardClass} w-full max-w-sm space-y-4 p-6`}>
+        <h1 className="font-heading text-xl font-bold text-ink">Sign in</h1>
+        <p className="font-body -mt-3 text-sm text-slate">Franchise Platform</p>
 
         <div className="space-y-1">
-          <label htmlFor="email" className="block text-sm font-medium">
+          <label htmlFor="email" className={labelClass}>
             Email
           </label>
           <input
@@ -47,12 +46,12 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+            className={inputClass}
           />
         </div>
 
         <div className="space-y-1">
-          <label htmlFor="password" className="block text-sm font-medium">
+          <label htmlFor="password" className={labelClass}>
             Password
           </label>
           <input
@@ -61,17 +60,15 @@ export default function LoginPage() {
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent"
+            className={inputClass}
           />
         </div>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && (
+          <p className="font-body rounded-md bg-error-bg px-3 py-2 text-sm text-error-text">{error}</p>
+        )}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-md bg-black px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
-        >
+        <button type="submit" disabled={submitting} className={`${primaryButtonClass} w-full`}>
           {submitting ? "Signing in..." : "Sign in"}
         </button>
       </form>

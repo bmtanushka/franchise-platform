@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/config";
 import { getFranchiseeProfile } from "@/lib/db/site-content";
 import { getServiceProviderById } from "@/lib/db/providers";
+import { cardClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -13,25 +14,22 @@ export default async function ProfilePage() {
     return (
       <div className="mx-auto w-full max-w-2xl space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-lg font-semibold">Your site contact details</h1>
-          <Link
-            href="/dashboard/profile/edit"
-            className="rounded-md bg-black px-3 py-1.5 text-sm text-white dark:bg-white dark:text-black"
-          >
+          <h1 className="font-heading text-2xl font-bold text-ink">Your site contact details</h1>
+          <Link href="/dashboard/profile/edit" className={primaryButtonClass}>
             Edit
           </Link>
         </div>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-lg border border-black/10 p-4 text-sm dark:border-white/15">
-          <dt className="opacity-60">Phone</dt>
-          <dd>{profile?.phone ?? "—"}</dd>
-          <dt className="opacity-60">Email</dt>
-          <dd>{profile?.email ?? "—"}</dd>
-          <dt className="opacity-60">Address</dt>
-          <dd>{profile?.address ?? "—"}</dd>
-          <dt className="opacity-60">Hours</dt>
-          <dd>{profile?.businessHours ?? "—"}</dd>
+        <dl className={`${cardClass} grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-4 font-body text-sm`}>
+          <dt className="text-slate">Phone</dt>
+          <dd className="text-ink">{profile?.phone ?? "—"}</dd>
+          <dt className="text-slate">Email</dt>
+          <dd className="text-ink">{profile?.email ?? "—"}</dd>
+          <dt className="text-slate">Address</dt>
+          <dd className="text-ink">{profile?.address ?? "—"}</dd>
+          <dt className="text-slate">Hours</dt>
+          <dd className="text-ink">{profile?.businessHours ?? "—"}</dd>
         </dl>
-        <p className="text-xs opacity-60">
+        <p className="font-body text-xs text-slate">
           This tenant only ever sees its own leads, rebates, and profile — never another franchisee&apos;s.
         </p>
       </div>
@@ -42,14 +40,14 @@ export default async function ProfilePage() {
     const provider = await getServiceProviderById(providerId);
     return (
       <div className="mx-auto w-full max-w-2xl space-y-4">
-        <h1 className="text-lg font-semibold">Your provider profile</h1>
-        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-lg border border-black/10 p-4 text-sm dark:border-white/15">
-          <dt className="opacity-60">Company</dt>
-          <dd>{provider?.companyName ?? "—"}</dd>
-          <dt className="opacity-60">Services</dt>
-          <dd>{provider?.serviceTypes.join(", ") ?? "—"}</dd>
+        <h1 className="font-heading text-2xl font-bold text-ink">Your provider profile</h1>
+        <dl className={`${cardClass} grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-4 font-body text-sm`}>
+          <dt className="text-slate">Company</dt>
+          <dd className="text-ink">{provider?.companyName ?? "—"}</dd>
+          <dt className="text-slate">Services</dt>
+          <dd className="text-ink">{provider?.serviceTypes.join(", ") ?? "—"}</dd>
         </dl>
-        <p className="text-xs opacity-60">
+        <p className="font-body text-xs text-slate">
           You&apos;ll only ever see leads explicitly assigned to you here — not the full pipeline.
         </p>
       </div>

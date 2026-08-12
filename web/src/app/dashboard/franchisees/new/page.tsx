@@ -12,7 +12,7 @@ export default async function NewFranchiseePage() {
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-4">
-      <h1 className="text-lg font-semibold">Add franchisee</h1>
+      <h1 className="font-heading text-2xl font-bold text-ink">Add franchisee</h1>
       <NewFranchiseeForm />
     </div>
   );

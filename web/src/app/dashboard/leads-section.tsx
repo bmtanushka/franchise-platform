@@ -3,6 +3,8 @@ import { listLeads, type Lead, type LeadStatus } from "@/lib/db/leads";
 import { listServiceProviders } from "@/lib/db/providers";
 import { assignLeadAction, updateLeadStatusAction } from "@/lib/actions/leads";
 import { STATUS_LABEL } from "@/lib/lead-status-labels";
+import { StatusBadge } from "@/components/dashboard/status-badge";
+import { cardClass, inputClass, secondaryButtonClass, linkClass } from "@/lib/dashboard-ui";
 import type { Role } from "@/lib/db/context";
 import type { SessionContext } from "@/lib/db/context";
 
@@ -14,6 +16,9 @@ const NEXT_REBATE_STATUS: Partial<Record<LeadStatus, LeadStatus>> = {
   rebate_received: "rebate_paid",
 };
 
+const thClass = "px-4 py-3 text-left font-body text-xs font-semibold uppercase tracking-[0.03em] text-slate";
+const tdClass = "px-4 py-3 align-middle font-body text-sm text-ink";
+
 export async function LeadsSection({ ctx }: { ctx: SessionContext }) {
   const leads = await listLeads(ctx);
   const providers =
@@ -22,53 +27,58 @@ export async function LeadsSection({ ctx }: { ctx: SessionContext }) {
   if (leads.length === 0) {
     return (
       <section className="space-y-3">
-        <h2 className="text-sm font-medium opacity-70">{sectionTitle(ctx.role)}</h2>
-        <p className="text-sm opacity-60">No leads yet.</p>
+        <h2 className="font-heading text-base font-semibold text-ink">{sectionTitle(ctx.role)}</h2>
+        <div className={`${cardClass} p-8 text-center`}>
+          <p className="font-body text-sm text-slate">
+            No leads yet — they&apos;ll show up here once the chat agent captures one.
+          </p>
+        </div>
       </section>
     );
   }
 
   return (
     <section className="space-y-3">
-      <h2 className="text-sm font-medium opacity-70">{sectionTitle(ctx.role)}</h2>
-      <div className="overflow-x-auto rounded-lg border border-black/10 dark:border-white/15">
-        <table className="w-full text-sm">
+      <h2 className="font-heading text-base font-semibold text-ink">{sectionTitle(ctx.role)}</h2>
+      <div className={`${cardClass} overflow-x-auto`}>
+        <table className="w-full">
           <thead>
-            <tr className="border-b border-black/10 text-left opacity-60 dark:border-white/15">
-              {(ctx.role === "super_admin" || ctx.role === "franchisor") && <th className="px-3 py-2 font-medium">Tenant</th>}
-              <th className="px-3 py-2 font-medium">Service</th>
-              <th className="px-3 py-2 font-medium">Contact</th>
-              <th className="px-3 py-2 font-medium">Status</th>
-              <th className="px-3 py-2 font-medium">Provider</th>
-              <th className="px-3 py-2 font-medium">Details</th>
-              {ctx.role !== "franchisee" && <th className="px-3 py-2 font-medium">Action</th>}
+            <tr className="border-b-2 border-border bg-sage-tint">
+              {(ctx.role === "super_admin" || ctx.role === "franchisor") && <th className={thClass}>Tenant</th>}
+              <th className={thClass}>Service</th>
+              <th className={thClass}>Contact</th>
+              <th className={thClass}>Status</th>
+              <th className={thClass}>Provider</th>
+              <th className={`${thClass} text-right`}>Deal value</th>
+              <th className={thClass}>Details</th>
+              {ctx.role !== "franchisee" && <th className={thClass}>Action</th>}
             </tr>
           </thead>
           <tbody>
             {leads.map((lead) => (
-              <tr key={lead.id} className="border-b border-black/5 last:border-0 dark:border-white/5">
+              <tr key={lead.id} className="border-b border-border last:border-0 hover:bg-sage-tint/60">
                 {(ctx.role === "super_admin" || ctx.role === "franchisor") && (
-                  <td className="px-3 py-2">{lead.tenantName}</td>
+                  <td className={tdClass}>{lead.tenantName}</td>
                 )}
-                <td className="px-3 py-2">{lead.serviceTypeLabel}</td>
-                <td className="px-3 py-2">
+                <td className={tdClass}>{lead.serviceTypeLabel}</td>
+                <td className={tdClass}>
                   <div>{lead.fullName ?? "—"}</div>
-                  <div className="text-xs opacity-60">{lead.contactEmail}</div>
+                  <div className="text-xs text-slate">{lead.contactEmail}</div>
                 </td>
-                <td className="px-3 py-2">
-                  <span className="rounded-full bg-black/5 px-2 py-0.5 text-xs dark:bg-white/10">
-                    {STATUS_LABEL[lead.status]}
-                  </span>
-                  {lead.dealValue && <div className="mt-1 text-xs opacity-60">${lead.dealValue}</div>}
+                <td className={tdClass}>
+                  <StatusBadge status={lead.status} />
                 </td>
-                <td className="px-3 py-2">{lead.assignedProviderName ?? "—"}</td>
-                <td className="px-3 py-2">
-                  <Link href={`/dashboard/leads/${lead.id}`} className="text-xs underline opacity-70 hover:opacity-100">
+                <td className={tdClass}>{lead.assignedProviderName ?? "—"}</td>
+                <td className={`${tdClass} text-right font-medium tabular-nums ${lead.dealValue ? "text-gold" : "text-slate"}`}>
+                  {lead.dealValue ? `$${lead.dealValue}` : "—"}
+                </td>
+                <td className={tdClass}>
+                  <Link href={`/dashboard/leads/${lead.id}`} className={linkClass}>
                     View
                   </Link>
                 </td>
                 {ctx.role !== "franchisee" && (
-                  <td className="px-3 py-2">
+                  <td className={tdClass}>
                     <div className="flex flex-col gap-1.5">
                       {(ctx.role === "super_admin" || ctx.role === "franchisor") &&
                         !lead.assignedProviderId && <AssignForm leadId={lead.id} providers={providers} />}
@@ -103,6 +113,10 @@ function sectionTitle(role: Role): string {
   }
 }
 
+const compactSelectClass = `${inputClass} !w-auto !py-1 !text-xs`;
+const compactInputClass = `${inputClass} !w-24 !py-1 !text-xs`;
+const compactButtonClass = "rounded-md bg-forest px-2.5 py-1 text-xs font-medium text-white hover:bg-moss transition-colors font-body";
+
 function AssignForm({
   leadId,
   providers,
@@ -113,7 +127,7 @@ function AssignForm({
   return (
     <form action={assignLeadAction} className="flex gap-1.5">
       <input type="hidden" name="leadId" value={leadId} />
-      <select name="providerId" required className="rounded border border-black/15 bg-transparent px-1.5 py-1 text-xs dark:border-white/20">
+      <select name="providerId" required className={compactSelectClass}>
         <option value="">Assign to...</option>
         {providers.map((p) => (
           <option key={p.id} value={p.id}>
@@ -121,7 +135,7 @@ function AssignForm({
           </option>
         ))}
       </select>
-      <button type="submit" className="rounded bg-black px-2 py-1 text-xs text-white dark:bg-white dark:text-black">
+      <button type="submit" className={compactButtonClass}>
         Assign
       </button>
     </form>
@@ -147,12 +161,7 @@ function UpdateStatusForm({
   return (
     <form action={updateLeadStatusAction} className="flex flex-wrap gap-1.5">
       <input type="hidden" name="leadId" value={leadId} />
-      <select
-        name="status"
-        required
-        defaultValue={defaultStatus}
-        className="rounded border border-black/15 bg-transparent px-1.5 py-1 text-xs dark:border-white/20"
-      >
+      <select name="status" required defaultValue={defaultStatus} className={compactSelectClass}>
         {PROVIDER_NEXT_STATUSES.map((status) => (
           <option key={status} value={status}>
             {STATUS_LABEL[status]}
@@ -165,9 +174,9 @@ function UpdateStatusForm({
         placeholder="Deal value"
         step="0.01"
         defaultValue={currentDealValue ?? ""}
-        className="w-24 rounded border border-black/15 bg-transparent px-1.5 py-1 text-xs dark:border-white/20"
+        className={compactInputClass}
       />
-      <button type="submit" className="rounded bg-black px-2 py-1 text-xs text-white dark:bg-white dark:text-black">
+      <button type="submit" className={compactButtonClass}>
         Update
       </button>
     </form>
@@ -179,10 +188,7 @@ function RebateAdvanceForm({ leadId, nextStatus }: { leadId: string; nextStatus:
     <form action={updateLeadStatusAction}>
       <input type="hidden" name="leadId" value={leadId} />
       <input type="hidden" name="status" value={nextStatus} />
-      <button
-        type="submit"
-        className="rounded border border-black/15 px-2 py-1 text-xs dark:border-white/20"
-      >
+      <button type="submit" className={`${secondaryButtonClass} !px-2 !py-1 !text-xs`}>
         Mark {STATUS_LABEL[nextStatus].toLowerCase()}
       </button>
     </form>

@@ -3,12 +3,9 @@
 import { useActionState } from "react";
 import { createServiceProviderAction, type AccountFormState } from "@/lib/actions/accounts";
 import type { ServiceType } from "@/lib/db/providers";
+import { inputClass, labelClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 const initialState: AccountFormState = { error: null };
-
-const inputClass =
-  "w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent";
-const labelClass = "block text-sm font-medium mb-1";
 
 export function NewProviderForm({ serviceTypes }: { serviceTypes: ServiceType[] }) {
   const [state, formAction, pending] = useActionState(createServiceProviderAction, initialState);
@@ -16,7 +13,7 @@ export function NewProviderForm({ serviceTypes }: { serviceTypes: ServiceType[] 
   return (
     <form action={formAction} className="max-w-xl space-y-6">
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Provider details</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Provider details</h2>
 
         <div>
           <label className={labelClass} htmlFor="companyName">
@@ -29,8 +26,8 @@ export function NewProviderForm({ serviceTypes }: { serviceTypes: ServiceType[] 
           <span className={labelClass}>Services handled</span>
           <div className="grid grid-cols-2 gap-2">
             {serviceTypes.map((st) => (
-              <label key={st.key} className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="serviceTypes" value={st.key} className="h-4 w-4" />
+              <label key={st.key} className="font-body flex items-center gap-2 text-sm text-ink">
+                <input type="checkbox" name="serviceTypes" value={st.key} className="h-4 w-4 accent-forest" />
                 {st.name}
               </label>
             ))}
@@ -39,7 +36,7 @@ export function NewProviderForm({ serviceTypes }: { serviceTypes: ServiceType[] 
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Login</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Login</h2>
 
         <div>
           <label className={labelClass} htmlFor="fullName">
@@ -65,17 +62,17 @@ export function NewProviderForm({ serviceTypes }: { serviceTypes: ServiceType[] 
             minLength={8}
             className={inputClass}
           />
-          <p className="mt-1 text-xs opacity-60">Share this with the provider directly — it isn&apos;t emailed automatically.</p>
+          <p className="font-body mt-1 text-xs text-slate">
+            Share this with the provider directly — it isn&apos;t emailed automatically.
+          </p>
         </div>
       </section>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && (
+        <p className="font-body rounded-md bg-error-bg px-3 py-2 text-sm text-error-text">{state.error}</p>
+      )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
-      >
+      <button type="submit" disabled={pending} className={primaryButtonClass}>
         {pending ? "Creating..." : "Create provider"}
       </button>
     </form>

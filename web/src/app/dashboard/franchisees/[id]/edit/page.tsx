@@ -23,7 +23,7 @@ export default async function EditFranchiseePage({ params }: { params: Promise<{
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-4">
-      <h1 className="text-lg font-semibold">Edit {tenant.name}</h1>
+      <h1 className="font-heading text-2xl font-bold text-ink">Edit {tenant.name}</h1>
       <EditFranchiseeAdminForm tenant={tenant} profile={profile} templates={templates} />
     </div>
   );

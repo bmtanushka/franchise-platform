@@ -15,7 +15,7 @@ export default async function NewProviderPage() {
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-4">
-      <h1 className="text-lg font-semibold">Add service provider</h1>
+      <h1 className="font-heading text-2xl font-bold text-ink">Add service provider</h1>
       <NewProviderForm serviceTypes={serviceTypes} />
     </div>
   );

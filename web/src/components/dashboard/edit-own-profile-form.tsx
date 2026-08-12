@@ -3,12 +3,9 @@
 import { useActionState } from "react";
 import { updateOwnFranchiseeProfileAction, type ProfileFormState } from "@/lib/actions/profile";
 import type { FranchiseeProfile, SiteTemplateOption } from "@/lib/db/site-content";
+import { inputClass, labelClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 const initialState: ProfileFormState = { error: null };
-
-const inputClass =
-  "w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent";
-const labelClass = "block text-sm font-medium mb-1";
 
 export function EditOwnProfileForm({
   profile,
@@ -24,7 +21,7 @@ export function EditOwnProfileForm({
   return (
     <form action={formAction} className="max-w-xl space-y-6">
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Website template</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Website template</h2>
         <div>
           <label className={labelClass} htmlFor="templateId">
             Template
@@ -40,7 +37,7 @@ export function EditOwnProfileForm({
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Site contact details</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Site contact details</h2>
 
         <div>
           <label className={labelClass} htmlFor="phone">
@@ -91,13 +88,11 @@ export function EditOwnProfileForm({
         </div>
       </section>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && (
+        <p className="font-body rounded-md bg-error-bg px-3 py-2 text-sm text-error-text">{state.error}</p>
+      )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
-      >
+      <button type="submit" disabled={pending} className={primaryButtonClass}>
         {pending ? "Saving..." : "Save changes"}
       </button>
     </form>

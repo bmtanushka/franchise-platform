@@ -4,12 +4,9 @@ import { useActionState } from "react";
 import { updateFranchiseeAdminAction, type AccountFormState } from "@/lib/actions/accounts";
 import type { FranchiseeProfile, SiteTemplateOption } from "@/lib/db/site-content";
 import type { Tenant } from "@/lib/db/tenants";
+import { inputClass, labelClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 const initialState: AccountFormState = { error: null };
-
-const inputClass =
-  "w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent";
-const labelClass = "block text-sm font-medium mb-1";
 
 export function EditFranchiseeAdminForm({
   tenant,
@@ -27,7 +24,7 @@ export function EditFranchiseeAdminForm({
       <input type="hidden" name="tenantId" value={tenant.id} />
 
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Franchise details</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Franchise details</h2>
 
         <div>
           <label className={labelClass} htmlFor="name">
@@ -69,7 +66,7 @@ export function EditFranchiseeAdminForm({
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Site contact details</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Site contact details</h2>
 
         <div>
           <label className={labelClass} htmlFor="phone">
@@ -120,13 +117,11 @@ export function EditFranchiseeAdminForm({
         </div>
       </section>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && (
+        <p className="font-body rounded-md bg-error-bg px-3 py-2 text-sm text-error-text">{state.error}</p>
+      )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
-      >
+      <button type="submit" disabled={pending} className={primaryButtonClass}>
         {pending ? "Saving..." : "Save changes"}
       </button>
     </form>

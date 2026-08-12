@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { createFranchiseeAction, type AccountFormState } from "@/lib/actions/accounts";
+import { inputClass, labelClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 const initialState: AccountFormState = { error: null };
 
@@ -12,10 +13,6 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-const inputClass =
-  "w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20 dark:bg-transparent";
-const labelClass = "block text-sm font-medium mb-1";
-
 export function NewFranchiseeForm() {
   const [state, formAction, pending] = useActionState(createFranchiseeAction, initialState);
   const [slug, setSlug] = useState("");
@@ -24,7 +21,7 @@ export function NewFranchiseeForm() {
   return (
     <form action={formAction} className="max-w-xl space-y-6">
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Franchise details</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Franchise details</h2>
 
         <div>
           <label className={labelClass} htmlFor="name">
@@ -56,7 +53,7 @@ export function NewFranchiseeForm() {
             }}
             className={inputClass}
           />
-          <p className="mt-1 text-xs opacity-60">Used for their site, e.g. {slug || "denver"}.franchiseenetwork.com</p>
+          <p className="font-body mt-1 text-xs text-slate">Used for their site, e.g. {slug || "denver"}.lv-5.com</p>
         </div>
 
         <div>
@@ -72,7 +69,7 @@ export function NewFranchiseeForm() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Site contact details (shown on their public site)</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Site contact details (shown on their public site)</h2>
 
         <div>
           <label className={labelClass} htmlFor="phone">
@@ -107,7 +104,7 @@ export function NewFranchiseeForm() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-sm font-medium opacity-70">Owner login</h2>
+        <h2 className="font-heading text-sm font-semibold text-slate">Owner login</h2>
 
         <div>
           <label className={labelClass} htmlFor="ownerFullName">
@@ -133,17 +130,17 @@ export function NewFranchiseeForm() {
             minLength={8}
             className={inputClass}
           />
-          <p className="mt-1 text-xs opacity-60">Share this with the owner directly — it isn&apos;t emailed automatically.</p>
+          <p className="font-body mt-1 text-xs text-slate">
+            Share this with the owner directly — it isn&apos;t emailed automatically.
+          </p>
         </div>
       </section>
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && (
+        <p className="font-body rounded-md bg-error-bg px-3 py-2 text-sm text-error-text">{state.error}</p>
+      )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
-      >
+      <button type="submit" disabled={pending} className={primaryButtonClass}>
         {pending ? "Creating..." : "Create franchisee"}
       </button>
     </form>

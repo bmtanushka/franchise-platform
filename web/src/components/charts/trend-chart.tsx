@@ -28,7 +28,7 @@ export function TrendChart({ data }: { data: { date: string; count: number }[] }
           tickLine={false}
         />
         <Tooltip
-          cursor={{ stroke: "var(--pipeline-5)", strokeWidth: 1 }}
+          cursor={{ stroke: "var(--trend)", strokeWidth: 1 }}
           contentStyle={{
             background: "var(--chart-surface)",
             border: "1px solid var(--grid)",
@@ -41,9 +41,9 @@ export function TrendChart({ data }: { data: { date: string; count: number }[] }
         <Area
           type="monotone"
           dataKey="count"
-          stroke="var(--pipeline-5)"
+          stroke="var(--trend)"
           strokeWidth={2}
-          fill="var(--pipeline-5)"
+          fill="var(--trend)"
           fillOpacity={0.1}
         />
       </AreaChart>
