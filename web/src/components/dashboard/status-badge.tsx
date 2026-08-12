@@ -34,7 +34,7 @@ export function StatusBadge({ status }: { status: LeadStatus }) {
   const tone = STATUS_TONE[status];
   return (
     <span
-      className={`inline-block rounded-full px-3 py-0.5 text-xs font-medium font-body ${TONE_CLASSES[tone]}`}
+      className={`inline-block whitespace-nowrap rounded-full px-3 py-0.5 text-xs font-medium font-body ${TONE_CLASSES[tone]}`}
     >
       {STATUS_LABEL[status]}
     </span>
