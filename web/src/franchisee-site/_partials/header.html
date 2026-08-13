@@ -111,7 +111,10 @@
 
   /* ── HERO ───────────────────────────────────────────── */
   .hero {
-    min-height: 50vh; padding: 1rem 5rem 6rem;
+    /* Top padding clears the fixed nav (~96px rendered height) — hero
+       content otherwise starts flush with the viewport top and the first
+       lines render underneath the nav bar. */
+    min-height: 50vh; padding: 9rem 5rem 6rem;
     display: flex; flex-direction: column; justify-content: center;
     position: relative; overflow: hidden;
   }
