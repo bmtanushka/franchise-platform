@@ -1,8 +1,10 @@
 import { notFound, redirect } from "next/navigation";
+import { Building2 } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { getTenantById } from "@/lib/db/tenants";
 import { getFranchiseeProfile, listSiteTemplates } from "@/lib/db/site-content";
 import { EditFranchiseeAdminForm } from "@/components/dashboard/edit-franchisee-admin-form";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 export default async function EditFranchiseePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await auth();
@@ -22,8 +24,8 @@ export default async function EditFranchiseePage({ params }: { params: Promise<{
   const [profile, templates] = await Promise.all([getFranchiseeProfile(id), listSiteTemplates()]);
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-4">
-      <h1 className="font-heading text-2xl font-bold text-ink">Edit {tenant.name}</h1>
+    <div className="w-full max-w-xl space-y-6">
+      <PageHeader icon={Building2} title={`Edit ${tenant.name}`} />
       <EditFranchiseeAdminForm tenant={tenant} profile={profile} templates={templates} />
     </div>
   );

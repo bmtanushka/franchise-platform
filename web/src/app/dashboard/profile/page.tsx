@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { UserCircle } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { getFranchiseeProfile } from "@/lib/db/site-content";
 import { getServiceProviderById } from "@/lib/db/providers";
 import { cardClass, primaryButtonClass } from "@/lib/dashboard-ui";
 import { ChangePasswordForm } from "@/components/dashboard/change-password-form";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 function PasswordSection() {
   return (
@@ -22,14 +24,17 @@ export default async function ProfilePage() {
   if (role === "franchisee" && tenantId) {
     const profile = await getFranchiseeProfile(tenantId);
     return (
-      <div className="mx-auto w-full max-w-2xl space-y-8">
+      <div className="w-full max-w-2xl space-y-8">
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h1 className="font-heading text-2xl font-bold text-ink">Your site contact details</h1>
-            <Link href="/dashboard/profile/edit" className={primaryButtonClass}>
-              Edit
-            </Link>
-          </div>
+          <PageHeader
+            icon={UserCircle}
+            title="Your site contact details"
+            action={
+              <Link href="/dashboard/profile/edit" className={primaryButtonClass}>
+                Edit
+              </Link>
+            }
+          />
           <dl className={`${cardClass} grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-4 font-body text-sm`}>
             <dt className="text-slate">Phone</dt>
             <dd className="text-ink">{profile?.phone ?? "—"}</dd>
@@ -52,9 +57,9 @@ export default async function ProfilePage() {
   if (role === "service_provider" && providerId) {
     const provider = await getServiceProviderById(providerId);
     return (
-      <div className="mx-auto w-full max-w-2xl space-y-8">
+      <div className="w-full max-w-2xl space-y-8">
         <div className="space-y-4">
-          <h1 className="font-heading text-2xl font-bold text-ink">Your provider profile</h1>
+          <PageHeader icon={UserCircle} title="Your provider profile" />
           <dl className={`${cardClass} grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-4 font-body text-sm`}>
             <dt className="text-slate">Company</dt>
             <dd className="text-ink">{provider?.companyName ?? "—"}</dd>
@@ -72,9 +77,9 @@ export default async function ProfilePage() {
 
   if (role === "super_admin" || role === "franchisor") {
     return (
-      <div className="mx-auto w-full max-w-2xl space-y-8">
+      <div className="w-full max-w-2xl space-y-8">
         <div className="space-y-4">
-          <h1 className="font-heading text-2xl font-bold text-ink">Your account</h1>
+          <PageHeader icon={UserCircle} title="Your account" />
           <dl className={`${cardClass} grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 p-4 font-body text-sm`}>
             <dt className="text-slate">Email</dt>
             <dd className="text-ink">{email}</dd>

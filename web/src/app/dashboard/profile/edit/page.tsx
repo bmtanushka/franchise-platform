@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
+import { UserCircle } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { getFranchiseeProfile, listSiteTemplates } from "@/lib/db/site-content";
 import { getTenantById } from "@/lib/db/tenants";
 import { EditOwnProfileForm } from "@/components/dashboard/edit-own-profile-form";
+import { PageHeader } from "@/components/dashboard/page-header";
 
 export default async function EditProfilePage() {
   const session = await auth();
@@ -19,8 +21,8 @@ export default async function EditProfilePage() {
   ]);
 
   return (
-    <div className="mx-auto w-full max-w-xl space-y-4">
-      <h1 className="font-heading text-2xl font-bold text-ink">Edit your site</h1>
+    <div className="w-full max-w-xl space-y-6">
+      <PageHeader icon={UserCircle} title="Edit your site" />
       <EditOwnProfileForm profile={profile} templates={templates} currentTemplateId={tenant?.templateId ?? null} />
     </div>
   );

@@ -22,7 +22,7 @@ export const STATUS_TONE: Record<LeadStatus, StatusTone> = {
   disqualified: "neutral",
 };
 
-const TONE_CLASSES: Record<string, string> = {
+export const TONE_CLASSES: Record<StatusTone, string> = {
   info: "bg-info-bg text-info-text",
   warning: "bg-warning-bg text-warning-text",
   success: "bg-success-bg text-success-text",
@@ -30,13 +30,34 @@ const TONE_CLASSES: Record<string, string> = {
   neutral: "bg-neutral-bg text-neutral-text",
 };
 
-export function StatusBadge({ status }: { status: LeadStatus }) {
-  const tone = STATUS_TONE[status];
+export function TonePill({ tone, label }: { tone: StatusTone; label: string }) {
   return (
     <span
       className={`inline-block whitespace-nowrap rounded-full px-3 py-0.5 text-xs font-medium font-body ${TONE_CLASSES[tone]}`}
     >
-      {STATUS_LABEL[status]}
+      {label}
     </span>
   );
+}
+
+export function StatusBadge({ status }: { status: LeadStatus }) {
+  return <TonePill tone={STATUS_TONE[status]} label={STATUS_LABEL[status]} />;
+}
+
+export type TenantStatus = "active" | "onboarding" | "suspended";
+
+export const TENANT_STATUS_TONE: Record<TenantStatus, StatusTone> = {
+  active: "success",
+  onboarding: "info",
+  suspended: "neutral",
+};
+
+const TENANT_STATUS_LABEL: Record<TenantStatus, string> = {
+  active: "Active",
+  onboarding: "Onboarding",
+  suspended: "Suspended",
+};
+
+export function TenantStatusBadge({ status }: { status: TenantStatus }) {
+  return <TonePill tone={TENANT_STATUS_TONE[status]} label={TENANT_STATUS_LABEL[status]} />;
 }

@@ -1,7 +1,9 @@
+import { LayoutDashboard } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { getLeadAnalytics } from "@/lib/db/leads";
 import { StatTile } from "@/components/dashboard/stat-tile";
-import { cardClass } from "@/lib/dashboard-ui";
+import { cardClass, pageContainerClass } from "@/lib/dashboard-ui";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { ChartTheme } from "@/components/charts/chart-theme";
 import { StatusChart } from "@/components/charts/status-chart";
 import { ServiceTypeChart } from "@/components/charts/service-type-chart";
@@ -25,8 +27,8 @@ export default async function OverviewPage() {
   });
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-8">
-      <h1 className="font-heading text-2xl font-bold text-ink">Overview</h1>
+    <div className={pageContainerClass}>
+      <PageHeader icon={LayoutDashboard} title="Overview" description="Your lead pipeline at a glance." />
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="Total leads" value={String(analytics.totalLeads)} />

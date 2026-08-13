@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import { UserCircle } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { getLeadDetail } from "@/lib/db/leads";
 import { StatusBadge } from "@/components/dashboard/status-badge";
+import { PageHeader } from "@/components/dashboard/page-header";
 import { cardClass, linkClass } from "@/lib/dashboard-ui";
 
 function prettifyKey(key: string): string {
@@ -39,19 +41,18 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
   const detailEntries = Object.entries(lead.details).filter(([, v]) => v !== null && v !== undefined && v !== "");
 
   return (
-    <div className="mx-auto w-full max-w-2xl space-y-8">
+    <div className="w-full max-w-2xl space-y-8">
       <div>
         <Link href="/dashboard/leads" className={linkClass}>
           ← Back to leads
         </Link>
       </div>
 
-      <div>
-        <h1 className="font-heading text-2xl font-bold text-ink">{lead.fullName ?? "Lead"}</h1>
-        <p className="font-body text-sm text-slate">
-          {lead.serviceTypeLabel} · {lead.tenantName}
-        </p>
-      </div>
+      <PageHeader
+        icon={UserCircle}
+        title={lead.fullName ?? "Lead"}
+        description={`${lead.serviceTypeLabel} · ${lead.tenantName}`}
+      />
 
       <section className="space-y-3">
         <h2 className="font-heading text-base font-semibold text-ink">Status</h2>

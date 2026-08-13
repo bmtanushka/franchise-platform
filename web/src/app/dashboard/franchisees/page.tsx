@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Building2 } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { listTenants } from "@/lib/db/tenants";
-import { cardClass, primaryButtonClass, linkClass } from "@/lib/dashboard-ui";
+import { cardClass, primaryButtonClass, linkClass, pageContainerClass } from "@/lib/dashboard-ui";
+import { PageHeader } from "@/components/dashboard/page-header";
+import { EntityRow } from "@/components/dashboard/entity-row";
+import { StatTile } from "@/components/dashboard/stat-tile";
+import { TenantStatusBadge } from "@/components/dashboard/status-badge";
 
 export default async function FranchiseesPage() {
   const session = await auth();
@@ -13,32 +18,42 @@ export default async function FranchiseesPage() {
   }
 
   const tenants = await listTenants();
+  const franchiseeCount = tenants.filter((t) => t.type === "franchisee").length;
+  const activeCount = tenants.filter((t) => t.type === "franchisee" && t.status === "active").length;
 
   return (
-    <div className="mx-auto w-full max-w-3xl space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="font-heading text-2xl font-bold text-ink">
-          {role === "super_admin" ? "All tenants" : "Franchisees"}
-        </h1>
-        <Link href="/dashboard/franchisees/new" className={primaryButtonClass}>
-          Add franchisee
-        </Link>
+    <div className={pageContainerClass}>
+      <PageHeader
+        icon={Building2}
+        title={role === "super_admin" ? "All tenants" : "Franchisees"}
+        description="Every franchisee tenant, plus the franchisor's own root site."
+        action={
+          <Link href="/dashboard/franchisees/new" className={primaryButtonClass}>
+            Add franchisee
+          </Link>
+        }
+      />
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <StatTile label="Franchisees" value={String(franchiseeCount)} />
+        <StatTile label="Active" value={String(activeCount)} />
       </div>
+
       <ul className={`${cardClass} divide-y divide-border`}>
         {tenants.map((t) => (
-          <li key={t.id} className="flex items-center justify-between px-4 py-3 font-body text-sm">
-            <span className="text-ink">{t.name}</span>
-            <div className="flex items-center gap-3">
-              <span className="text-slate">
-                {t.type} · {t.slug} · {t.status}
-              </span>
-              {t.type === "franchisee" && (
-                <Link href={`/dashboard/franchisees/${t.id}/edit`} className={linkClass}>
+          <EntityRow
+            key={t.id}
+            name={t.name}
+            meta={`${t.type === "franchisor" ? "Franchisor" : "Franchisee"} · ${t.slug}`}
+            status={t.type === "franchisee" ? <TenantStatusBadge status={t.status} /> : undefined}
+            action={
+              t.type === "franchisee" && (
+                <Link href={`/dashboard/franchisees/${t.id}/edit`} className={`${linkClass} ml-2`}>
                   Edit
                 </Link>
-              )}
-            </div>
-          </li>
+              )
+            }
+          />
         ))}
       </ul>
     </div>
