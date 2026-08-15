@@ -19,10 +19,20 @@ export function ChatWidget() {
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
+
+  // Re-focus the input once a response finishes loading (both the first
+  // intro message and every reply after) so the visitor can keep typing
+  // without having to click back into the field each turn.
+  useEffect(() => {
+    if (open && !loading && !done) {
+      inputRef.current?.focus();
+    }
+  }, [open, loading, done]);
 
   async function openChat() {
     setOpen(true);
@@ -98,6 +108,7 @@ export function ChatWidget() {
 
       <form onSubmit={sendMessage} className="flex gap-2 border-t border-black/10 p-3 dark:border-white/15">
         <input
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           disabled={loading || done || !sessionId}

@@ -72,6 +72,11 @@
     loading = state;
     input.disabled = state || done;
     sendBtn.disabled = state || done;
+    // Re-focus once a response finishes loading (both the first intro
+    // message and every reply after) so the visitor can keep typing
+    // without clicking back into the field each turn. A disabled input
+    // can't take focus, so this only fires once it's re-enabled.
+    if (!state && !done) input.focus();
   }
 
   function openPanel() {
