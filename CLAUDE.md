@@ -177,7 +177,11 @@ won / lost / disqualified`. Every status change is logged to
   service's question set.
 - Question sets live as structured data (JSON or a `service_question_sets`
   table), not hardcoded in prompts, so they can be tuned without a
-  redeploy.
+  redeploy. Fields can be conditional — a `depends_on: {field, equals}`
+  or `{field, one_of}` on a field means it's only ever asked (and only
+  ever lands in `leads.details`) when an earlier field's answer matches;
+  otherwise it's permanently skipped, not just deferred. See "Question
+  sets" below.
 - On completion of all required fields, upsert a row into `leads` (setting
   `tenant_id` per the rules above) and give a closing message.
 - **Every message, in and out, is written to `chat_messages` before the
@@ -561,6 +565,35 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     on). Worth remembering if a Railway build ever fails on something
     that clearly hasn't changed: try a cache-busted rebuild before
     assuming the code is at fault.
+
+16. ✅ Conditional (branching) questions in the chat agent's question
+    sets — a field can now declare `depends_on: {field, equals}` or
+    `{field, one_of}` (`agent/app/question_sets.py`) so it's only ever
+    asked when an earlier answer matches; unmet fields are permanently
+    skipped, not deferred, and never appear in the resulting lead's
+    `details`. Question traversal in `agent/app/chat.py` goes through one
+    `next_pending_field()` helper instead of indexing sequentially into
+    the list, so this is the single place the skip logic lives.
+
+    Applied to two of the five services as worked examples — `mortgage`
+    (`mortgage_purpose`: `purchase` → pre-approval status, `refinance` →
+    current lender, `home_equity` → what the funds are for) and
+    `real_estate` (`real_estate_intent`: `buying`/`both` → financing
+    status, `selling`/`both` → whether there's a mortgage on the
+    property being sold — picking `both` correctly triggers *both*
+    follow-ups, not just one). `credit`, `foreign_national_credit`, and
+    `business_credit` are unchanged for now — no branches invented for
+    them since that's real qualification-flow business logic, not
+    something to guess; extending the same pattern there is
+    straightforward once specific branches are wanted.
+
+    Verified against the running agent directly across four scenarios
+    (refinance, purchase, buying+selling "both", selling-only) — each
+    time confirming both that the right follow-up fires and that skipped
+    fields never land in `leads.details` — then re-verified end-to-end
+    on production (`mortgage` → `home_equity`) via a real conversation
+    through the actual `/api/chat` proxy, checking the resulting lead's
+    `details` in the database.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
