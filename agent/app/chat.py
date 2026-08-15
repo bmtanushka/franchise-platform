@@ -3,7 +3,7 @@ from typing import Any, Optional
 from . import db, email
 from .config import settings
 from .openai_helper import extract_answer, phrase_intro, phrase_question
-from .question_sets import Field, SERVICE_LABELS, get_question_set
+from .question_sets import Field, SERVICE_LABELS, get_question_set, next_pending_field
 
 SERVICE_SELECT_FIELD: Field = {
     "key": "service_type",
@@ -70,7 +70,8 @@ async def _handle_service_selection(session_id: str, tenant_name: str, user_mess
 
     await db.set_session_service_type(session_id, service_type_id)
 
-    first_field = get_question_set(service_key)[0]
+    first_field = next_pending_field(get_question_set(service_key), {})
+    assert first_field is not None  # every question set has at least the common closing fields
     reply = await phrase_question(first_field, tenant_name)
     await db.insert_chat_message(session_id, "assistant", reply)
     return {"session_id": session_id, "reply": reply, "done": False}
@@ -82,11 +83,10 @@ async def _handle_field_answer(session: dict[str, Any], tenant_name: str, user_m
     question_set = get_question_set(service_key)
     answers = session["collected_answers"]
 
-    field_index = len(answers)
-    if field_index >= len(question_set):
+    field = next_pending_field(question_set, answers)
+    if field is None:
         raise ChatTurnError("No more questions to answer for this session.")
 
-    field = question_set[field_index]
     result = await extract_answer(field, user_message)
 
     if not result.ok:
@@ -97,9 +97,8 @@ async def _handle_field_answer(session: dict[str, Any], tenant_name: str, user_m
     new_answers = {**answers, field["key"]: result.value}
     await db.update_session_answers(session_id, new_answers)
 
-    next_index = field_index + 1
-    if next_index < len(question_set):
-        next_field = question_set[next_index]
+    next_field = next_pending_field(question_set, new_answers)
+    if next_field is not None:
         reply = await phrase_question(next_field, tenant_name)
         await db.insert_chat_message(session_id, "assistant", reply)
         return {"session_id": session_id, "reply": reply, "done": False}

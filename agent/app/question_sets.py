@@ -14,9 +14,20 @@ Each field has:
   enum_values - required when type == "enum"
   lead_field  - if set, this answer goes on leads.<lead_field> directly
                 instead of into leads.details
+  depends_on  - optional; if set, this field is only ever asked (and only
+                ever appears in leads.details) when the referenced earlier
+                field's answer matches. Must reference a field that comes
+                *before* it in the same list — dependencies aren't
+                resolved out of order.
 """
 
-from typing import Literal, TypedDict
+from typing import Any, Literal, TypedDict
+
+
+class DependsOn(TypedDict, total=False):
+    field: str  # key of the earlier field this one is conditional on
+    equals: Any  # answer must equal this exact value
+    one_of: list[Any]  # answer must be one of these values
 
 
 class Field(TypedDict, total=False):
@@ -25,6 +36,7 @@ class Field(TypedDict, total=False):
     type: Literal["text", "email", "phone", "boolean", "enum"]
     enum_values: list[str]
     lead_field: str
+    depends_on: DependsOn
 
 
 # Appended to the end of every service's question set — the info needed to
@@ -84,6 +96,25 @@ SERVICE_SPECIFIC_FIELDS: dict[str, list[Field]] = {
             "prompt": "What's your estimated price range or loan amount?",
             "type": "text",
         },
+        {
+            "key": "preapproval_status",
+            "prompt": "Have you already been pre-approved, or are you just starting to look?",
+            "type": "enum",
+            "enum_values": ["pre_approved", "not_yet"],
+            "depends_on": {"field": "mortgage_purpose", "equals": "purchase"},
+        },
+        {
+            "key": "current_lender",
+            "prompt": "Who's your current mortgage lender?",
+            "type": "text",
+            "depends_on": {"field": "mortgage_purpose", "equals": "refinance"},
+        },
+        {
+            "key": "home_equity_purpose",
+            "prompt": "What would you use the home equity funds for?",
+            "type": "text",
+            "depends_on": {"field": "mortgage_purpose", "equals": "home_equity"},
+        },
     ],
     "real_estate": [
         {
@@ -98,6 +129,20 @@ SERVICE_SPECIFIC_FIELDS: dict[str, list[Field]] = {
             "prompt": "What's your timeline — immediately, 1-3 months, 3-6 months, or just exploring?",
             "type": "enum",
             "enum_values": ["immediately", "1_3_months", "3_6_months", "just_exploring"],
+        },
+        {
+            "key": "financing_status",
+            "prompt": "Are you pre-approved for financing, still need financing, or paying cash?",
+            "type": "enum",
+            "enum_values": ["pre_approved", "need_financing", "cash"],
+            "depends_on": {"field": "real_estate_intent", "one_of": ["buying", "both"]},
+        },
+        {
+            "key": "current_property_status",
+            "prompt": "For the property you're selling — do you own it outright, or is there a mortgage on it?",
+            "type": "enum",
+            "enum_values": ["owned_outright", "has_mortgage"],
+            "depends_on": {"field": "real_estate_intent", "one_of": ["selling", "both"]},
         },
     ],
     "foreign_national_credit": [
@@ -137,3 +182,32 @@ SERVICE_LABELS: dict[str, str] = {
 
 def get_question_set(service_key: str) -> list[Field]:
     return SERVICE_SPECIFIC_FIELDS[service_key] + COMMON_CLOSING_FIELDS
+
+
+def _dependency_met(field: Field, answers: dict[str, Any]) -> bool:
+    dep = field.get("depends_on")
+    if dep is None:
+        return True
+    value = answers.get(dep["field"])
+    if "equals" in dep:
+        return value == dep["equals"]
+    if "one_of" in dep:
+        return value in dep["one_of"]
+    return True
+
+
+def next_pending_field(question_set: list[Field], answers: dict[str, Any]) -> Field | None:
+    """
+    First field that hasn't been answered yet and whose depends_on (if any)
+    is satisfied by the answers so far — a field whose dependency is never
+    met is permanently skipped, not just deferred. The single place this
+    conditional-skip logic lives; chat.py always goes through this rather
+    than indexing into the list directly.
+    """
+    for field in question_set:
+        if field["key"] in answers:
+            continue
+        if not _dependency_met(field, answers):
+            continue
+        return field
+    return None
