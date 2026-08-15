@@ -527,6 +527,41 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     existing `va1.web-production-80ea6d...` gap in "Known gaps") — the
     code path is identical either way, only the trigger differs.
 
+15. ✅ Dashboard visual polish — fixed a real layout bug (every page
+    wrapped its content in `mx-auto w-full max-w-{2xl|3xl|5xl}`, which
+    centers a narrow column inside the wide `<main>` next to the
+    sidebar, leaving a large dead gap on the left on any real monitor)
+    and brought the whole shell up to a more modern, consistent look
+    using the existing Forest/Moss/Gold style kit — no new palette.
+    Shared `pageContainerClass` (`web/src/lib/dashboard-ui.ts`, no
+    `mx-auto`) replaces the ad-hoc wrapper on every page. New
+    `PageHeader` (icon in a tinted circle + title/description + action)
+    and `EntityRow` (avatar-circle initials, name/meta, status pill)
+    components (`web/src/components/dashboard/`) replace the bare `<h1>`
+    and plain bordered list rows Franchisees/Providers had had since
+    early in the build; both pages also gained a small stat-tile summary
+    row so they read as part of the same dashboard as Overview.
+    `TenantStatusBadge` sits alongside the existing lead `StatusBadge`,
+    both now built on a shared `TonePill`/`TONE_CLASSES` instead of
+    duplicating the tone-to-class mapping. `TopBar` gained a logo mark
+    and a user initials-avatar. Verified per role (super_admin/
+    franchisor, franchisee, service_provider) at a realistic wide
+    viewport, both locally and on production — the alignment bug only
+    shows up at real monitor widths, not a narrow one.
+
+    Hit a real deployment snag along the way: the `web` service's
+    Railway build failed twice in a row on an unrelated, pre-existing
+    step (`next/font/google` / Turbopack's internal font module,
+    `Module not found: @vercel/turbopack-next/internal/font/google/font`)
+    that had nothing to do with this change — turned out to be a stale/
+    corrupted Nixpacks Docker layer cache, not a real regression. Fixed
+    by setting `NIXPACKS_NO_CACHE=1` on `web` for one deploy to force a
+    clean build, confirming success, then removing the variable again
+    (kept off by default — it would slow down every future build if left
+    on). Worth remembering if a Railway build ever fails on something
+    that clearly hasn't changed: try a cache-busted rebuild before
+    assuming the code is at fault.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
