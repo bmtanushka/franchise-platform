@@ -595,6 +595,45 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     through the actual `/api/chat` proxy, checking the resulting lead's
     `details` in the database.
 
+17. ✅ Franchisor/super_admin can now edit service providers — there was
+    previously no edit path at all, only create. New
+    `/dashboard/providers/[id]/edit` (`EditProviderForm`) lets them
+    change company name and services handled; login email/password are
+    deliberately excluded, same reasoning as `updateFranchiseeAdmin` not
+    touching the franchisee owner's login identity — that's a separate
+    concern from the business-facing profile.
+
+    Also added service areas — which US states/cities a provider
+    actually covers — to both the create and edit forms. Stored as
+    `service_providers.service_areas` (migration 009, jsonb array of
+    `{state, stateName, cities[]}`; nothing queries it relationally yet,
+    e.g. no area-based lead routing, so a normalized table wasn't
+    worth it over one jsonb column). Real state/city data comes from the
+    `country-state-city` npm package rather than a hand-curated list —
+    city data varies too much in what "the list" should include to
+    generate reliably from memory. Cities are fetched per-state on
+    demand via a Server Action (`getCitiesForStateAction`) rather than
+    shipping the whole package's data (every country) to the browser.
+    `ServiceAreaPicker` (`web/src/components/dashboard/`) is the one
+    shared component both forms use: pick a state, search/check its
+    cities, add as a removable area chip; a provider can cover multiple
+    states.
+
+    Hit a real data bug wiring this up: `${JSON.stringify(areas)}` as a
+    plain template parameter into a jsonb column double-encoded it —
+    postgres.js auto-serializes JS values for jsonb columns, so handing
+    it an already-stringified string just got serialized *again* into a
+    JSON string scalar (`jsonb_typeof` was `"string"`, not `"array"`).
+    Fixed with postgres.js's `sql.json()` helper, the documented way to
+    pass an already-typed value for a `json`/`jsonb` column.
+
+    Verified end-to-end both locally and on production: created a
+    provider with a real service area (Virginia → Alexandria/Arlington
+    locally, Maryland → Bethesda on prod), confirmed
+    `jsonb_typeof(service_areas)` is genuinely `array` not `string` in
+    both places, and edited the local one to add a second state
+    (California), confirming both areas persist together correctly.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
