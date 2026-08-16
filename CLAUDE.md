@@ -232,10 +232,15 @@ lessons they've actually viewed.
   video embed on the lesson view page, shown only when present.
 - Both `text_content` fields (a text lesson's body, and a video lesson's
   optional notes) are authored through a TipTap rich text editor
-  (`web/src/components/dashboard/rich-text-editor.tsx` — bold/italic/
-  heading/lists/undo-redo toolbar, syncs its HTML into a hidden form
-  input so it works with the existing Server Action + `useActionState`
-  form pattern) rather than a plain textarea, and stored as HTML.
+  (`web/src/components/dashboard/rich-text-editor.tsx` — bold/italic,
+  H1-H3 headings, bullet/numbered lists with indent/outdent (nested
+  lists via `sinkListItem`/`liftListItem`), image embed by URL
+  (`@tiptap/extension-image` — no file upload, since there's still no
+  object storage; author pastes an already-hosted image URL and it's
+  inserted as a real `<img>`), undo/redo toolbar, syncs its HTML into a
+  hidden form input so it works with the existing Server Action +
+  `useActionState` form pattern) rather than a plain textarea, and
+  stored as HTML.
   Rendered via `dangerouslySetInnerHTML` after server-side sanitizing
   with `isomorphic-dompurify` on every read (lesson view page), not at
   write time — so sanitization rules can be tightened later without a
