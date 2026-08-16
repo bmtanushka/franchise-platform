@@ -127,6 +127,25 @@ export async function listAdminUsers(role: Role): Promise<AdminUser[]> {
   }));
 }
 
+export async function getAdminUserById(role: Role, id: string): Promise<AdminUser | null> {
+  if (role !== "super_admin") {
+    throw new Error("Only a super admin can view admin/franchisor accounts.");
+  }
+
+  const rows = await sql<
+    { id: string; email: string; full_name: string | null; role: "super_admin" | "franchisor"; created_at: string }[]
+  >`
+    select id, email, full_name, role, created_at
+    from users
+    where id = ${id} and role in ('super_admin', 'franchisor')
+    limit 1
+  `;
+
+  if (rows.length === 0) return null;
+  const row = rows[0];
+  return { id: row.id, email: row.email, fullName: row.full_name, role: row.role, createdAt: row.created_at };
+}
+
 export type SummaryRecipient = {
   id: string;
   email: string;

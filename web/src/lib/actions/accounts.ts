@@ -9,6 +9,7 @@ import {
   updateFranchiseeAdmin,
   updateServiceProvider,
   createAdminUser,
+  updateAdminUser,
   AccountConflictError,
 } from "@/lib/db/accounts";
 import type { ServiceArea } from "@/lib/db/providers";
@@ -164,6 +165,35 @@ export async function createAdminUserAction(
     if (err instanceof AccountConflictError) return { error: err.message };
     if (err instanceof Error && err.message.startsWith("Only a super admin")) return { error: err.message };
     return { error: "Something went wrong creating this account. Please try again." };
+  }
+
+  revalidatePath("/dashboard/users");
+  redirect("/dashboard/users");
+}
+
+export async function updateAdminUserAction(
+  _prevState: AccountFormState,
+  formData: FormData,
+): Promise<AccountFormState> {
+  const ctx = await requireSessionContext();
+  const targetUserId = String(formData.get("userId"));
+  const role = String(formData.get("role"));
+
+  if (role !== "super_admin" && role !== "franchisor") {
+    return { error: "Select a role." };
+  }
+
+  try {
+    await updateAdminUser(ctx.role, ctx.userId, targetUserId, {
+      fullName: String(formData.get("fullName")).trim(),
+      role,
+    });
+  } catch (err) {
+    // These are all deliberately user-facing validation messages (self-role-change,
+    // last-super-admin, not found, unauthorized) — safe to surface directly, unlike
+    // a raw DB error.
+    if (err instanceof Error) return { error: err.message };
+    return { error: "Something went wrong saving these changes. Please try again." };
   }
 
   revalidatePath("/dashboard/users");

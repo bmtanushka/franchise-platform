@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Users } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { listAdminUsers } from "@/lib/db/users";
-import { cardClass, primaryButtonClass, pageContainerClass } from "@/lib/dashboard-ui";
+import { cardClass, primaryButtonClass, linkClass, pageContainerClass } from "@/lib/dashboard-ui";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EntityRow } from "@/components/dashboard/entity-row";
 import { StatTile } from "@/components/dashboard/stat-tile";
@@ -50,7 +50,16 @@ export default async function UsersPage() {
       ) : (
         <ul className={`${cardClass} divide-y divide-border`}>
           {users.map((u) => (
-            <EntityRow key={u.id} name={u.fullName ?? u.email} meta={`${ROLE_LABEL[u.role]} · ${u.email}`} />
+            <EntityRow
+              key={u.id}
+              name={u.fullName ?? u.email}
+              meta={`${ROLE_LABEL[u.role]} · ${u.email}`}
+              action={
+                <Link href={`/dashboard/users/${u.id}/edit`} className={`${linkClass} ml-2`}>
+                  Edit
+                </Link>
+              }
+            />
           ))}
         </ul>
       )}

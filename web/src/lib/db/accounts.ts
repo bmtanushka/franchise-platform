@@ -272,3 +272,64 @@ export async function createAdminUser(
     rethrowAsConflict(err);
   }
 }
+
+export type UpdateAdminUserInput = {
+  fullName: string;
+  role: "super_admin" | "franchisor";
+};
+
+/**
+ * Edits a super_admin/franchisor account's name and role. Login email
+ * isn't editable here, same reasoning as franchisee/provider edit not
+ * touching login identity — that's a separate concern.
+ *
+ * Two lockout guards, since super_admin is the only role that can even
+ * reach this page: you can't change your *own* role (a self-demotion —
+ * or, just as bad, fat-fingering a role change on your own row — could
+ * lock you out of this page entirely), and you can't demote the last
+ * remaining super_admin (would zero out the role that can grant it).
+ */
+export async function updateAdminUser(
+  actingRole: Role,
+  actingUserId: string | null,
+  targetUserId: string,
+  input: UpdateAdminUserInput,
+): Promise<void> {
+  if (actingRole !== "super_admin") {
+    throw new Error("Only a super admin can edit admin or franchisor accounts.");
+  }
+
+  const [target] = await sql<{ role: "super_admin" | "franchisor" }[]>`
+    select role from users where id = ${targetUserId} and role in ('super_admin', 'franchisor') limit 1
+  `;
+  if (!target) {
+    throw new Error("Account not found.");
+  }
+
+  if (actingUserId === targetUserId && input.role !== target.role) {
+    throw new Error("You can't change your own role.");
+  }
+
+  if (target.role === "super_admin" && input.role !== "super_admin") {
+    const [{ count }] = await sql<{ count: number }[]>`
+      select count(*)::int as count from users where role = 'super_admin'
+    `;
+    if (count <= 1) {
+      throw new Error("Can't change the last super admin's role — add another super admin first.");
+    }
+  }
+
+  let tenantId: string | null = null;
+  if (input.role === "franchisor") {
+    const [franchisorTenant] = await sql<{ id: string }[]>`
+      select id from tenants where type = 'franchisor' limit 1
+    `;
+    tenantId = franchisorTenant?.id ?? null;
+  }
+
+  await sql`
+    update users
+    set full_name = ${input.fullName}, role = ${input.role}, tenant_id = ${tenantId}, updated_at = now()
+    where id = ${targetUserId}
+  `;
+}
