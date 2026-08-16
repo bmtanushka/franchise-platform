@@ -190,10 +190,43 @@ won / lost / disqualified`. Every status change is logged to
   (`active`/`completed`/`abandoned`) and links to the resulting lead once
   qualified.
 
+## Course module
+
+Franchisor/super_admin author training courses; franchisees self-enroll
+and work through them; the franchisor sees who's enrolled and which
+lessons they've actually viewed.
+
+- A course has many lessons (`courses` → `lessons`). Each lesson is
+  either `video` (a pasted YouTube/Vimeo link, parsed to an embeddable
+  iframe URL by `web/src/lib/video-embed.ts`) or `text` — no PDF/image
+  upload, since this project has no file storage set up and that scope
+  was deliberately cut to avoid needing new infrastructure to ship.
+- A course is `draft` or `published`; only published courses are visible
+  to franchisees at all (`getCourseDetail`/`getLessonDetail` return
+  `null` for a franchisee on a draft course, same as a 404).
+- Enrollment (`course_enrollments`) and progress (`lesson_progress`) are
+  both keyed to the actual login **user**, not the tenant — a franchisee
+  tenant has exactly one login today, so it's equivalent in practice,
+  and it matches how everything else in this app attributes activity to
+  an account. "Viewed" is presence of a `lesson_progress` row, not a
+  boolean, set automatically the moment a franchisee opens a lesson
+  (`markLessonViewedAction`, fired from a client `useEffect` on mount —
+  not tied to any explicit "mark complete" button).
+- The franchisor's course detail page shows an enrollment matrix — every
+  enrolled franchisee as a row, every lesson as a column, checkmarked
+  when viewed — directly answering "who enrolled and which lessons have
+  they gone through."
+- No RLS on any of these tables, same app-layer-only pattern as
+  `tenants`/`service_providers`/`users` (only `leads`/`chat_messages`/
+  `rebates` are in the brief's protected set).
+- `service_provider` has no access to this module at all.
+
 ## Database schema
 
-Two migration files define the current schema, in `db/migrations/`, run
-against the Railway Postgres instance in order:
+The schema is defined incrementally across migration files in
+`db/migrations/`, run against the Railway Postgres instance in order
+(currently up to `010_courses.sql` — see the roadmap below for what each
+later one added). The first two:
 
 1. `001_initial_schema.sql` — tenants, domains, users, service providers,
    site content, franchisee profile, service types, chat sessions/messages,
@@ -684,6 +717,49 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     confirmed the role select is disabled with an explanatory note,
     submitted a name-only change, and confirmed the role stayed
     untouched in the DB.
+
+20. ✅ Course module — franchisor/super_admin author courses made of
+    lessons, franchisees self-enroll and work through them, franchisor
+    sees who's enrolled and which lessons they've viewed. See the
+    "Course module" section above for the architecture; migration 010
+    (`courses`, `lessons`, `course_enrollments`, `lesson_progress`).
+
+    Scoped down from the original ask in conversation: lessons are
+    video (YouTube/Vimeo link) or text only, no PDF/image upload — this
+    project has no file/object storage set up at all, and standing one
+    up needs a new external account/credentials from the user (same
+    situation as `RESEND_API_KEY`), so link-based video was the way to
+    ship this in one pass without a hard external blocker.
+
+    New `/dashboard/courses` (role-branching like `/dashboard/profile`:
+    franchisor/admin get a management list + "Add course"; franchisee
+    gets a browse-and-enroll list), `/dashboard/courses/[id]` (lesson
+    list + either the enrollment matrix or an Enroll button depending on
+    role), lesson create/view pages. `video-embed.ts` parses a pasted
+    URL into an iframe src (common YouTube/Vimeo shapes, not
+    exhaustive), falling back to a plain "Watch video" link for
+    anything unrecognized instead of a broken embed.
+
+    Caught and fixed a real access-control gap while testing: the
+    courses list and lesson-view pages relied only on the DB layer
+    throwing for `service_provider` (an unauthorized role), which
+    surfaced as a raw Next.js 500 error page instead of the clean
+    `redirect("/dashboard")` every other dashboard page gives an
+    unauthorized role — added the same explicit guard used everywhere
+    else. Worth remembering for any future page: the DB-layer role check
+    is the enforcement layer, but the page itself still needs its own
+    guard *before* calling it, for a clean redirect instead of a 500.
+
+    Verified end-to-end both locally and on production: created a
+    course with a video and a text lesson, confirmed it was hidden from
+    a franchisee while `draft`, published it, enrolled as a franchisee,
+    opened both lessons (confirmed the YouTube embed actually renders,
+    not just that the URL parsed), and confirmed the franchisor's
+    enrollment matrix showed that franchisee with both lessons checked
+    off — production run showed a second, independently-enrolled
+    franchisee too, confirming the matrix handles multiple enrollments
+    correctly. Re-verified `service_provider` gets a clean redirect (not
+    a 500) from every course-module route.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
