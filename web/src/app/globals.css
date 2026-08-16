@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* Dashboard style kit — financial/professional tone. Deliberately a
    single fixed light theme (no dark mode) per the kit; doesn't affect
