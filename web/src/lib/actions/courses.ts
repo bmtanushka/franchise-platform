@@ -5,8 +5,10 @@ import { revalidatePath } from "next/cache";
 import { requireSessionContext } from "@/lib/auth/session-context";
 import {
   createCourse,
+  updateCourse,
   updateCourseStatus,
   createLesson,
+  updateLesson,
   enrollInCourse,
   markLessonViewed,
   type CourseStatus,
@@ -18,6 +20,15 @@ export type CourseFormState = { error: string | null };
 function optionalString(value: FormDataEntryValue | null): string | null {
   const str = value ? String(value).trim() : "";
   return str.length > 0 ? str : null;
+}
+
+// The rich text editor always submits at least an empty paragraph
+// (e.g. "<p></p>"), not an empty string — strip tags before treating it
+// as blank so "required" validation and "no notes given" both work.
+function optionalHtml(value: FormDataEntryValue | null): string | null {
+  const raw = value ? String(value) : "";
+  const textOnly = raw.replace(/<[^>]*>/g, "").trim();
+  return textOnly.length > 0 ? raw.trim() : null;
 }
 
 export async function createCourseAction(
@@ -48,20 +59,37 @@ export async function createCourseAction(
   redirect(`/dashboard/courses/${courseId}`);
 }
 
-export async function createLessonAction(
+export async function updateCourseAction(
   _prevState: CourseFormState,
   formData: FormData,
 ): Promise<CourseFormState> {
   const ctx = await requireSessionContext();
   const courseId = String(formData.get("courseId"));
-  const contentType = String(formData.get("contentType"));
 
+  try {
+    await updateCourse(ctx, courseId, {
+      title: String(formData.get("title")).trim(),
+      description: optionalString(formData.get("description")),
+    });
+  } catch (err) {
+    if (err instanceof Error) return { error: err.message };
+    return { error: "Something went wrong saving this course. Please try again." };
+  }
+
+  revalidatePath(`/dashboard/courses/${courseId}`);
+  redirect(`/dashboard/courses/${courseId}`);
+}
+
+// Video lessons may optionally carry rich-text notes shown below the
+// embed; text lessons require it, since it's their only content.
+function extractLessonFields(formData: FormData): { contentType: LessonContentType; videoUrl: string | null; textContent: string | null } | { error: string } {
+  const contentType = String(formData.get("contentType"));
   if (contentType !== "video" && contentType !== "text") {
     return { error: "Select a content type." };
   }
 
   const videoUrl = optionalString(formData.get("videoUrl"));
-  const textContent = optionalString(formData.get("textContent"));
+  const textContent = optionalHtml(formData.get("textContent"));
 
   if (contentType === "video" && !videoUrl) {
     return { error: "Enter a YouTube or Vimeo link." };
@@ -70,16 +98,46 @@ export async function createLessonAction(
     return { error: "Enter the lesson text." };
   }
 
+  return { contentType, videoUrl: contentType === "video" ? videoUrl : null, textContent };
+}
+
+export async function createLessonAction(
+  _prevState: CourseFormState,
+  formData: FormData,
+): Promise<CourseFormState> {
+  const ctx = await requireSessionContext();
+  const courseId = String(formData.get("courseId"));
+
+  const fields = extractLessonFields(formData);
+  if ("error" in fields) return { error: fields.error };
+
   try {
-    await createLesson(ctx, courseId, {
-      title: String(formData.get("title")).trim(),
-      contentType: contentType as LessonContentType,
-      videoUrl: contentType === "video" ? videoUrl : null,
-      textContent: contentType === "text" ? textContent : null,
-    });
+    await createLesson(ctx, courseId, { title: String(formData.get("title")).trim(), ...fields });
   } catch (err) {
     if (err instanceof Error) return { error: err.message };
     return { error: "Something went wrong adding this lesson. Please try again." };
+  }
+
+  revalidatePath(`/dashboard/courses/${courseId}`);
+  redirect(`/dashboard/courses/${courseId}`);
+}
+
+export async function updateLessonAction(
+  _prevState: CourseFormState,
+  formData: FormData,
+): Promise<CourseFormState> {
+  const ctx = await requireSessionContext();
+  const courseId = String(formData.get("courseId"));
+  const lessonId = String(formData.get("lessonId"));
+
+  const fields = extractLessonFields(formData);
+  if ("error" in fields) return { error: fields.error };
+
+  try {
+    await updateLesson(ctx, lessonId, { title: String(formData.get("title")).trim(), ...fields });
+  } catch (err) {
+    if (err instanceof Error) return { error: err.message };
+    return { error: "Something went wrong saving this lesson. Please try again." };
   }
 
   revalidatePath(`/dashboard/courses/${courseId}`);

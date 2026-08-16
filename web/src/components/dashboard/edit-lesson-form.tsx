@@ -1,26 +1,28 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { createLessonAction, type CourseFormState } from "@/lib/actions/courses";
+import { updateLessonAction, type CourseFormState } from "@/lib/actions/courses";
 import { RichTextEditor } from "@/components/dashboard/rich-text-editor";
+import type { LessonDetail } from "@/lib/db/courses";
 import { inputClass, labelClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 const initialState: CourseFormState = { error: null };
 
-export function NewLessonForm({ courseId }: { courseId: string }) {
-  const [state, formAction, pending] = useActionState(createLessonAction, initialState);
-  const [contentType, setContentType] = useState<"video" | "text">("video");
+export function EditLessonForm({ courseId, lesson }: { courseId: string; lesson: LessonDetail }) {
+  const [state, formAction, pending] = useActionState(updateLessonAction, initialState);
+  const [contentType, setContentType] = useState<"video" | "text">(lesson.contentType);
 
   return (
     <form action={formAction} className="max-w-xl space-y-6">
       <input type="hidden" name="courseId" value={courseId} />
+      <input type="hidden" name="lessonId" value={lesson.id} />
 
       <section className="space-y-4">
         <div>
           <label className={labelClass} htmlFor="title">
             Lesson title
           </label>
-          <input id="title" name="title" required className={inputClass} />
+          <input id="title" name="title" required defaultValue={lesson.title} className={inputClass} />
         </div>
 
         <div>
@@ -61,19 +63,28 @@ export function NewLessonForm({ courseId }: { courseId: string }) {
                 id="videoUrl"
                 name="videoUrl"
                 type="url"
+                defaultValue={lesson.videoUrl ?? ""}
                 placeholder="https://www.youtube.com/watch?v=..."
                 className={inputClass}
               />
             </div>
             <div>
               <span className={labelClass}>Notes (optional, shown below the video)</span>
-              <RichTextEditor name="textContent" placeholder="Add any notes for this video..." />
+              <RichTextEditor
+                name="textContent"
+                defaultValue={lesson.contentType === "video" ? lesson.textContent : null}
+                placeholder="Add any notes for this video..."
+              />
             </div>
           </>
         ) : (
           <div>
             <span className={labelClass}>Lesson text</span>
-            <RichTextEditor name="textContent" placeholder="Write the lesson content..." />
+            <RichTextEditor
+              name="textContent"
+              defaultValue={lesson.contentType === "text" ? lesson.textContent : null}
+              placeholder="Write the lesson content..."
+            />
           </div>
         )}
       </section>
@@ -83,7 +94,7 @@ export function NewLessonForm({ courseId }: { courseId: string }) {
       )}
 
       <button type="submit" disabled={pending} className={primaryButtonClass}>
-        {pending ? "Adding..." : "Add lesson"}
+        {pending ? "Saving..." : "Save changes"}
       </button>
     </form>
   );

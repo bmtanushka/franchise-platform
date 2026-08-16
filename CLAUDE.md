@@ -220,6 +220,29 @@ lessons they've actually viewed.
   `tenants`/`service_providers`/`users` (only `leads`/`chat_messages`/
   `rebates` are in the brief's protected set).
 - `service_provider` has no access to this module at all.
+- Franchisor/super_admin can also **edit** an existing course (title,
+  description — `/dashboard/courses/[id]/edit`, `updateCourse`) or lesson
+  (title, content type, video URL, text content —
+  `/dashboard/courses/[id]/lessons/[lessonId]/edit`, `updateLesson`), not
+  just create new ones — an "Edit" link sits next to the course title and
+  on each lesson row, visible only to managers.
+- A video lesson can now also carry optional notes, stored in the same
+  `lessons.text_content` column a text lesson uses for its body (no
+  schema change) — rendered under a small "Notes" heading below the
+  video embed on the lesson view page, shown only when present.
+- Both `text_content` fields (a text lesson's body, and a video lesson's
+  optional notes) are authored through a TipTap rich text editor
+  (`web/src/components/dashboard/rich-text-editor.tsx` — bold/italic/
+  heading/lists/undo-redo toolbar, syncs its HTML into a hidden form
+  input so it works with the existing Server Action + `useActionState`
+  form pattern) rather than a plain textarea, and stored as HTML.
+  Rendered via `dangerouslySetInnerHTML` after server-side sanitizing
+  with `isomorphic-dompurify` on every read (lesson view page), not at
+  write time — so sanitization rules can be tightened later without a
+  backfill. TipTap always emits at least `<p></p>` for "empty" content,
+  never a true empty string, so blank/required-field detection
+  (`optionalHtml` in `web/src/lib/actions/courses.ts`) strips tags before
+  checking length rather than doing a naive string-length check.
 
 ## Database schema
 
@@ -760,6 +783,26 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     franchisee too, confirming the matrix handles multiple enrollments
     correctly. Re-verified `service_provider` gets a clean redirect (not
     a 500) from every course-module route.
+
+21. ✅ Course/lesson editing, video-lesson notes, and a rich text editor
+    for lesson content — see the "Course module" section above for the
+    details (`updateCourse`/`updateLesson`, the `RichTextEditor` TipTap
+    component, `isomorphic-dompurify` sanitization on render). No schema
+    change — video notes reuse the existing `lessons.text_content`
+    column. Verified locally against the tunneled Railway Postgres (not
+    a throwaway local DB, so two pre-existing demo rows — "Onboarding
+    101" and its "Company policies"/"Welcome video" lessons — were
+    edited during testing and restored afterward, though the restored
+    course description and lesson text are a best-effort reconstruction
+    rather than byte-for-byte originals, since the exact prior values
+    weren't captured before editing): franchisor edited a course's
+    title/description, edited a text lesson's rich content and confirmed
+    a `<script>` tag survives to storage but is stripped on render while
+    real formatting (bold, lists) renders correctly, added notes to a
+    video lesson and confirmed they render under a "Notes" heading below
+    the embed, and confirmed franchisees see the rendered rich content
+    but get no Edit links/pages and service_provider is still fully
+    blocked from the module.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.

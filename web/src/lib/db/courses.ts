@@ -108,6 +108,34 @@ export async function updateCourseStatus(ctx: SessionContext, courseId: string, 
   await sql`update courses set status = ${status}, updated_at = now() where id = ${courseId}`;
 }
 
+/** Lightweight fetch for the course-edit form — no lessons/enrollments, unlike getCourseDetail. */
+export async function getCourseById(
+  ctx: SessionContext,
+  courseId: string,
+): Promise<{ id: string; title: string; description: string | null; status: CourseStatus } | null> {
+  if (!COURSE_MANAGER_ROLES.has(ctx.role)) {
+    throw new Error("Not authorized to view this course.");
+  }
+
+  const [course] = await sql<{ id: string; title: string; description: string | null; status: CourseStatus }[]>`
+    select id, title, description, status from courses where id = ${courseId} limit 1
+  `;
+  return course ?? null;
+}
+
+export type UpdateCourseInput = { title: string; description: string | null };
+
+export async function updateCourse(ctx: SessionContext, courseId: string, input: UpdateCourseInput): Promise<void> {
+  if (!COURSE_MANAGER_ROLES.has(ctx.role)) {
+    throw new Error("Only the franchisor can update a course.");
+  }
+
+  await sql`
+    update courses set title = ${input.title}, description = ${input.description}, updated_at = now()
+    where id = ${courseId}
+  `;
+}
+
 export type LessonSummary = {
   id: string;
   title: string;
@@ -235,6 +263,26 @@ export async function createLesson(
     returning id
   `;
   return { lessonId: row.id as string };
+}
+
+export type UpdateLessonInput = {
+  title: string;
+  contentType: LessonContentType;
+  videoUrl: string | null;
+  textContent: string | null;
+};
+
+export async function updateLesson(ctx: SessionContext, lessonId: string, input: UpdateLessonInput): Promise<void> {
+  if (!COURSE_MANAGER_ROLES.has(ctx.role)) {
+    throw new Error("Only the franchisor can edit lessons.");
+  }
+
+  await sql`
+    update lessons
+    set title = ${input.title}, content_type = ${input.contentType},
+        video_url = ${input.videoUrl}, text_content = ${input.textContent}
+    where id = ${lessonId}
+  `;
 }
 
 export async function enrollInCourse(ctx: SessionContext, courseId: string): Promise<void> {

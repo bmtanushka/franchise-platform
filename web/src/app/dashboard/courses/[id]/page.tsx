@@ -43,6 +43,9 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
           isManager ? (
             <div className="flex items-center gap-2">
               <CourseStatusBadge status={course.status} />
+              <Link href={`/dashboard/courses/${course.id}/edit`} className={linkClass}>
+                Edit
+              </Link>
               <PublishToggleButton courseId={course.id} status={course.status} />
             </div>
           ) : undefined
@@ -95,6 +98,14 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
                     </Link>
                   ) : (
                     <div className="flex flex-1 items-center gap-3 opacity-60">{content}</div>
+                  )}
+                  {isManager && (
+                    <Link
+                      href={`/dashboard/courses/${course.id}/lessons/${lesson.id}/edit`}
+                      className={`${linkClass} shrink-0`}
+                    >
+                      Edit
+                    </Link>
                   )}
                 </li>
               );

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import DOMPurify from "isomorphic-dompurify";
 import { auth } from "@/lib/auth/config";
 import { getLessonDetail } from "@/lib/db/courses";
 import { toEmbedUrl } from "@/lib/video-embed";
@@ -26,6 +27,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
   }
 
   const embedUrl = lesson.contentType === "video" && lesson.videoUrl ? toEmbedUrl(lesson.videoUrl) : null;
+  const sanitizedContent = lesson.textContent ? DOMPurify.sanitize(lesson.textContent) : null;
 
   return (
     <div className={pageContainerClass}>
@@ -41,29 +43,43 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
 
       <div className={`${cardClass} p-6`}>
         {lesson.contentType === "video" ? (
-          embedUrl ? (
-            <div className="aspect-video w-full overflow-hidden rounded-md">
-              <iframe
-                src={embedUrl}
-                className="h-full w-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-          ) : (
-            <div className="space-y-2">
-              <p className="font-body text-sm text-slate">
-                This video link couldn&apos;t be embedded automatically.
-              </p>
-              {lesson.videoUrl && (
-                <a href={lesson.videoUrl} target="_blank" rel="noreferrer" className={linkClass}>
-                  Watch video ↗
-                </a>
-              )}
-            </div>
-          )
+          <div className="space-y-4">
+            {embedUrl ? (
+              <div className="aspect-video w-full overflow-hidden rounded-md">
+                <iframe
+                  src={embedUrl}
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="font-body text-sm text-slate">
+                  This video link couldn&apos;t be embedded automatically.
+                </p>
+                {lesson.videoUrl && (
+                  <a href={lesson.videoUrl} target="_blank" rel="noreferrer" className={linkClass}>
+                    Watch video ↗
+                  </a>
+                )}
+              </div>
+            )}
+            {sanitizedContent && (
+              <div className="border-t border-border pt-4">
+                <h2 className="font-heading mb-2 text-sm font-semibold text-ink">Notes</h2>
+                <div
+                  className="font-body prose prose-sm max-w-none text-sm leading-relaxed text-ink"
+                  dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+                />
+              </div>
+            )}
+          </div>
         ) : (
-          <p className="font-body whitespace-pre-wrap text-sm leading-relaxed text-ink">{lesson.textContent}</p>
+          <div
+            className="font-body prose prose-sm max-w-none text-sm leading-relaxed text-ink"
+            dangerouslySetInnerHTML={{ __html: sanitizedContent ?? "" }}
+          />
         )}
       </div>
     </div>
