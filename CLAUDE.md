@@ -661,6 +661,30 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     service_provider logins neither see the "Users" nav item nor can
     reach `/dashboard/users` directly (redirected to `/dashboard`).
 
+19. ✅ Edit for admin/franchisor user accounts — `/dashboard/users/[id]/edit`
+    (`EditAdminUserForm`) lets a super_admin change a user's full name and
+    role. Login email isn't editable, same reasoning as franchisee/
+    provider edit not touching login identity.
+
+    Two lockout guards on `updateAdminUser`, since super_admin is the
+    only role that can reach this page at all: can't change your own
+    role (the form disables the role `<select>` when editing yourself,
+    backed by a hidden input so the current role still submits, plus the
+    same check server-side), and can't demote the last remaining
+    super_admin (in practice already covered by the self-guard — if only
+    one super_admin exists, whoever's editing must be that one — but
+    kept as defense-in-depth, same two-layer pattern as everywhere else).
+    Changing a user's role re-resolves `tenant_id` the same way
+    `createAdminUser` does (franchisor → the singleton franchisor
+    tenant, super_admin → null).
+
+    Verified end-to-end both locally and on production: edited another
+    user's name and promoted them franchisor → super_admin, confirmed
+    `tenant_id` cleared correctly; opened the self-edit page and
+    confirmed the role select is disabled with an explanatory note,
+    submitted a name-only change, and confirmed the role stayed
+    untouched in the DB.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
