@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import type postgres from "postgres";
 import { sql } from "./client";
 import type { Role } from "./context";
+import type { ServiceArea } from "./providers";
 
 // tenants/franchisee_profile/users/service_providers carry no RLS (only
 // leads/chat_messages/rebates do per the brief) — this role check is the
@@ -160,6 +161,7 @@ export async function updateFranchiseeAdmin(
 export type CreateServiceProviderInput = {
   companyName: string;
   serviceTypes: string[];
+  serviceAreas: ServiceArea[];
   fullName: string;
   loginEmail: string;
   loginPassword: string;
@@ -182,8 +184,8 @@ export async function createServiceProvider(
       `;
 
       const [provider] = await tx<{ id: string }[]>`
-        insert into service_providers (user_id, company_name, service_types)
-        values (${user.id}, ${input.companyName}, ${input.serviceTypes})
+        insert into service_providers (user_id, company_name, service_types, service_areas)
+        values (${user.id}, ${input.companyName}, ${input.serviceTypes}, ${sql.json(input.serviceAreas)})
         returning id
       `;
 
@@ -192,4 +194,33 @@ export async function createServiceProvider(
   } catch (err) {
     rethrowAsConflict(err);
   }
+}
+
+export type UpdateServiceProviderInput = {
+  companyName: string;
+  serviceTypes: string[];
+  serviceAreas: ServiceArea[];
+};
+
+/**
+ * Franchisor/super_admin editing a provider — company name, the services
+ * they handle, and their coverage areas. Deliberately excludes login
+ * email/password, same reasoning as updateFranchiseeAdmin not touching
+ * the owner's login identity — that's a separate concern from the
+ * business-facing profile fields.
+ */
+export async function updateServiceProvider(
+  actingRole: Role,
+  providerId: string,
+  input: UpdateServiceProviderInput,
+): Promise<void> {
+  assertCanCreateAccounts(actingRole);
+
+  await sql`
+    update service_providers
+    set company_name = ${input.companyName},
+        service_types = ${input.serviceTypes},
+        service_areas = ${sql.json(input.serviceAreas)}
+    where id = ${providerId}
+  `;
 }

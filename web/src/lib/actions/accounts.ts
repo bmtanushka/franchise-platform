@@ -7,14 +7,26 @@ import {
   createFranchisee,
   createServiceProvider,
   updateFranchiseeAdmin,
+  updateServiceProvider,
   AccountConflictError,
 } from "@/lib/db/accounts";
+import type { ServiceArea } from "@/lib/db/providers";
 
 export type AccountFormState = { error: string | null };
 
 function optionalString(value: FormDataEntryValue | null): string | null {
   const str = value ? String(value).trim() : "";
   return str.length > 0 ? str : null;
+}
+
+function parseServiceAreas(value: FormDataEntryValue | null): ServiceArea[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(String(value));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 export async function createFranchiseeAction(
@@ -89,6 +101,7 @@ export async function createServiceProviderAction(
     await createServiceProvider(ctx.role, {
       companyName: String(formData.get("companyName")).trim(),
       serviceTypes,
+      serviceAreas: parseServiceAreas(formData.get("serviceAreas")),
       fullName: String(formData.get("fullName")).trim(),
       loginEmail: String(formData.get("loginEmail")).trim(),
       loginPassword: String(formData.get("loginPassword")),
@@ -96,6 +109,32 @@ export async function createServiceProviderAction(
   } catch (err) {
     if (err instanceof AccountConflictError) return { error: err.message };
     return { error: "Something went wrong creating this provider. Please try again." };
+  }
+
+  revalidatePath("/dashboard/providers");
+  redirect("/dashboard/providers");
+}
+
+export async function updateServiceProviderAction(
+  _prevState: AccountFormState,
+  formData: FormData,
+): Promise<AccountFormState> {
+  const ctx = await requireSessionContext();
+  const providerId = String(formData.get("providerId"));
+  const serviceTypes = formData.getAll("serviceTypes").map(String);
+
+  if (serviceTypes.length === 0) {
+    return { error: "Select at least one service this provider handles." };
+  }
+
+  try {
+    await updateServiceProvider(ctx.role, providerId, {
+      companyName: String(formData.get("companyName")).trim(),
+      serviceTypes,
+      serviceAreas: parseServiceAreas(formData.get("serviceAreas")),
+    });
+  } catch {
+    return { error: "Something went wrong saving these changes. Please try again." };
   }
 
   revalidatePath("/dashboard/providers");

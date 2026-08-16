@@ -3,11 +3,13 @@
 import { useActionState } from "react";
 import { createServiceProviderAction, type AccountFormState } from "@/lib/actions/accounts";
 import type { ServiceType } from "@/lib/db/providers";
+import type { USState } from "@/lib/us-locations";
+import { ServiceAreaPicker } from "@/components/dashboard/service-area-picker";
 import { inputClass, labelClass, primaryButtonClass } from "@/lib/dashboard-ui";
 
 const initialState: AccountFormState = { error: null };
 
-export function NewProviderForm({ serviceTypes }: { serviceTypes: ServiceType[] }) {
+export function NewProviderForm({ serviceTypes, states }: { serviceTypes: ServiceType[]; states: USState[] }) {
   const [state, formAction, pending] = useActionState(createServiceProviderAction, initialState);
 
   return (
@@ -32,6 +34,14 @@ export function NewProviderForm({ serviceTypes }: { serviceTypes: ServiceType[] 
               </label>
             ))}
           </div>
+        </div>
+
+        <div>
+          <span className={labelClass}>Service areas</span>
+          <p className="font-body -mt-0.5 mb-2 text-xs text-slate">
+            Which states and cities this provider actually covers.
+          </p>
+          <ServiceAreaPicker states={states} />
         </div>
       </section>
 

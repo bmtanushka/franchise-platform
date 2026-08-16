@@ -1,11 +1,30 @@
 import { sql } from "./client";
 import type { Role } from "./context";
 
+export type ServiceArea = { state: string; stateName: string; cities: string[] };
+
 export type ServiceProvider = {
   id: string;
   companyName: string;
   serviceTypes: string[];
+  serviceAreas: ServiceArea[];
 };
+
+type ServiceProviderRow = {
+  id: string;
+  company_name: string;
+  service_types: string[];
+  service_areas: ServiceArea[];
+};
+
+function toServiceProvider(row: ServiceProviderRow): ServiceProvider {
+  return {
+    id: row.id,
+    companyName: row.company_name,
+    serviceTypes: row.service_types,
+    serviceAreas: row.service_areas ?? [],
+  };
+}
 
 /**
  * `service_providers` has no RLS (not one of the brief's protected
@@ -18,12 +37,12 @@ export async function listServiceProviders(role: Role): Promise<ServiceProvider[
     throw new Error("Not authorized to list service providers.");
   }
 
-  const rows = await sql<{ id: string; company_name: string; service_types: string[] }[]>`
-    select id, company_name, service_types
+  const rows = await sql<ServiceProviderRow[]>`
+    select id, company_name, service_types, service_areas
     from service_providers
     order by company_name
   `;
-  return rows.map((row) => ({ id: row.id, companyName: row.company_name, serviceTypes: row.service_types }));
+  return rows.map(toServiceProvider);
 }
 
 export type ServiceType = { key: string; name: string };
@@ -48,15 +67,13 @@ export async function getProviderContactEmail(
 }
 
 export async function getServiceProviderById(providerId: string): Promise<ServiceProvider | null> {
-  const rows = await sql<{ id: string; company_name: string; service_types: string[] }[]>`
-    select id, company_name, service_types
+  const rows = await sql<ServiceProviderRow[]>`
+    select id, company_name, service_types, service_areas
     from service_providers
     where id = ${providerId}
     limit 1
   `;
 
   if (rows.length === 0) return null;
-
-  const row = rows[0];
-  return { id: row.id, companyName: row.company_name, serviceTypes: row.service_types };
+  return toServiceProvider(rows[0]);
 }

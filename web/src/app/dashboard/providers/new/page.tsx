@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { Briefcase } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { listServiceTypes } from "@/lib/db/providers";
+import { listUSStates } from "@/lib/us-locations";
 import { NewProviderForm } from "@/components/dashboard/new-provider-form";
 import { PageHeader } from "@/components/dashboard/page-header";
 
@@ -14,11 +15,12 @@ export default async function NewProviderPage() {
   }
 
   const serviceTypes = await listServiceTypes();
+  const states = listUSStates();
 
   return (
     <div className="w-full max-w-xl space-y-6">
       <PageHeader icon={Briefcase} title="Add service provider" />
-      <NewProviderForm serviceTypes={serviceTypes} />
+      <NewProviderForm serviceTypes={serviceTypes} states={states} />
     </div>
   );
 }

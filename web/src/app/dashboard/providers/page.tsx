@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { Briefcase } from "lucide-react";
 import { auth } from "@/lib/auth/config";
 import { listServiceProviders } from "@/lib/db/providers";
-import { cardClass, primaryButtonClass, pageContainerClass } from "@/lib/dashboard-ui";
+import { cardClass, primaryButtonClass, linkClass, pageContainerClass } from "@/lib/dashboard-ui";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EntityRow } from "@/components/dashboard/entity-row";
 import { StatTile } from "@/components/dashboard/stat-tile";
@@ -42,7 +42,20 @@ export default async function ProvidersPage() {
           </div>
           <ul className={`${cardClass} divide-y divide-border`}>
             {providers.map((p) => (
-              <EntityRow key={p.id} name={p.companyName} meta={p.serviceTypes.join(", ")} />
+              <EntityRow
+                key={p.id}
+                name={p.companyName}
+                meta={
+                  p.serviceAreas.length > 0
+                    ? `${p.serviceTypes.join(", ")} · ${p.serviceAreas.length} service area${p.serviceAreas.length === 1 ? "" : "s"}`
+                    : p.serviceTypes.join(", ")
+                }
+                action={
+                  <Link href={`/dashboard/providers/${p.id}/edit`} className={`${linkClass} ml-2`}>
+                    Edit
+                  </Link>
+                }
+              />
             ))}
           </ul>
         </>
