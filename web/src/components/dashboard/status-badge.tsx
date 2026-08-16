@@ -1,5 +1,6 @@
 import { STATUS_LABEL } from "@/lib/lead-status-labels";
 import type { LeadStatus } from "@/lib/db/leads";
+import type { CourseStatus } from "@/lib/db/courses";
 
 // Maps every lead_status onto the style kit's 5 semantic status colors.
 // The kit only names 5 explicit pairings (Won/In progress/Lost/New/
@@ -60,4 +61,18 @@ const TENANT_STATUS_LABEL: Record<TenantStatus, string> = {
 
 export function TenantStatusBadge({ status }: { status: TenantStatus }) {
   return <TonePill tone={TENANT_STATUS_TONE[status]} label={TENANT_STATUS_LABEL[status]} />;
+}
+
+const COURSE_STATUS_TONE: Record<CourseStatus, StatusTone> = {
+  draft: "neutral",
+  published: "success",
+};
+
+const COURSE_STATUS_LABEL: Record<CourseStatus, string> = {
+  draft: "Draft",
+  published: "Published",
+};
+
+export function CourseStatusBadge({ status }: { status: CourseStatus }) {
+  return <TonePill tone={COURSE_STATUS_TONE[status]} label={COURSE_STATUS_LABEL[status]} />;
 }
