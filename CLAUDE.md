@@ -634,6 +634,33 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     both places, and edited the local one to add a second state
     (California), confirming both areas persist together correctly.
 
+18. ✅ User management for super_admin — new `/dashboard/users`
+    (nav item gated `["super_admin"]` only in `dashboard-nav.ts`, and
+    re-checked server-side on both pages) lists every super_admin/
+    franchisor login and lets the super_admin create more of either.
+    Franchisees and providers aren't listed here — they already have
+    their own pages tied to a tenant/profile row; this only covers the
+    two roles that had no management surface before (originally only
+    seedable via `web/scripts/seed.mjs`).
+
+    `createAdminUser` (`web/src/lib/db/accounts.ts`) is deliberately
+    stricter than `ACCOUNT_CREATOR_ROLES`/`assertCanCreateAccounts`
+    (which lets franchisor create franchisees/providers too) — only
+    `actingRole === 'super_admin'` can call it, so a franchisor account
+    can never create a peer or escalate itself to super_admin. A new
+    franchisor account's `tenant_id` is set to the singleton franchisor
+    tenant (looked up by `type = 'franchisor'`), matching how the
+    originally seeded franchisor account is wired, so every franchisor
+    user shares the same platform-wide view.
+
+    Verified end-to-end both locally and on production: created a new
+    franchisor and a new super_admin account, confirmed `tenant_id`/
+    `role` landed correctly in the DB in both places, confirmed the new
+    franchisor gets identical dashboard access (franchisee list, leads)
+    to the originally seeded one, and confirmed franchisor/franchisee/
+    service_provider logins neither see the "Users" nav item nor can
+    reach `/dashboard/users` directly (redirected to `/dashboard`).
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
