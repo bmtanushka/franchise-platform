@@ -2,6 +2,13 @@ import { withTenantContext, SessionContext } from "./context";
 import { getProviderContactEmail } from "./providers";
 import { sendLeadAssignedEmail } from "@/lib/email";
 
+// Franchise-interest leads (someone wanting to open a franchise, captured
+// via the corporate site's chat) are a different kind of thing than a
+// customer lead — no provider assignment, no deal value/rebate flow, own
+// dashboard section (see listFranchiseProspects below). Every "customer
+// leads" query in this file excludes them explicitly.
+const FRANCHISE_INTEREST_KEY = "franchise_interest";
+
 export type LeadStatus =
   | "new"
   | "qualified"
@@ -86,7 +93,8 @@ export async function listLeads(ctx: SessionContext): Promise<Lead[]> {
       join tenants t on t.id = l.tenant_id
       join service_types st on st.id = l.service_type_id
       left join service_providers sp on sp.id = l.assigned_provider_id
-      where ${
+      where st.key <> ${FRANCHISE_INTEREST_KEY}
+      and ${
         ctx.role === "franchisee"
           ? tx`l.tenant_id = ${ctx.tenantId}`
           : ctx.role === "service_provider"
@@ -273,12 +281,15 @@ export type LeadAnalytics = {
  */
 export async function getLeadAnalytics(ctx: SessionContext): Promise<LeadAnalytics> {
   return withTenantContext(ctx, async (tx) => {
-    const scope =
+    const roleScope =
       ctx.role === "franchisee"
         ? tx`tenant_id = ${ctx.tenantId}`
         : ctx.role === "service_provider"
           ? tx`assigned_provider_id = ${ctx.providerId}`
           : tx`true`;
+    // Composed once so all 4 queries below exclude franchise-interest leads,
+    // regardless of whether they join service_types or query bare leads.
+    const scope = tx`${roleScope} and service_type_id <> (select id from service_types where key = ${FRANCHISE_INTEREST_KEY})`;
 
     const statusRows = await tx<{ status: LeadStatus; count: number }[]>`
       select status, count(*)::int as count
@@ -327,5 +338,60 @@ export async function getLeadAnalytics(ctx: SessionContext): Promise<LeadAnalyti
       })),
       last30Days: dailyRows,
     };
+  });
+}
+
+const FRANCHISE_PROSPECT_MANAGER_ROLES = new Set(["super_admin", "franchisor"]);
+
+export type FranchiseProspect = {
+  id: string;
+  fullName: string | null;
+  contactEmail: string | null;
+  contactPhone: string | null;
+  desiredLocation: string | null;
+  status: LeadStatus;
+  createdAt: string;
+};
+
+/**
+ * People who expressed interest in becoming a franchisee themselves,
+ * captured via the corporate site's chat agent — a fundamentally different
+ * category than a customer lead (no provider, no deal value/rebate flow),
+ * so this is a dedicated query rather than a filter on listLeads.
+ */
+export async function listFranchiseProspects(ctx: SessionContext): Promise<FranchiseProspect[]> {
+  if (!FRANCHISE_PROSPECT_MANAGER_ROLES.has(ctx.role)) {
+    throw new Error("Not authorized to view franchise prospects.");
+  }
+  return withTenantContext(ctx, async (tx) => {
+    const rows = await tx<
+      {
+        id: string;
+        full_name: string | null;
+        contact_email: string | null;
+        contact_phone: string | null;
+        desired_location: string | null;
+        status: LeadStatus;
+        created_at: string;
+      }[]
+    >`
+      select
+        l.id, l.full_name, l.contact_email, l.contact_phone,
+        l.details->>'desired_operating_location' as desired_location,
+        l.status, l.created_at
+      from leads l
+      join service_types st on st.id = l.service_type_id
+      where st.key = ${FRANCHISE_INTEREST_KEY}
+      order by l.created_at desc
+    `;
+    return rows.map((r) => ({
+      id: r.id,
+      fullName: r.full_name,
+      contactEmail: r.contact_email,
+      contactPhone: r.contact_phone,
+      desiredLocation: r.desired_location,
+      status: r.status,
+      createdAt: r.created_at,
+    }));
   });
 }

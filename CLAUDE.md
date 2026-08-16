@@ -174,7 +174,9 @@ won / lost / disqualified`. Every status change is logged to
 - Opening turn: agent introduces itself (tenant-aware — knows which
   franchisee's site, or the franchisor's, it's running on) and asks which
   of the 5 services the visitor is interested in, then branches into that
-  service's question set.
+  service's question set. On the franchisor's own corporate site only, a
+  6th option is also offered — interest in *becoming* a franchisee — see
+  "Franchise-interest leads" below.
 - Question sets live as structured data (JSON or a `service_question_sets`
   table), not hardcoded in prompts, so they can be tuned without a
   redeploy. Fields can be conditional — a `depends_on: {field, equals}`
@@ -189,6 +191,62 @@ won / lost / disqualified`. Every status change is logged to
   drop-off points and prompt tuning. `chat_sessions` tracks status
   (`active`/`completed`/`abandoned`) and links to the resulting lead once
   qualified.
+
+### Franchise-interest leads
+
+People interested in *opening* a Luna Verde franchise themselves (not a
+customer) are captured through the same chat agent, gated to the
+franchisor's own corporate site only — a franchisee's subdomain chat is for
+their local customers, never for someone wanting to open a competing
+franchise. Reuses the `leads`/`chat_sessions` infrastructure wholesale
+rather than a new table: one extra `service_types` row (key
+`franchise_interest`, migration 011) with its own question set
+(`agent/app/question_sets.py`'s `SERVICE_SPECIFIC_FIELDS["franchise_interest"]`
+— reason for interest, ownership experience, capital readiness, timeline,
+desired operating location/territory — plus a dedicated
+`FRANCHISE_INTEREST_CLOSING_FIELDS` list instead of the generic
+`COMMON_CLOSING_FIELDS`, since the shared `postcode` field's "match you
+with someone in your area" wording doesn't fit a franchise-sales
+conversation and the territory question is already asked service-specifically).
+The chat-facing label is "Franchise interest," not the more natural
+"Franchise Opportunity," so the deterministic local-dev fallback extractor
+(no `OPENAI_API_KEY`) can substring-match it the same way every other
+service's label already contains its key — the DB's more formal
+`service_types.name` ("Franchise Opportunity", shown on the lead detail
+page) is unaffected.
+
+The gating is tenant-type-aware, not a hardcoded list edit:
+`web/src/app/api/chat/route.ts` forwards `tenant.type` to the agent's
+`POST /chat/start`, and `agent/app/chat.py` builds the offered service list
+from it (`_offered_labels`/`_service_select_field`) at both points that
+need it — the opening turn (from the request) and the service-selection
+turn (re-derived via the existing `db.get_tenant_type(session.tenant_id)`,
+since that's a separate turn with no request-level tenant type). A
+franchisee-site visitor can't produce `franchise_interest` as an answer at
+all, even by typing the raw key — it's never in that turn's extraction
+enum on that tenant, not just hidden from the intro text.
+
+These leads are structurally invisible to `franchisee`/`service_provider`
+roles under the existing RLS policies with zero policy changes (tenant_id
+is always the franchisor's root tenant, never assigned to a provider), but
+franchisor/super_admin's own "all leads" queries needed an explicit
+`service_types.key <> 'franchise_interest'` exclusion so they don't leak
+into the normal Leads table/kanban/Overview charts or the "services a
+provider handles" picker (`listLeads`, `getLeadAnalytics`,
+`listServiceTypes` in `web/src/lib/db/leads.ts`/`providers.ts`). They get
+their own page instead — `/dashboard/franchisees/prospects` ("Possible
+Franchisees" in the sidebar, right after "Franchisees," plus a summary link
+on the Franchisees list page itself; no true nested-submenu UI exists
+anywhere in this app, so this is a flat nav item that reads as related
+rather than a new nav pattern), franchisor/super_admin only. It reuses the
+existing generic `/dashboard/leads/[id]` detail page unmodified for
+"View" (already renders arbitrary `leads.details` + full status history
+with no service-specific code) and the existing `moveLeadStatusAction` for
+status changes, restricted client-side to a sales-pipeline-shaped subset
+that makes sense without a provider (qualified → in_progress →
+won/lost/disqualified, skipping `assigned_to_provider` and the
+rebate_received/rebate_paid pair) — a UI affordance only, since
+`updateLeadStatus` already permits franchisor/super_admin any status.
 
 ## Course module
 
@@ -808,6 +866,48 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     the embed, and confirmed franchisees see the rendered rich content
     but get no Edit links/pages and service_provider is still fully
     blocked from the module.
+
+22. ✅ Franchise-interest leads — the corporate-site chat agent now offers a
+    6th option, interest in becoming a franchisee, alongside the 5 customer
+    services. See "Franchise-interest leads" under "AI chat agent" above for
+    the full design (reuses `leads`/`service_types` rather than a new
+    table, migration 011, tenant-type-gated to the franchisor's own site,
+    dedicated question set and closing fields, own dashboard section at
+    `/dashboard/franchisees/prospects`).
+
+    Verified end-to-end locally: drove a full chat conversation on the
+    franchisor tenant (`localhost:3000`) through "Franchise interest" to a
+    created lead, confirmed all 5 franchise-specific answers (interest
+    reason, ownership experience, capital readiness, timeline, desired
+    operating location) landed correctly in `leads.details` and contact
+    fields landed in their columns; confirmed the same conversation on a
+    franchisee subdomain (`va1.localhost:3000`) never offers the option on
+    either the intro or a retry message, and typing the raw key
+    `franchise_interest` directly is still rejected (it's never in that
+    turn's extraction enum on that tenant); confirmed the resulting lead
+    shows on `/dashboard/franchisees/prospects` but is absent from
+    `/dashboard/leads` (table and kanban) and from Overview's total/
+    service-type charts; confirmed franchisee/service_provider roles are
+    redirected away from the new page and see no nav item for it; confirmed
+    the New/Edit Service Provider forms' "services handled" list still
+    shows only the original 5 services; confirmed the existing generic
+    `/dashboard/leads/[id]` page renders the franchise-specific fields
+    correctly with zero page-level changes.
+
+    Hit one real bug during verification, specific to local dev without
+    `OPENAI_API_KEY` set: the deterministic fallback extractor matches an
+    enum answer by substring against its label text, and "Franchise
+    Opportunity" doesn't textually contain the key `franchise_interest` the
+    way every other service's label already contains its key (e.g.
+    "Mortgage" contains "mortgage"). Fixed by changing the chat-facing
+    label to "Franchise interest" instead — the DB's more formal
+    `service_types.name` ("Franchise Opportunity," shown on the lead detail
+    page) is a separate value, unaffected. Production is unaffected either
+    way since `OPENAI_API_KEY` is set there and real tool-calling
+    understands the intended phrasing regardless of exact wording — worth
+    remembering for any future new enum option added to the chat: keep its
+    label containing its key, or the local-dev-only fallback breaks for it
+    specifically.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.

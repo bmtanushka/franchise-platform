@@ -43,6 +43,7 @@ export async function moveLeadStatusAction(
   try {
     await updateLeadStatus(ctx, leadId, status, { dealValue });
     revalidatePath("/dashboard/leads");
+    revalidatePath("/dashboard/franchisees/prospects");
     return { error: null };
   } catch (e) {
     return { error: e instanceof Error ? e.message : "Failed to update status." };

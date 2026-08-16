@@ -69,7 +69,59 @@ COMMON_CLOSING_FIELDS: list[Field] = [
     },
 ]
 
+FRANCHISE_INTEREST_CLOSING_FIELDS: list[Field] = [
+    {"key": "full_name", "prompt": "What's your full name?", "type": "text", "lead_field": "full_name"},
+    {
+        "key": "contact_email",
+        "prompt": "What's the best email to reach you at?",
+        "type": "email",
+        "lead_field": "contact_email",
+    },
+    {
+        "key": "contact_phone",
+        "prompt": "And a phone number where we can reach you?",
+        "type": "phone",
+        "lead_field": "contact_phone",
+    },
+    {
+        "key": "consent_to_contact",
+        "prompt": "Do you consent to being contacted by our franchise development team about this?",
+        "type": "boolean",
+        "lead_field": "consent_to_contact",
+    },
+]
+
 SERVICE_SPECIFIC_FIELDS: dict[str, list[Field]] = {
+    "franchise_interest": [
+        {
+            "key": "interest_reason",
+            "prompt": "What's drawing you to franchise ownership with us?",
+            "type": "text",
+        },
+        {
+            "key": "ownership_experience",
+            "prompt": "Have you owned or managed a business before?",
+            "type": "enum",
+            "enum_values": ["never_owned", "managed_not_owned", "owned_before", "own_currently"],
+        },
+        {
+            "key": "capital_readiness",
+            "prompt": "Do you have investment capital ready, or are you still exploring financing options?",
+            "type": "enum",
+            "enum_values": ["capital_ready", "exploring_financing", "not_yet_sure"],
+        },
+        {
+            "key": "target_timeline",
+            "prompt": "What's your timeline to open — within 6 months, 6-12 months, or just researching for now?",
+            "type": "enum",
+            "enum_values": ["within_6_months", "6_12_months", "just_researching"],
+        },
+        {
+            "key": "desired_operating_location",
+            "prompt": "What city, region, or territory are you hoping to open a location in?",
+            "type": "text",
+        },
+    ],
     "credit": [
         {
             "key": "credit_goal",
@@ -177,11 +229,20 @@ SERVICE_LABELS: dict[str, str] = {
     "real_estate": "Real estate",
     "foreign_national_credit": "Foreign national credit facility",
     "business_credit": "Business credit",
+    # Deliberately "Franchise interest" not "Franchise Opportunity" here —
+    # the deterministic local-dev fallback (no OPENAI_API_KEY) matches an
+    # enum answer by substring against its label text, same as every other
+    # service ("Mortgage" contains "mortgage", etc.); this keeps that
+    # working without needing a smarter matcher. The DB's service_types.name
+    # ("Franchise Opportunity", migration 011) is the more formal label used
+    # in the dashboard and is unaffected by this.
+    "franchise_interest": "Franchise interest",
 }
 
 
 def get_question_set(service_key: str) -> list[Field]:
-    return SERVICE_SPECIFIC_FIELDS[service_key] + COMMON_CLOSING_FIELDS
+    closing = FRANCHISE_INTEREST_CLOSING_FIELDS if service_key == "franchise_interest" else COMMON_CLOSING_FIELDS
+    return SERVICE_SPECIFIC_FIELDS[service_key] + closing
 
 
 def _dependency_met(field: Field, answers: dict[str, Any]) -> bool:

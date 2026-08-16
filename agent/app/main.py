@@ -14,7 +14,7 @@ async def health() -> dict[str, str]:
 
 @app.post("/chat/start", response_model=ChatTurnResponse)
 async def start_chat(body: StartChatRequest) -> ChatTurnResponse:
-    result = await chat.start_chat(tenant_id=body.tenant_id, tenant_name=body.tenant_name)
+    result = await chat.start_chat(tenant_id=body.tenant_id, tenant_name=body.tenant_name, tenant_type=body.tenant_type)
     return ChatTurnResponse(**result)
 
 

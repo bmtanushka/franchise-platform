@@ -39,6 +39,14 @@ export default async function FranchiseesPage() {
         <StatTile label="Active" value={String(activeCount)} />
       </div>
 
+      <Link
+        href="/dashboard/franchisees/prospects"
+        className={`${cardClass} flex items-center justify-between p-4 transition-colors hover:bg-sage-tint/60`}
+      >
+        <span className="font-body text-sm text-ink">Possible franchisees — people who inquired about opening one</span>
+        <span className={linkClass}>View →</span>
+      </Link>
+
       <ul className={`${cardClass} divide-y divide-border`}>
         {tenants.map((t) => (
           <EntityRow

@@ -1,4 +1,13 @@
-import { LayoutDashboard, ListChecks, Building2, Briefcase, UserCircle, Users, GraduationCap } from "lucide-react";
+import {
+  LayoutDashboard,
+  ListChecks,
+  Building2,
+  Briefcase,
+  UserCircle,
+  Users,
+  GraduationCap,
+  UserPlus,
+} from "lucide-react";
 import type { Role } from "@/lib/db/context";
 
 export type NavItem = {
@@ -14,6 +23,12 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard, roles: ALL_ROLES },
   { label: "Leads", href: "/dashboard/leads", icon: ListChecks, roles: ALL_ROLES },
   { label: "Franchisees", href: "/dashboard/franchisees", icon: Building2, roles: ["super_admin", "franchisor"] },
+  {
+    label: "Possible Franchisees",
+    href: "/dashboard/franchisees/prospects",
+    icon: UserPlus,
+    roles: ["super_admin", "franchisor"],
+  },
   { label: "Providers", href: "/dashboard/providers", icon: Briefcase, roles: ["super_admin", "franchisor"] },
   { label: "Users", href: "/dashboard/users", icon: Users, roles: ["super_admin"] },
   {

@@ -48,7 +48,12 @@ export async function listServiceProviders(role: Role): Promise<ServiceProvider[
 export type ServiceType = { key: string; name: string };
 
 export async function listServiceTypes(): Promise<ServiceType[]> {
-  const rows = await sql<ServiceType[]>`select key, name from service_types order by name`;
+  // Excludes franchise_interest — that's people wanting to open a
+  // franchise themselves, never a service a business-service provider
+  // "handles".
+  const rows = await sql<ServiceType[]>`
+    select key, name from service_types where key <> 'franchise_interest' order by name
+  `;
   return rows;
 }
 

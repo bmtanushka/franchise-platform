@@ -5,12 +5,23 @@ from .config import settings
 from .openai_helper import extract_answer, phrase_intro, phrase_question
 from .question_sets import Field, SERVICE_LABELS, get_question_set, next_pending_field
 
-SERVICE_SELECT_FIELD: Field = {
-    "key": "service_type",
-    "prompt": "Which service are you interested in?",
-    "type": "enum",
-    "enum_values": list(SERVICE_LABELS.keys()),
-}
+
+def _offered_labels(tenant_type: str) -> dict[str, str]:
+    # Franchise-interest is only ever offered on the franchisor's own
+    # corporate site — a franchisee's subdomain chat is for their local
+    # customers, not people wanting to open a competing franchise.
+    if tenant_type == "franchisor":
+        return SERVICE_LABELS
+    return {k: v for k, v in SERVICE_LABELS.items() if k != "franchise_interest"}
+
+
+def _service_select_field(tenant_type: str) -> Field:
+    return {
+        "key": "service_type",
+        "prompt": "Which service are you interested in?",
+        "type": "enum",
+        "enum_values": list(_offered_labels(tenant_type).keys()),
+    }
 
 
 class ChatTurnError(Exception):
@@ -31,9 +42,9 @@ def _split_answers(question_set: list[Field], answers: dict[str, Any]) -> tuple[
     return lead_fields, details
 
 
-async def start_chat(tenant_id: str, tenant_name: str) -> dict[str, Any]:
+async def start_chat(tenant_id: str, tenant_name: str, tenant_type: str) -> dict[str, Any]:
     session_id = await db.create_chat_session(tenant_id, service_type_id=None)
-    intro = await phrase_intro(tenant_name, list(SERVICE_LABELS.values()))
+    intro = await phrase_intro(tenant_name, list(_offered_labels(tenant_type).values()))
     await db.insert_chat_message(session_id, "assistant", intro)
     return {"session_id": session_id, "reply": intro, "done": False}
 
@@ -48,17 +59,19 @@ async def handle_message(session_id: str, tenant_name: str, user_message: str) -
     await db.insert_chat_message(session_id, "user", user_message)
 
     if session["service_type_id"] is None:
-        return await _handle_service_selection(session_id, tenant_name, user_message)
+        return await _handle_service_selection(session_id, session["tenant_id"], tenant_name, user_message)
 
     return await _handle_field_answer(session, tenant_name, user_message)
 
 
-async def _handle_service_selection(session_id: str, tenant_name: str, user_message: str) -> dict[str, Any]:
-    result = await extract_answer(SERVICE_SELECT_FIELD, user_message)
+async def _handle_service_selection(session_id: str, tenant_id: str, tenant_name: str, user_message: str) -> dict[str, Any]:
+    tenant_type = await db.get_tenant_type(tenant_id)
+    offered = _offered_labels(tenant_type or "franchisee")
+    result = await extract_answer(_service_select_field(tenant_type or "franchisee"), user_message)
     if not result.ok:
         reply = (
             "Sorry, I didn't quite catch that — could you tell me which of these you're "
-            f"interested in: {', '.join(SERVICE_LABELS.values())}?"
+            f"interested in: {', '.join(offered.values())}?"
         )
         await db.insert_chat_message(session_id, "assistant", reply)
         return {"session_id": session_id, "reply": reply, "done": False}

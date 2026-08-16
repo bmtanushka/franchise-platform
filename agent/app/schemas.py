@@ -6,6 +6,7 @@ from pydantic import BaseModel
 class StartChatRequest(BaseModel):
     tenant_id: str
     tenant_name: str
+    tenant_type: str
 
 
 class ChatMessageRequest(BaseModel):
