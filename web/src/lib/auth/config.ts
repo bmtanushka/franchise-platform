@@ -53,5 +53,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       session.user.providerId = (token.providerId as string | null | undefined) ?? null;
       return session;
     },
+    // AUTH_URL is pinned to one fixed domain (needed so Auth.js doesn't
+    // mis-detect the host behind Railway's proxy), but this app is
+    // multi-tenant — every tenant's own domain must get its user back after
+    // sign-out, not always the AUTH_URL domain. The only caller that ever
+    // passes an absolute callbackUrl is our own SignOutButton (built from
+    // window.location.origin), so honoring it as-is is safe.
+    redirect: async ({ url, baseUrl }) => {
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      return url;
+    },
   },
 });

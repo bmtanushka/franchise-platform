@@ -838,7 +838,20 @@ next — nothing currently queued.
   `AUTH_SECRET` value than the local `.env.local` one). `AUTH_URL` is
   required in production — Auth.js's automatic host-detection picks up an
   incorrect `x-forwarded-host` behind Railway's proxy otherwise, which
-  broke sign-out redirects until this was set explicitly.
+  broke sign-out redirects until this was set explicitly. Pinning
+  `AUTH_URL` to one fixed domain introduced a second, multi-tenant-only
+  bug: Auth.js's default `redirect` callback resolves any relative
+  `callbackUrl` (e.g. `"/login"`) against that fixed `AUTH_URL`, so every
+  tenant's sign-out button was landing on the same fixed domain instead
+  of staying on whatever tenant domain the user was actually on. Fixed
+  with a custom `redirect` callback in `web/src/lib/auth/config.ts` that
+  honors an absolute `callbackUrl` as-is instead of coercing it to
+  `AUTH_URL`, plus `SignOutButton` (`web/src/app/dashboard/`) now passes
+  `` `${window.location.origin}/login` `` instead of a bare relative path.
+  Safe to trust that URL unvalidated because `SignOutButton` is the only
+  caller anywhere in the app that supplies a `callbackUrl` at all — there
+  is no `?callbackUrl=`-from-query-string path for an attacker to feed a
+  cross-origin URL through the same callback.
 - No `chat_sessions.status = 'abandoned'` detection yet — messages are all
   logged regardless, so the raw data for later drop-off analysis exists,
   but nothing marks a session abandoned after inactivity.
