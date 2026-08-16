@@ -91,6 +91,42 @@ export async function updateUserPassword(userId: string, passwordHash: string): 
   await sql`update users set password_hash = ${passwordHash}, updated_at = now() where id = ${userId}`;
 }
 
+export type AdminUser = {
+  id: string;
+  email: string;
+  fullName: string | null;
+  role: "super_admin" | "franchisor";
+  createdAt: string;
+};
+
+/**
+ * super_admin/franchisor accounts only — franchisee and service_provider
+ * logins already have their own management pages (Franchisees, Providers)
+ * tied to their tenant/profile row, so this deliberately doesn't overlap
+ * with those. super_admin-only, enforced here as well as by the caller.
+ */
+export async function listAdminUsers(role: Role): Promise<AdminUser[]> {
+  if (role !== "super_admin") {
+    throw new Error("Only a super admin can view admin/franchisor accounts.");
+  }
+
+  const rows = await sql<
+    { id: string; email: string; full_name: string | null; role: "super_admin" | "franchisor"; created_at: string }[]
+  >`
+    select id, email, full_name, role, created_at
+    from users
+    where role in ('super_admin', 'franchisor')
+    order by created_at desc
+  `;
+  return rows.map((row) => ({
+    id: row.id,
+    email: row.email,
+    fullName: row.full_name,
+    role: row.role,
+    createdAt: row.created_at,
+  }));
+}
+
 export type SummaryRecipient = {
   id: string;
   email: string;

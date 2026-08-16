@@ -8,6 +8,7 @@ import {
   createServiceProvider,
   updateFranchiseeAdmin,
   updateServiceProvider,
+  createAdminUser,
   AccountConflictError,
 } from "@/lib/db/accounts";
 import type { ServiceArea } from "@/lib/db/providers";
@@ -139,4 +140,32 @@ export async function updateServiceProviderAction(
 
   revalidatePath("/dashboard/providers");
   redirect("/dashboard/providers");
+}
+
+export async function createAdminUserAction(
+  _prevState: AccountFormState,
+  formData: FormData,
+): Promise<AccountFormState> {
+  const ctx = await requireSessionContext();
+  const role = String(formData.get("role"));
+
+  if (role !== "super_admin" && role !== "franchisor") {
+    return { error: "Select a role." };
+  }
+
+  try {
+    await createAdminUser(ctx.role, {
+      fullName: String(formData.get("fullName")).trim(),
+      loginEmail: String(formData.get("loginEmail")).trim(),
+      loginPassword: String(formData.get("loginPassword")),
+      role,
+    });
+  } catch (err) {
+    if (err instanceof AccountConflictError) return { error: err.message };
+    if (err instanceof Error && err.message.startsWith("Only a super admin")) return { error: err.message };
+    return { error: "Something went wrong creating this account. Please try again." };
+  }
+
+  revalidatePath("/dashboard/users");
+  redirect("/dashboard/users");
 }

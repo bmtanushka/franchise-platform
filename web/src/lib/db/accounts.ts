@@ -224,3 +224,51 @@ export async function updateServiceProvider(
     where id = ${providerId}
   `;
 }
+
+export type CreateAdminUserInput = {
+  fullName: string;
+  loginEmail: string;
+  loginPassword: string;
+  role: "super_admin" | "franchisor";
+};
+
+/**
+ * Adds another super_admin or franchisor login. Deliberately stricter than
+ * ACCOUNT_CREATOR_ROLES/assertCanCreateAccounts (which also allows
+ * franchisor to create franchisees/providers) — only a super_admin can
+ * grant admin-level access, so a franchisor account can never create a
+ * peer or a super_admin for itself.
+ *
+ * A franchisor-role user's tenant_id points at the singleton franchisor
+ * tenant (same as the seeded one) so they see the same platform-wide data
+ * every other franchisor user does; super_admin has no tenant.
+ */
+export async function createAdminUser(
+  actingRole: Role,
+  input: CreateAdminUserInput,
+): Promise<{ userId: string }> {
+  if (actingRole !== "super_admin") {
+    throw new Error("Only a super admin can add admin or franchisor accounts.");
+  }
+
+  const passwordHash = await bcrypt.hash(input.loginPassword, 10);
+
+  let tenantId: string | null = null;
+  if (input.role === "franchisor") {
+    const [franchisorTenant] = await sql<{ id: string }[]>`
+      select id from tenants where type = 'franchisor' limit 1
+    `;
+    tenantId = franchisorTenant?.id ?? null;
+  }
+
+  try {
+    const [user] = await sql<{ id: string }[]>`
+      insert into users (email, role, tenant_id, full_name, password_hash)
+      values (${input.loginEmail}, ${input.role}, ${tenantId}, ${input.fullName}, ${passwordHash})
+      returning id
+    `;
+    return { userId: user.id as string };
+  } catch (err) {
+    rethrowAsConflict(err);
+  }
+}
