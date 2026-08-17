@@ -909,6 +909,32 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     label containing its key, or the local-dev-only fallback breaks for it
     specifically.
 
+23. ✅ Removed every embedded contact form from both raw-HTML site
+    templates — chat is now the only way to contact/collect data on either
+    site, matching the AI chat agent's role in the brief. This was two
+    different things, not one: `partner-with-us.html` (both site types) had
+    a dead decorative form (`action="#"`, never wired to a backend) for
+    business-partner inquiries (realtors, lenders, title companies — a
+    different category from both customer leads and franchise-interest
+    leads, out of scope to build a real capture flow for); the corporate
+    site's `index.html` had two *real, functioning* third-party form
+    embeds — GoHighLevel/ShareTechSolutions iframes (`link.sharetechsolutions.com`)
+    for "Claim Your Rebate Offer" and "Commercial Mortgage Financing" —
+    that silently bypassed this app's `leads` table and the chat agent
+    entirely; the franchisee site's `index.html` had the same "Claim Your
+    Rebate" embed. All three replaced with a "Chat With Us" button
+    (`onclick="document.getElementById('cw-toggle').click()"`, opening
+    `chat-widget.js`'s existing floating panel — no new JS needed) inside a
+    matching prompt card, and the now-fully-unused
+    `<script src="https://link.sharetechsolutions.com/js/form_embed.js">`
+    tag and every form-specific CSS rule (`.form-grid`, `.form-input`,
+    `.apply-form-wrap`, etc.) removed too. Individual service detail pages
+    (`commercial-mortgages.html` on both site types, etc.) already only
+    ever had a static "chat with our agent" prompt, never an embedded
+    form — confirmed via a full-repo grep for `<form`, `sharetechsolutions`,
+    and `widget/form` across every page on both site types before and
+    after, landing at zero remaining matches.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 

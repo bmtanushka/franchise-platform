@@ -8,19 +8,6 @@
        3. Global Footer section  → paste _partials/footer.html
 ════════════════════════════════════════════════════ -->
 
-<style>
-  /* ── APPLICATION FORM (embedded, per-product) ── */
-  .apply-form-wrap {
-    max-width: 800px; margin: 3rem auto 0; background: #fff;
-    border-radius: 8px; overflow: hidden; position: relative;
-  }
-  .apply-form-wrap::before {
-    content: ''; position: absolute; inset: -1px; border-radius: 9px; z-index: -1;
-    background: linear-gradient(135deg, rgba(201,168,76,0.25), rgba(74,158,120,0.15), rgba(201,168,76,0.25));
-  }
-  .apply-form-wrap iframe { display: block; width: 100%; height: 2052px; border: none; }
-</style>
-
 <!-- ══════════════════════════════════════════
      HERO
 ══════════════════════════════════════════ -->
@@ -239,31 +226,20 @@
     <h3 class="sec-title rv d1" style="text-align:center;">Tell us about<br><em>your commercial mortgage</em></h3>
     <div class="rule rv d2" style="margin:1.8rem auto;"></div>
     <p class="body-txt rv d2" style="max-width:640px;margin:0 auto;text-align:center;">
-      Complete the form below and one of our commercial mortgage specialists will reach out with tailored options — plus your commission rebate applied directly to reduce your costs.
+      Chat with one of our commercial mortgage specialists for tailored options — plus your commission rebate applied directly to reduce your costs.
     </p>
 
-    <div class="apply-form-wrap rv d3">
-      <iframe
-        src="https://link.sharetechsolutions.com/widget/form/E8E67qoUiEWHFG8b3lyY"
-        style="width:100%;height:2052px;border:none;border-radius:8px;display:block;"
-        id="inline-E8E67qoUiEWHFG8b3lyY"
-        data-layout="{'id':'INLINE'}"
-        data-trigger-type="alwaysShow"
-        data-trigger-value=""
-        data-activation-type="alwaysActivated"
-        data-activation-value=""
-        data-deactivation-type="neverDeactivate"
-        data-deactivation-value=""
-        data-form-name="Commercial Mortgage Financing"
-        data-height="2052"
-        data-layout-iframe-id="inline-E8E67qoUiEWHFG8b3lyY"
-        data-form-id="E8E67qoUiEWHFG8b3lyY"
-        title="Commercial Mortgage Financing"
-      ></iframe>
+    <div class="rv d3" style="max-width:640px;margin:2rem auto 0;text-align:center;background:var(--glass);border:1px solid var(--glass-b);border-left:3px solid var(--mint);padding:3rem 2.5rem;">
+      <div style="font-size:2rem;margin-bottom:1rem;">💬</div>
+      <p class="body-txt" style="color:rgba(245,240,232,0.85);margin:0 0 1.5rem;">
+        Chat with our agent to share your information — the right person on our team will contact you shortly.
+      </p>
+      <button type="button" class="btn-g" style="border:none;cursor:pointer;" onclick="document.getElementById('cw-toggle').click()">
+        <span>Chat With Us</span>
+      </button>
     </div>
   </div>
 </section>
-<script src="https://link.sharetechsolutions.com/js/form_embed.js"></script>
 
 <!-- ══════════════════════════════════════════
      FOREIGN NATIONALS & INVESTORS
@@ -441,7 +417,7 @@
       <h2 class="sec-title rv d1">Claim Your <em>Rebate</em><br>Offer Now</h2>
       <div class="rule rv d2"></div>
       <p class="body-txt rv d2">
-        Ready to keep more cash in your pocket? Fill in the form and one of our specialists will reach out to walk you through your personalised rebate strategy — whether it's business capital, commercial mortgages, international financing, or real estate.
+        Ready to keep more cash in your pocket? Chat with us and one of our specialists will reach out to walk you through your personalised rebate strategy — whether it's business capital, commercial mortgages, international financing, or real estate.
       </p>
       <div class="form-benefits rv d3">
         <div class="form-benefit">
@@ -476,29 +452,18 @@
     </div>
 
     <div class="form-right rv d2">
-      <div class="form-iframe-wrap">
-        <iframe
-          src="https://link.sharetechsolutions.com/widget/form/rJbJcZHZXBqKKPZpjZGb"
-          style="width:100%;height:433px;border:none;border-radius:0;"
-          id="inline-rJbJcZHZXBqKKPZpjZGb"
-          data-layout="{'id':'INLINE'}"
-          data-trigger-type="alwaysShow"
-          data-trigger-value=""
-          data-activation-type="alwaysActivated"
-          data-activation-value=""
-          data-deactivation-type="neverDeactivate"
-          data-deactivation-value=""
-          data-form-name="Marketing Form - Claim Offer"
-          data-height="433"
-          data-layout-iframe-id="inline-rJbJcZHZXBqKKPZpjZGb"
-          data-form-id="rJbJcZHZXBqKKPZpjZGb"
-          title="Marketing Form - Claim Offer"
-        ></iframe>
+      <div class="form-iframe-wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2.5rem;gap:1.2rem;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--forest);">Chat with us to get started</div>
+        <p style="font-size:0.9rem;color:var(--muted);line-height:1.6;max-width:320px;">
+          Tell our assistant a bit about your situation and we'll match you with the right rebate strategy.
+        </p>
+        <button type="button" class="btn-g" style="border:none;cursor:pointer;" onclick="document.getElementById('cw-toggle').click()">
+          <span>Chat With Us</span>
+        </button>
       </div>
     </div>
   </div>
 </section>
-<script src="https://link.sharetechsolutions.com/js/form_embed.js"></script>
 
 <!-- ══════════════════════════════════════════
      FRANCHISE
