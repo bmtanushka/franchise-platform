@@ -25,7 +25,7 @@
 
   <div class="hero-cta">
     <a href="/rebate-and-credit-rewards#real-estate" class="btn-g"><span>See Your Rebate</span></a>
-    <a href="#apply" class="btn-txt">Chat With Us</a>
+    <a href="#" class="btn-txt" onclick="document.getElementById('cw-toggle').click(); return false;">Chat With Us</a>
   </div>
 </section>
 
@@ -86,7 +86,7 @@
       <div class="stream">Commission Rebate</div>
     </div>
     <div style="display:flex;align-items:center;justify-content:center;gap:2rem;flex-wrap:wrap;" class="rv d4">
-      <a href="#apply" class="btn-g"><span>Chat With Us</span></a>
+      <a href="#" class="btn-g" onclick="document.getElementById('cw-toggle').click(); return false;"><span>Chat With Us</span></a>
       <a href="/rebate-and-credit-rewards#real-estate" class="btn-txt">Review Your Rebate</a>
     </div>
   </div>
@@ -101,9 +101,12 @@
   <div class="rule rv d2" style="margin:1.8rem auto;"></div>
   <div class="rv d3" style="max-width:640px;margin:2rem auto 0;text-align:center;background:var(--glass);border:1px solid var(--glass-b);border-left:3px solid var(--mint);padding:3rem 2.5rem;">
     <div style="font-size:2rem;margin-bottom:1rem;">💬</div>
-    <p class="body-txt" style="color:rgba(245,240,232,0.85);">
+    <p class="body-txt" style="color:rgba(245,240,232,0.85);margin:0 0 1.5rem;">
       Chat with our agent to share your information — the right person on our team will contact you shortly, with your commission and mortgage rebates applied directly to reduce your closing costs.
     </p>
+    <button type="button" class="btn-g" style="border:none;cursor:pointer;" onclick="document.getElementById('cw-toggle').click()">
+      <span>Chat With Us</span>
+    </button>
   </div>
 </section>
 

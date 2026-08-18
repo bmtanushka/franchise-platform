@@ -935,6 +935,48 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     and `widget/form` across every page on both site types before and
     after, landing at zero remaining matches.
 
+24. ✅ Follow-up to the above: every "Chat With Us" link/button across both
+    site types now actually opens the chat widget, not just the ones behind
+    the removed forms. Two distinct gaps, found via a full-repo grep for
+    "Chat With Us"/"Contact Us" across every page:
+    - The corporate site's shared nav dropdown (`_partials/header.html`,
+      injected on every page) had 4 "Chat With Us" entries linking to
+      `/<page>#apply` — cross-page navigation-then-scroll instead of
+      actually opening the widget. Same for 7 hero/mid-page "Chat With Us"
+      CTA buttons on `credit.html`/`foreign-nationals.html`/
+      `real-estate.html`/`commercial-mortgages.html`/`business.html`
+      linking to their own page's `#apply`/`#commercial-apply` anchor. All
+      converted to `href="#"` (or `type="button"`) +
+      `onclick="document.getElementById('cw-toggle').click()"`
+      (`return false` on the `<a>` versions to block the anchor jump),
+      opening `chat-widget.js`'s existing panel directly instead.
+    - Those same `#apply`/`#commercial-apply` sections' static "💬 Chat with
+      our agent..." message cards had **no actual button at all** on 5
+      corporate-site pages and 2 franchisee-site pages
+      (`commercial-mortgages.html`, `business.html`) — a visitor who
+      scrolled there (e.g. via a "Get Started" CTA using different wording,
+      deliberately left untouched since it isn't literally "Chat With
+      Us"/"Contact Us") had nothing to click. Added a matching "Chat With
+      Us" button to each.
+
+    Left untouched, deliberately: two "Contact us for state-specific
+    information" instances in `about-us.html` (plain disclaimer prose, not
+    a link/button — nothing to wire); CTA buttons labeled differently
+    ("Get Started," "Start Your Application," "Become a Partner," etc.) —
+    out of scope for a request specifically about "Chat With Us"/"Contact
+    Us" text, and every one of them already lands on a section that now has
+    a working chat button regardless.
+
+    Verified locally: full-repo grep confirms every remaining "Chat With
+    Us"/"Contact Us" occurrence on both site types is either an
+    onclick-wired element or the two prose exceptions above. Hit a real
+    gotcha mid-verification: `web/src/lib/corporate-site.ts` caches file
+    contents in an in-memory `Map` (`fileCache`) read once per dev-server
+    process, so these raw-HTML edits didn't show up in fetched pages until
+    the dev server was restarted — worth remembering for any future
+    corporate/franchisee-site HTML edit, since `next dev`'s Fast Refresh
+    doesn't cover this cache the way it does the React module graph.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
