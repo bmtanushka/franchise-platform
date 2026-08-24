@@ -3,24 +3,26 @@ from typing import Any, Optional
 from . import db, email
 from .config import settings
 from .openai_helper import extract_answer, phrase_question
-from .question_sets import Field, SERVICE_LABELS, get_question_set, next_pending_field
+from .question_sets import Field, next_pending_field
 
 
-def _offered_labels(tenant_type: str) -> dict[str, str]:
-    # Franchise-interest is only ever offered on the franchisor's own
-    # corporate site — a franchisee's subdomain chat is for their local
-    # customers, not people wanting to open a competing franchise.
-    if tenant_type == "franchisor":
-        return SERVICE_LABELS
-    return {k: v for k, v in SERVICE_LABELS.items() if k != "franchise_interest"}
+async def _offered_services(tenant_type: str) -> dict[str, str]:
+    # Franchise-interest (or any future corporate_only service) is only
+    # ever offered on the franchisor's own corporate site — a franchisee's
+    # subdomain chat is for their local customers, not people wanting to
+    # open a competing franchise. db.list_offered_services already applies
+    # this filter (and is_active) at the query level.
+    services = await db.list_offered_services(tenant_type)
+    return {s["key"]: s["name"] for s in services}
 
 
-def _service_select_field(tenant_type: str) -> Field:
+def _service_select_field(offered: dict[str, str]) -> Field:
     return {
         "key": "service_type",
         "prompt": "Which service are you interested in?",
         "type": "enum",
-        "enum_values": list(_offered_labels(tenant_type).keys()),
+        "enum_values": list(offered.keys()),
+        "enum_labels": offered,
     }
 
 
@@ -42,7 +44,7 @@ def _split_answers(question_set: list[Field], answers: dict[str, Any]) -> tuple[
     return lead_fields, details
 
 
-async def _build_intro(tenant_name: str, tenant_type: str) -> str:
+async def _build_intro(tenant_name: str, tenant_type: str, offered: dict[str, str]) -> str:
     # Deliberately literal, not passed through OpenAI rephrasing — the
     # whole point of an editable greeting is that what the franchisor/
     # super_admin types is exactly what a visitor sees, not something an
@@ -52,13 +54,14 @@ async def _build_intro(tenant_name: str, tenant_type: str) -> str:
     chat_settings = await db.get_chat_settings()
     template = chat_settings["corporate_greeting"] if tenant_type == "franchisor" else chat_settings["franchisee_greeting"]
     greeting = template.replace("{tenant_name}", tenant_name)
-    services_line = ", ".join(_offered_labels(tenant_type).values())
+    services_line = ", ".join(offered.values())
     return f"{greeting} Which of these are you interested in: {services_line}?"
 
 
 async def start_chat(tenant_id: str, tenant_name: str, tenant_type: str) -> dict[str, Any]:
     session_id = await db.create_chat_session(tenant_id, service_type_id=None)
-    intro = await _build_intro(tenant_name, tenant_type)
+    offered = await _offered_services(tenant_type)
+    intro = await _build_intro(tenant_name, tenant_type, offered)
     await db.insert_chat_message(session_id, "assistant", intro)
     return {"session_id": session_id, "reply": intro, "done": False}
 
@@ -80,8 +83,8 @@ async def handle_message(session_id: str, tenant_name: str, user_message: str) -
 
 async def _handle_service_selection(session_id: str, tenant_id: str, tenant_name: str, user_message: str) -> dict[str, Any]:
     tenant_type = await db.get_tenant_type(tenant_id)
-    offered = _offered_labels(tenant_type or "franchisee")
-    result = await extract_answer(_service_select_field(tenant_type or "franchisee"), user_message)
+    offered = await _offered_services(tenant_type or "franchisee")
+    result = await extract_answer(_service_select_field(offered), user_message)
     if not result.ok:
         reply = (
             "Sorry, I didn't quite catch that — could you tell me which of these you're "
@@ -97,8 +100,14 @@ async def _handle_service_selection(session_id: str, tenant_id: str, tenant_name
 
     await db.set_session_service_type(session_id, service_type_id)
 
-    first_field = next_pending_field(get_question_set(service_key), {})
-    assert first_field is not None  # every question set has at least the common closing fields
+    question_set = await db.get_questions_for_service(service_type_id)
+    first_field = next_pending_field(question_set, {})
+    if first_field is None:
+        # An admin saved this service with no questions at all — shouldn't
+        # happen (the 4 required closing questions can't be deleted), but
+        # data can still end up in an unexpected state; fail as a normal
+        # chat error, not an unhandled crash for every visitor.
+        raise ChatTurnError(f"Service '{service_key}' has no questions configured.")
     reply = await phrase_question(first_field, tenant_name)
     await db.insert_chat_message(session_id, "assistant", reply)
     return {"session_id": session_id, "reply": reply, "done": False}
@@ -106,8 +115,8 @@ async def _handle_service_selection(session_id: str, tenant_id: str, tenant_name
 
 async def _handle_field_answer(session: dict[str, Any], tenant_name: str, user_message: str) -> dict[str, Any]:
     session_id = session["id"]
-    service_key = await db.get_service_type_key(session["service_type_id"])
-    question_set = get_question_set(service_key)
+    service_type_id = session["service_type_id"]
+    question_set = await db.get_questions_for_service(service_type_id)
     answers = session["collected_answers"]
 
     field = next_pending_field(question_set, answers)
@@ -130,20 +139,20 @@ async def _handle_field_answer(session: dict[str, Any], tenant_name: str, user_m
         await db.insert_chat_message(session_id, "assistant", reply)
         return {"session_id": session_id, "reply": reply, "done": False}
 
-    return await _finalize_lead(session["tenant_id"], session_id, service_key, question_set, new_answers, tenant_name)
+    service_name = await db.get_service_type_name(service_type_id)
+    return await _finalize_lead(session["tenant_id"], session_id, service_type_id, service_name, question_set, new_answers, tenant_name)
 
 
 async def _finalize_lead(
     tenant_id: str,
     session_id: str,
-    service_key: str,
+    service_type_id: str,
+    service_name: Optional[str],
     question_set: list[Field],
     answers: dict[str, Any],
     tenant_name: str,
 ) -> dict[str, Any]:
     lead_fields, details = _split_answers(question_set, answers)
-    service_type_id = await db.get_service_type_id(service_key)
-    assert service_type_id is not None
 
     lead_id = await db.create_lead(
         tenant_id=tenant_id,
@@ -171,7 +180,7 @@ async def _finalize_lead(
                     owner_email,
                     tenant_name=tenant_name,
                     full_name=lead_fields.get("full_name"),
-                    service_label=SERVICE_LABELS.get(service_key, service_key),
+                    service_label=service_name or "Unknown service",
                     lead_url=f"{settings.app_public_url}/dashboard/leads/{lead_id}",
                 )
     except Exception as exc:  # noqa: BLE001 - notification must never break lead capture

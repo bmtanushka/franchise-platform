@@ -101,6 +101,89 @@ async def get_service_type_key(service_type_id: str) -> Optional[str]:
     return row["key"] if row else None
 
 
+async def get_service_type_name(service_type_id: str) -> Optional[str]:
+    pool = await get_pool()
+    row = await pool.fetchrow("select name from service_types where id = $1", UUID(service_type_id))
+    return row["name"] if row else None
+
+
+async def list_offered_services(tenant_type: str) -> list[dict[str, str]]:
+    """
+    Active services offered to a visitor of this tenant type — corporate-
+    only services (franchise_interest, or any future one an admin marks
+    that way) are excluded everywhere except the franchisor's own site.
+    Replaces chat.py's old hardcoded `SERVICE_LABELS` + key-equality check.
+    """
+    pool = await get_pool()
+    rows = await pool.fetch(
+        """
+        select key, name from service_types
+        where is_active and (not corporate_only or $1 = 'franchisor')
+        order by created_at
+        """,
+        tenant_type,
+    )
+    return [{"key": r["key"], "name": r["name"]} for r in rows]
+
+
+async def get_questions_for_service(service_type_id: str) -> list[dict[str, Any]]:
+    """
+    Ordered question list for a service, shaped exactly like the old
+    static `Field` dicts from question_sets.py so `next_pending_field`/
+    `_dependency_met` (unchanged, dict-shape-agnostic) and openai_helper's
+    extraction keep working unmodified. `enum_values` is the flat list of
+    stored option values (what `_dependency_met`/the tool-call JSON schema
+    need); `enum_labels` (value -> label) is new, used by openai_helper to
+    give extraction more than a bare slug to match free text against.
+    Called fresh every turn — not cached — so an admin edit takes effect
+    immediately, including mid-conversation.
+    """
+    pool = await get_pool()
+    rows = await pool.fetch(
+        """
+        select
+          cq.id, cq.key, cq.prompt, cq.field_type, cq.lead_field,
+          cq.depends_on_key, cq.depends_on_mode, cq.depends_on_values,
+          co.value as option_value, co.label as option_label
+        from chat_questions cq
+        left join chat_question_options co on co.chat_question_id = cq.id
+        where cq.service_type_id = $1
+        order by cq.position, co.position
+        """,
+        UUID(service_type_id),
+    )
+
+    fields: dict[str, dict[str, Any]] = {}
+    order: list[str] = []
+    for row in rows:
+        key = row["key"]
+        if key not in fields:
+            order.append(key)
+            field: dict[str, Any] = {
+                "key": key,
+                "prompt": row["prompt"],
+                "type": row["field_type"],
+            }
+            if row["lead_field"]:
+                field["lead_field"] = row["lead_field"]
+            if row["depends_on_key"]:
+                field["depends_on"] = {"field": row["depends_on_key"]}
+                if row["depends_on_mode"] == "equals":
+                    field["depends_on"]["equals"] = row["depends_on_values"][0]
+                else:
+                    field["depends_on"]["one_of"] = list(row["depends_on_values"])
+            if row["field_type"] == "enum":
+                field["enum_values"] = []
+                field["enum_labels"] = {}
+            fields[key] = field
+
+        if row["option_value"] is not None:
+            fields[key]["enum_values"].append(row["option_value"])
+            fields[key]["enum_labels"][row["option_value"]] = row["option_label"]
+
+    return [fields[k] for k in order]
+
+
 async def create_lead(
     *,
     tenant_id: str,

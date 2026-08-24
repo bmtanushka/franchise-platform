@@ -8,6 +8,7 @@ import {
   GraduationCap,
   UserPlus,
   MessageCircle,
+  MessageSquareText,
 } from "lucide-react";
 import type { Role } from "@/lib/db/context";
 
@@ -42,6 +43,12 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Chat Greeting",
     href: "/dashboard/chat-settings",
     icon: MessageCircle,
+    roles: ["super_admin", "franchisor"],
+  },
+  {
+    label: "Chat Services",
+    href: "/dashboard/chat-services",
+    icon: MessageSquareText,
     roles: ["super_admin", "franchisor"],
   },
   { label: "My Profile", href: "/dashboard/profile", icon: UserCircle, roles: ALL_ROLES },

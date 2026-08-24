@@ -48,11 +48,13 @@ export async function listServiceProviders(role: Role): Promise<ServiceProvider[
 export type ServiceType = { key: string; name: string };
 
 export async function listServiceTypes(): Promise<ServiceType[]> {
-  // Excludes franchise_interest — that's people wanting to open a
-  // franchise themselves, never a service a business-service provider
-  // "handles".
+  // Excludes corporate_only services (e.g. franchise_interest — people
+  // wanting to open a franchise themselves, never a service a business-
+  // service provider "handles") and deactivated ones, generally rather
+  // than hardcoded by key — any future corporate-only or deactivated
+  // service is automatically excluded too.
   const rows = await sql<ServiceType[]>`
-    select key, name from service_types where key <> 'franchise_interest' order by name
+    select key, name from service_types where not corporate_only and is_active order by name
   `;
   return rows;
 }

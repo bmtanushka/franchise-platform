@@ -173,17 +173,17 @@ won / lost / disqualified`. Every status change is logged to
      ambiguous, re-ask rather than guess.
 - Opening turn: agent introduces itself (tenant-aware — knows which
   franchisee's site, or the franchisor's, it's running on) and asks which
-  of the 5 services the visitor is interested in, then branches into that
-  service's question set. On the franchisor's own corporate site only, a
-  6th option is also offered — interest in *becoming* a franchisee — see
-  "Franchise-interest leads" below.
-- Question sets live as structured data (JSON or a `service_question_sets`
-  table), not hardcoded in prompts, so they can be tuned without a
-  redeploy. Fields can be conditional — a `depends_on: {field, equals}`
-  or `{field, one_of}` on a field means it's only ever asked (and only
-  ever lands in `leads.details`) when an earlier field's answer matches;
-  otherwise it's permanently skipped, not just deferred. See "Question
-  sets" below.
+  service the visitor is interested in, then branches into that service's
+  question set. On the franchisor's own corporate site only, a
+  corporate-only option is also offered — interest in *becoming* a
+  franchisee — see "Franchise-interest leads" below.
+- Question sets are fully database-backed and franchisor/super_admin-
+  editable through the dashboard, not hardcoded in Python — see
+  "Admin-editable chat services & questions" below. Fields can be
+  conditional — a `depends_on: {field, equals}` or `{field, one_of}` on a
+  field means it's only ever asked (and only ever lands in
+  `leads.details`) when an earlier field's answer matches; otherwise it's
+  permanently skipped, not just deferred.
 - On completion of all required fields, upsert a row into `leads` (setting
   `tenant_id` per the rules above) and give a closing message.
 - **Every message, in and out, is written to `chat_messages` before the
@@ -199,54 +199,53 @@ customer) are captured through the same chat agent, gated to the
 franchisor's own corporate site only — a franchisee's subdomain chat is for
 their local customers, never for someone wanting to open a competing
 franchise. Reuses the `leads`/`chat_sessions` infrastructure wholesale
-rather than a new table: one extra `service_types` row (key
-`franchise_interest`, migration 011) with its own question set
-(`agent/app/question_sets.py`'s `SERVICE_SPECIFIC_FIELDS["franchise_interest"]`
-— reason for interest, ownership experience, capital readiness, timeline,
-desired operating location/territory — plus a dedicated
-`FRANCHISE_INTEREST_CLOSING_FIELDS` list instead of the generic
-`COMMON_CLOSING_FIELDS`, since the shared `postcode` field's "match you
-with someone in your area" wording doesn't fit a franchise-sales
-conversation and the territory question is already asked service-specifically).
-The chat-facing label is "Franchise interest," not the more natural
-"Franchise Opportunity," so the deterministic local-dev fallback extractor
-(no `OPENAI_API_KEY`) can substring-match it the same way every other
-service's label already contains its key — the DB's more formal
-`service_types.name` ("Franchise Opportunity", shown on the lead detail
-page) is unaffected.
+rather than a new table: one `service_types` row (key `franchise_interest`,
+migration 011) with `corporate_only = true` (migration 013) and its own
+question set (reason for interest, ownership experience, capital
+readiness, timeline, desired operating location/territory, plus name/
+email/phone/consent — no `postcode`, since its "match you with someone in
+your area" wording doesn't fit a franchise-sales conversation and the
+territory question already covers "where"). The gating that used to be a
+hardcoded `if service_key == "franchise_interest"` check is now the
+general `corporate_only` column any service can have — see "Admin-editable
+chat services & questions" below.
 
 The gating is tenant-type-aware, not a hardcoded list edit:
 `web/src/app/api/chat/route.ts` forwards `tenant.type` to the agent's
 `POST /chat/start`, and `agent/app/chat.py` builds the offered service list
-from it (`_offered_labels`/`_service_select_field`) at both points that
-need it — the opening turn (from the request) and the service-selection
-turn (re-derived via the existing `db.get_tenant_type(session.tenant_id)`,
-since that's a separate turn with no request-level tenant type). A
-franchisee-site visitor can't produce `franchise_interest` as an answer at
-all, even by typing the raw key — it's never in that turn's extraction
-enum on that tenant, not just hidden from the intro text.
+from it (`_offered_services`/`_service_select_field`, backed by
+`db.list_offered_services`) at both points that need it — the opening turn
+(from the request) and the service-selection turn (re-derived via the
+existing `db.get_tenant_type(session.tenant_id)`, since that's a separate
+turn with no request-level tenant type). A franchisee-site visitor can't
+produce `franchise_interest` as an answer at all, even by typing the raw
+key — it's never in that turn's extraction enum on that tenant, not just
+hidden from the intro text.
 
 These leads are structurally invisible to `franchisee`/`service_provider`
 roles under the existing RLS policies with zero policy changes (tenant_id
 is always the franchisor's root tenant, never assigned to a provider), but
 franchisor/super_admin's own "all leads" queries needed an explicit
 `service_types.key <> 'franchise_interest'` exclusion so they don't leak
-into the normal Leads table/kanban/Overview charts or the "services a
-provider handles" picker (`listLeads`, `getLeadAnalytics`,
-`listServiceTypes` in `web/src/lib/db/leads.ts`/`providers.ts`). They get
-their own page instead — `/dashboard/franchisees/prospects` ("Possible
-Franchisees" in the sidebar, right after "Franchisees," plus a summary link
-on the Franchisees list page itself; no true nested-submenu UI exists
-anywhere in this app, so this is a flat nav item that reads as related
-rather than a new nav pattern), franchisor/super_admin only. It reuses the
-existing generic `/dashboard/leads/[id]` detail page unmodified for
-"View" (already renders arbitrary `leads.details` + full status history
-with no service-specific code) and the existing `moveLeadStatusAction` for
-status changes, restricted client-side to a sales-pipeline-shaped subset
-that makes sense without a provider (qualified → in_progress →
-won/lost/disqualified, skipping `assigned_to_provider` and the
-rebate_received/rebate_paid pair) — a UI affordance only, since
-`updateLeadStatus` already permits franchisor/super_admin any status.
+into the normal Leads table/kanban/Overview charts (`listLeads`,
+`getLeadAnalytics` in `web/src/lib/db/leads.ts` — deliberately still
+hardcoded to this one literal key, not generalized to `corporate_only`,
+since "hide from the normal leads dashboard" is specific to this one lead
+*category* being fundamentally non-customer, not a property every
+corporate-only service should inherit). They get their own page instead —
+`/dashboard/franchisees/prospects` ("Possible Franchisees" in the sidebar,
+right after "Franchisees," plus a summary link on the Franchisees list
+page itself; no true nested-submenu UI exists anywhere in this app, so
+this is a flat nav item that reads as related rather than a new nav
+pattern), franchisor/super_admin only. It reuses the existing generic
+`/dashboard/leads/[id]` detail page unmodified for "View" (already renders
+arbitrary `leads.details` + full status history with no service-specific
+code) and the existing `moveLeadStatusAction` for status changes,
+restricted client-side to a sales-pipeline-shaped subset that makes sense
+without a provider (qualified → in_progress → won/lost/disqualified,
+skipping `assigned_to_provider` and the rebate_received/rebate_paid pair)
+— a UI affordance only, since `updateLeadStatus` already permits
+franchisor/super_admin any status.
 
 ### Chat greeting
 
@@ -260,7 +259,7 @@ tenant's name at chat-start time (`agent/app/chat.py`'s `_build_intro`);
 the "Which of these are you interested in: ..." services question is
 always system-appended after it, never part of the editable text, so an
 edit can't accidentally go stale against the real, tenant-type-filtered
-service list (`_offered_labels`).
+service list (`_offered_services`).
 
 Deliberately **not** passed through OpenAI rephrasing the way question
 prompts still are (`phrase_question` in `agent/app/openai_helper.py`) —
@@ -268,6 +267,92 @@ prompts still are (`phrase_question` in `agent/app/openai_helper.py`) —
 entirely. The whole point of making the greeting editable is that what a
 franchisor/super_admin types is exactly what a visitor sees, not something
 an LLM might paraphrase differently turn to turn.
+
+### Admin-editable chat services & questions
+
+The chat agent's per-service question sets used to be static Python dicts
+(`agent/app/question_sets.py`). They're now fully database-backed and
+editable by franchisor/super_admin through `/dashboard/chat-services`
+("Chat Services" in the sidebar) — add new services (not just edit the
+original 6), add/edit/delete their questions, and configure `depends_on`
+conditional branching, all without a code change or redeploy.
+
+**Schema** (migration 013): `service_types` gains `corporate_only`
+(generalizes the old hardcoded "only franchise_interest is corporate-site-
+only" check into a real column any service can have) and `is_active`
+(soft-deactivate only — `leads.service_type_id` FKs here, so no hard
+delete). New `chat_questions` (key, prompt, `field_type`
+text/email/phone/boolean/enum, `lead_field` constrained to the 5 columns
+`create_lead` actually recognizes, `depends_on_key`/`depends_on_mode`/
+`depends_on_values`, `position`) and `chat_question_options` (a proper
+child table — `value`/`label` pairs — not jsonb, because `depends_on`
+values are cross-referenced between questions and jsonb array elements
+can't be individually referenced, ordered, or protected against a silent
+rename). Migration 014 seeded both tables with exactly what the old Python
+dicts contained, so deploying this was behavior-neutral before any admin
+touched anything — verified by reproducing all 4 pre-existing conditional
+branches (mortgage ×3, real_estate ×2, including the "both" case that
+fires two conditional fields at once) through a real chat conversation
+against the migrated data.
+
+**Identity fields are immutable once created; everything else is
+editable** — applied consistently to `service_types.key`,
+`chat_questions.key`, and `chat_question_options.value`, all for the same
+reason: something else references them by that exact string with no FK to
+enforce it (`service_providers.service_types` stores a loose `text[]` of
+service keys; `depends_on_key`/`depends_on_values` reference question keys
+and option values directly), so a rename would silently orphan the
+reference. Renaming means delete-and-recreate, which save-time validation
+blocks if anything currently depends on it.
+
+**Every service is auto-seeded with 4 required questions at creation**
+(`full_name`/`contact_email`/`contact_phone`/`consent_to_contact` — what
+`create_lead` needs to produce a usable lead) **that can't be deleted**
+(blocked server-side, no delete button client-side) — structurally
+prevents "a service with zero closable questions" rather than relying on
+validation to catch it after the fact. `postcode` isn't auto-seeded — it's
+optional, addable by the admin, since it's specific to customer-service
+matching and doesn't necessarily fit every possible custom service.
+
+**`depends_on` can only target an earlier `enum` or `boolean` question in
+the same service** — matches 100% of real usage (`mortgage_purpose`,
+`real_estate_intent`) and avoids "type free text that must match exactly"
+as a branch condition. Validated on every create/update in
+`web/src/lib/db/chat-services.ts` (the primary enforcement layer, per this
+repo's convention): the target must exist, be enum/boolean, and have a
+strictly earlier `position` — re-checked on every save (including a plain
+reorder) so an edit can't silently break an existing dependency. Also
+validated: enum questions need ≥ 1 option; deleting/renaming an option
+value, deleting a question, or changing a question's type away from
+enum/boolean is blocked if anything currently depends on it; flipping
+`corporate_only` to `true` is blocked if any `service_providers.service_types`
+currently includes that service's key (would silently orphan that
+provider's "services handled" selection).
+
+**Runtime defense-in-depth in the agent**, since admin-editable data can
+still end up in a bad state between validation passes: `agent/app/main.py`'s
+`/chat/start` endpoint (previously the one turn with *no* error handling
+at all) now catches broadly and returns a graceful "sorry, try again
+shortly" instead of an unhandled 500 for every visitor on that tenant; the
+two bare `assert`s in `chat.py` that were only safe because the data used
+to be static Python (a service always having questions, a service always
+existing) are now real `ChatTurnError`s.
+
+**Enum matching got more robust as a side effect.** Extraction (both real
+OpenAI tool-calling and the local-dev-only deterministic fallback) used to
+match only against a bare stored value (e.g. `"purchase"`); options now
+carry a separate admin-authored `label` (e.g. "Just purchasing my first
+home"), and both extraction paths match against label text too —
+`agent/app/openai_helper.py`'s `_tool_schema_for_field` enriches the tool
+description with label context (the JSON Schema `enum` constraint itself
+still only accepts raw values), and `_fallback_extract`'s longest-first
+substring-priority matching (there specifically to stop `"credit"` from
+shadowing `"business_credit"`) now runs across both values and labels
+together. This also retired the old `franchise_interest`-specific
+workaround where the chat-facing label had to be kept different from the
+DB's `service_types.name` purely so the old value-only fallback matcher
+could substring-match it — `service_types.name` is now the single name
+field, used everywhere.
 
 ## Course module
 
@@ -1023,6 +1108,49 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     `/dashboard/chat-settings` and don't see the nav item; reverted the
     test greeting text back to the original default afterward, since this
     is live production data, not a throwaway local DB.
+
+26. ✅ Admin-editable chat services & questions — replaced the hardcoded
+    Python question sets with a fully database-backed, franchisor/
+    super_admin-editable model. See "Admin-editable chat services &
+    questions" under "AI chat agent" above for the full design (migrations
+    013/014, the `chat_questions`/`chat_question_options` schema, the
+    identity-fields-immutable rule, the auto-seeded required questions,
+    the `depends_on` validation rules, the agent's new defense-in-depth
+    error handling, and the label-aware extraction matching). Went through
+    a full design-validation pass before implementation, given this
+    replaces a live, revenue-relevant lead-capture flow used by every
+    tenant — that pass caught two real risks the initial design missed
+    (bare `assert`s that were only safe as static Python, and jsonb being
+    the wrong model for cross-referenced enum options) that reshaped the
+    plan before any code was written.
+
+    Verified end-to-end locally: regression-tested all 6 pre-migration
+    services through real chat conversations, specifically exercising all
+    4 existing conditional branches (mortgage ×3, real_estate ×2 —
+    including the "both" case firing two conditional fields at once) to
+    confirm the migrated data reproduces the exact prior behavior;
+    confirmed `franchise_interest` still only appears on the franchisor
+    tenant via the new `corporate_only` column; created a brand-new custom
+    service ("Equipment Leasing") entirely through the dashboard, confirmed
+    its 4 required questions were auto-seeded and undeletable, added an
+    enum question with options and a second question that `depends_on` it,
+    and drove a real chat conversation through it to a created lead with
+    the conditional field firing correctly and landing in `leads.details`
+    — confirmed the new service appeared in the live offered list
+    immediately, no restart needed; confirmed the `corporate_only`-flip
+    validation correctly blocks marking an in-use service corporate-only
+    (tested against a real provider that had `mortgage` selected); tested
+    unit-level that the reworked fallback extractor matches option labels
+    (not just values) while preserving the pre-existing longest-first
+    substring-priority rule that stops `"credit"` from shadowing
+    `"business_credit"`; confirmed franchisee/service_provider roles are
+    redirected away from `/dashboard/chat-services` and don't see the nav
+    item; confirmed the New Provider form's "services handled" list
+    correctly includes new non-corporate-only services and excludes
+    corporate-only ones. Test service and its test lead deleted afterward
+    (leads FK to service_types, so the lead had to go first) — this is
+    live production data via the SSH-tunneled local dev DB, not a
+    throwaway one.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.

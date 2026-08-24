@@ -53,8 +53,21 @@ class ExtractionResult:
 
 
 def _tool_schema_for_field(field: Field) -> dict:
+    description = f"Record the user's answer to: {field['prompt']}"
+
     if field["type"] == "enum":
+        # The JSON Schema `enum` constraint only accepts a flat list of
+        # strings — it can't carry {value,label} pairs — so the actual
+        # constraint is still raw values. Admin-authored option labels
+        # (e.g. "Just purchasing my first home" for value "purchase") may
+        # not be self-descriptive as a bare value, so they're spelled out
+        # in the description instead, giving the model real option text to
+        # match the user's free-form reply against, not just a slug.
         value_schema = {"type": "string", "enum": field["enum_values"]}
+        labels = field.get("enum_labels")
+        if labels:
+            options_text = ", ".join(f"{v} ({labels[v]})" for v in field["enum_values"] if v in labels)
+            description += f". Options are value (label): {options_text}"
     elif field["type"] == "boolean":
         value_schema = {"type": "boolean"}
     else:
@@ -64,7 +77,7 @@ def _tool_schema_for_field(field: Field) -> dict:
         "type": "function",
         "function": {
             "name": "record_answer",
-            "description": f"Record the user's answer to: {field['prompt']}",
+            "description": description,
             "parameters": {
                 "type": "object",
                 "properties": {"value": value_schema},
@@ -123,14 +136,28 @@ def _fallback_extract(field: Field, user_message: str) -> ExtractionResult:
 
     if field["type"] == "enum":
         lowered = text.lower().replace(" ", "_").replace("-", "_")
-        if lowered in field["enum_values"]:
-            return ExtractionResult(ok=True, value=lowered)
+        # Matches against both the raw stored value and, if present, its
+        # admin-authored label (e.g. an option value "purchase" with label
+        # "Just purchasing my first home" — a visitor is far more likely
+        # to echo the label's wording than the internal slug). Both map to
+        # the same value, so a dict naturally dedups when they normalize
+        # to the same string.
+        labels = field.get("enum_labels", {})
+        candidates: dict[str, str] = {}
+        for value in field["enum_values"]:
+            candidates[value] = value
+            if value in labels:
+                normalized_label = labels[value].lower().replace(" ", "_").replace("-", "_")
+                candidates[normalized_label] = value
+        if lowered in candidates:
+            return ExtractionResult(ok=True, value=candidates[lowered])
         # Substring fallback (e.g. "yeah just refinancing" -> "refinance"),
-        # but check longest candidates first so e.g. "credit" can't shadow
-        # "business_credit" — "credit" is a substring of it.
-        for candidate in sorted(field["enum_values"], key=len, reverse=True):
-            if candidate in lowered or lowered in candidate:
-                return ExtractionResult(ok=True, value=candidate)
+        # checking longest candidates first so e.g. "credit" can't shadow
+        # "business_credit" — "credit" is a substring of it. Applies to
+        # both values and labels via the same combined candidate map.
+        for candidate_text in sorted(candidates, key=len, reverse=True):
+            if candidate_text in lowered or lowered in candidate_text:
+                return ExtractionResult(ok=True, value=candidates[candidate_text])
         return ExtractionResult(ok=False)
 
     if field["type"] == "email":
