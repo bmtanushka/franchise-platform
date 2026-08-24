@@ -76,7 +76,12 @@ export async function createFranchisee(
   actingRole: Role,
   input: CreateFranchiseeInput,
 ): Promise<{ tenantId: string }> {
-  assertCanCreateAccounts(actingRole);
+  // Deliberately stricter than the shared ACCOUNT_CREATOR_ROLES (which
+  // still lets franchisor create service providers, and edit an existing
+  // franchisee) — only a super_admin can add a *new* franchisee tenant.
+  if (actingRole !== "super_admin") {
+    throw new Error("Only a super admin can add a new franchisee.");
+  }
 
   const [template] = await sql<{ id: string }[]>`
     select id from site_templates where component_key = 'standard' limit 1

@@ -53,6 +53,7 @@ export async function createFranchiseeAction(
     });
   } catch (err) {
     if (err instanceof AccountConflictError) return { error: err.message };
+    if (err instanceof Error && err.message.startsWith("Only a super admin")) return { error: err.message };
     return { error: "Something went wrong creating this franchisee. Please try again." };
   }
 

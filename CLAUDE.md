@@ -1246,6 +1246,20 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     submitted leads appear correctly in the franchisee's own Leads list.
     All test leads/sessions/the temporary question pair removed afterward.
 
+28. ✅ Adding a *new* franchisee is now `super_admin`-only — franchisor
+    lost this one specific capability (everything else they could already
+    do — editing an existing franchisee, adding/editing service providers
+    — is unchanged). `createFranchisee` in `web/src/lib/db/accounts.ts`
+    got its own stricter check (`actingRole !== "super_admin"`) instead of
+    the shared `ACCOUNT_CREATOR_ROLES`/`assertCanCreateAccounts` every
+    other account-creation function still uses — same pattern
+    `createAdminUser` already used for the same reason (roadmap item 18).
+    `/dashboard/franchisees/new` redirects franchisor away, and the "Add
+    franchisee" button on `/dashboard/franchisees` only renders for
+    `super_admin`. Verified franchisor still sees/can use "Add provider"
+    and can still edit an existing franchisee — only franchisee *creation*
+    changed.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 

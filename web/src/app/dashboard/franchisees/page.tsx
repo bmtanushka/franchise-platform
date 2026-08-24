@@ -28,9 +28,11 @@ export default async function FranchiseesPage() {
         title={role === "super_admin" ? "All tenants" : "Franchisees"}
         description="Every franchisee tenant, plus the franchisor's own root site."
         action={
-          <Link href="/dashboard/franchisees/new" className={primaryButtonClass}>
-            Add franchisee
-          </Link>
+          role === "super_admin" ? (
+            <Link href="/dashboard/franchisees/new" className={primaryButtonClass}>
+              Add franchisee
+            </Link>
+          ) : undefined
         }
       />
 

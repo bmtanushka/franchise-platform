@@ -8,7 +8,7 @@ export default async function NewFranchiseePage() {
   const session = await auth();
   const role = session!.user.role;
 
-  if (role !== "super_admin" && role !== "franchisor") {
+  if (role !== "super_admin") {
     redirect("/dashboard");
   }
 
