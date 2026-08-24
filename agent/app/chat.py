@@ -2,7 +2,7 @@ from typing import Any, Optional
 
 from . import db, email
 from .config import settings
-from .openai_helper import extract_answer, phrase_intro, phrase_question
+from .openai_helper import extract_answer, phrase_question
 from .question_sets import Field, SERVICE_LABELS, get_question_set, next_pending_field
 
 
@@ -42,9 +42,23 @@ def _split_answers(question_set: list[Field], answers: dict[str, Any]) -> tuple[
     return lead_fields, details
 
 
+async def _build_intro(tenant_name: str, tenant_type: str) -> str:
+    # Deliberately literal, not passed through OpenAI rephrasing — the
+    # whole point of an editable greeting is that what the franchisor/
+    # super_admin types is exactly what a visitor sees, not something an
+    # LLM might paraphrase turn to turn. The services question is always
+    # system-appended so it can't drift out of sync with the real,
+    # tenant-type-filtered service list.
+    chat_settings = await db.get_chat_settings()
+    template = chat_settings["corporate_greeting"] if tenant_type == "franchisor" else chat_settings["franchisee_greeting"]
+    greeting = template.replace("{tenant_name}", tenant_name)
+    services_line = ", ".join(_offered_labels(tenant_type).values())
+    return f"{greeting} Which of these are you interested in: {services_line}?"
+
+
 async def start_chat(tenant_id: str, tenant_name: str, tenant_type: str) -> dict[str, Any]:
     session_id = await db.create_chat_session(tenant_id, service_type_id=None)
-    intro = await phrase_intro(tenant_name, list(_offered_labels(tenant_type).values()))
+    intro = await _build_intro(tenant_name, tenant_type)
     await db.insert_chat_message(session_id, "assistant", intro)
     return {"session_id": session_id, "reply": intro, "done": False}
 

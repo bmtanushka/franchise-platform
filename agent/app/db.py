@@ -151,6 +151,21 @@ async def get_tenant_type(tenant_id: str) -> Optional[str]:
     return row["type"] if row else None
 
 
+async def get_chat_settings() -> dict[str, str]:
+    """
+    Singleton row — always exactly one. Franchisor/super_admin-editable
+    greeting templates (web/src/lib/db/chat-settings.ts); the corporate
+    site uses corporate_greeting, every franchisee site uses
+    franchisee_greeting, per chat.py's start_chat.
+    """
+    pool = await get_pool()
+    row = await pool.fetchrow("select corporate_greeting, franchisee_greeting from chat_settings limit 1")
+    return {
+        "corporate_greeting": row["corporate_greeting"],
+        "franchisee_greeting": row["franchisee_greeting"],
+    }
+
+
 async def get_franchisee_owner_email(tenant_id: str) -> Optional[str]:
     pool = await get_pool()
     row = await pool.fetchrow(

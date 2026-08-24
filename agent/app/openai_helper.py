@@ -24,33 +24,6 @@ _client = AsyncOpenAI(api_key=settings.openai_api_key) if settings.openai_api_ke
 MODEL = "gpt-4o-mini"
 
 
-async def phrase_intro(tenant_name: str, service_labels: list[str]) -> str:
-    services_line = ", ".join(service_labels)
-    base = (
-        f"Hi, I'm {tenant_name}'s virtual assistant. I can help connect you with the right "
-        f"specialist. Which of these are you interested in: {services_line}?"
-    )
-    if _client is None:
-        return base
-
-    response = await _client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    f"You are a warm, concise intake assistant for {tenant_name}. "
-                    "Rephrase the given opening message naturally in 2-3 short sentences. "
-                    "Keep it introducing yourself and asking which service the visitor wants — "
-                    "do not drop or add services."
-                ),
-            },
-            {"role": "user", "content": base},
-        ],
-    )
-    return response.choices[0].message.content or base
-
-
 async def phrase_question(field: Field, tenant_name: str) -> str:
     base_prompt = field["prompt"]
     if _client is None:

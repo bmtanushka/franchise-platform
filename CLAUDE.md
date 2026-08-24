@@ -248,6 +248,27 @@ won/lost/disqualified, skipping `assigned_to_provider` and the
 rebate_received/rebate_paid pair) — a UI affordance only, since
 `updateLeadStatus` already permits franchisor/super_admin any status.
 
+### Chat greeting
+
+The chat's opening message is editable — franchisor/super_admin only, via
+`/dashboard/chat-settings` ("Chat Greeting" in the sidebar). Two templates
+in a singleton `chat_settings` table (migration 012, always exactly one
+row, no per-franchisee override): `corporate_greeting` for the franchisor's
+own site, `franchisee_greeting` used identically across every franchisee
+site. `{tenant_name}` in either template is substituted with the actual
+tenant's name at chat-start time (`agent/app/chat.py`'s `_build_intro`);
+the "Which of these are you interested in: ..." services question is
+always system-appended after it, never part of the editable text, so an
+edit can't accidentally go stale against the real, tenant-type-filtered
+service list (`_offered_labels`).
+
+Deliberately **not** passed through OpenAI rephrasing the way question
+prompts still are (`phrase_question` in `agent/app/openai_helper.py`) —
+`phrase_intro`, which used to do this for the greeting, was removed
+entirely. The whole point of making the greeting editable is that what a
+franchisor/super_admin types is exactly what a visitor sees, not something
+an LLM might paraphrase differently turn to turn.
+
 ## Course module
 
 Franchisor/super_admin author training courses; franchisees self-enroll
@@ -976,6 +997,32 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     the dev server was restarted — worth remembering for any future
     corporate/franchisee-site HTML edit, since `next dev`'s Fast Refresh
     doesn't cover this cache the way it does the React module graph.
+
+25. ✅ Editable chat greeting — see "Chat greeting" under "AI chat agent"
+    above for the design (migration 012's singleton `chat_settings` table,
+    separate corporate/franchisee templates, `{tenant_name}` substitution,
+    system-appended services question, franchisor/super_admin-only via
+    `/dashboard/chat-settings`). Scope was confirmed with the user before
+    building — asked whether this should be one shared greeting everywhere
+    or a separate one for the corporate site vs. a franchisee default; they
+    chose the latter, which is what's built.
+
+    Removed `phrase_intro` from `agent/app/openai_helper.py` entirely
+    (dead code once the greeting stopped going through OpenAI rephrasing)
+    rather than leaving it unused.
+
+    Verified end-to-end locally: confirmed the default greeting (seeded
+    byte-identical to the old hardcoded fallback text) still opens correctly
+    on both a franchisor tenant and a franchisee tenant, with the right
+    tenant name substituted and the right service list per tenant type
+    (franchise-interest included only on the franchisor site, per the
+    existing gating); edited both templates via the dashboard form and
+    confirmed a fresh chat session on each tenant type immediately reflected
+    the new text verbatim (not paraphrased) with correct substitution;
+    confirmed franchisee/service_provider roles are redirected away from
+    `/dashboard/chat-settings` and don't see the nav item; reverted the
+    test greeting text back to the original default afterward, since this
+    is live production data, not a throwaway local DB.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
