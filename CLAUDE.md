@@ -354,6 +354,70 @@ DB's `service_types.name` purely so the old value-only fallback matcher
 could substring-match it — `service_types.name` is now the single name
 field, used everywhere.
 
+### Manual lead entry (franchisee portal)
+
+A franchisee taking a call in person — someone gives their info over the
+phone instead of using the chat widget — can enter it directly at
+`/dashboard/leads/new` ("Add lead" button on the Leads page), `franchisee`
+role only (not franchisor/super_admin, who already have a full-platform
+Leads view; this is specifically "a franchisee typing up a call they just
+took"). Same services and questions as the chat agent, including
+`depends_on` conditional branching — reuses the exact same
+`chat_questions`/`chat_question_options` data
+(`web/src/lib/db/chat-services.ts`'s `getServiceQuestions`, extracted out
+so both the admin management UI and this feature read from one query
+instead of drifting apart), filtered the same way the chat agent's
+franchisee-site offering is (`is_active` and `not corporate_only` — a
+franchisee can't submit a `franchise_interest`-style lead any more than a
+caller could ask their local chat widget for one).
+
+One page (`web/src/components/dashboard/lead-entry-form.tsx`, a client
+component): a service picker at the top, then that service's questions
+below with conditional fields shown/hidden entirely client-side as
+earlier answers change — no per-question page turns like the chat's
+turn-by-turn flow, since a form doesn't need that pacing. `web/src/lib/db/lead-entry.ts`'s
+`createLeadFromEntry` re-derives which questions are actually visible
+server-side from the submitted answers (mirroring the chat agent's
+`next_pending_field`/`_dependency_met`) and requires every visible one be
+answered, so a tampered request can't skip a question that was visible in
+the real form. Writes straight into `leads`/`lead_status_history` via
+`withTenantContext` — the first time the web app creates a lead directly
+rather than through the agent; `tenant_id` is always the franchisee's own,
+`status` starts `qualified` (matching the chat path), and the note reads
+"Captured via franchisee portal (manual entry)". No `chat_sessions`/
+`chat_messages` rows — those exist specifically to analyze a
+*conversation's* drop-off points, and there's no conversation here, just
+one form submission. No lead-created email either — the franchisee is the
+one submitting it, so notifying "the franchisee" would just be notifying
+themselves about their own action.
+
+Boolean answers are handled as the literal strings `"true"`/`"false"`
+throughout this form's client state, `FormData`, and server-side
+`depends_on` evaluation — deliberately, since `chat_question_options`'
+`depends_on_values` column already stores boolean dependency targets as
+those same strings (set when an admin picks Yes/No while configuring a
+question's dependency), so comparing string to string needs no coercion
+here. They're only converted to a real Postgres/JSON boolean at the final
+point of writing to `leads`/`leads.details`, to match the shape the chat
+path already produces there.
+
+**Found and fixed a real bug in the chat agent while building this**:
+`agent/app/db.py`'s `get_questions_for_service` was putting
+`depends_on_values` into a field's `depends_on` dict as the raw DB string
+("true"/"false") unconditionally — but a boolean question's actual stored
+answer (from `extract_answer`) is a native Python `bool`, and `True ==
+"true"` is `False`, so **any `depends_on` targeting a boolean question
+could never fire** since this feature shipped (migrations 013/014). No
+existing question used a boolean dependency target yet — both worked
+examples then were enum-based (`mortgage_purpose`, `real_estate_intent`)
+— so this had shipped silently broken. Fixed by building a `key ->
+field_type` lookup within the same query result and coercing
+`depends_on_values` to real booleans when the target is boolean-typed,
+before it's compared. Verified against a real chat conversation both ways
+(bankruptcy-year follow-up correctly appears when "yes," correctly skipped
+when "no") and against the new manual-entry form, then removed the test
+question afterward.
+
 ## Course module
 
 Franchisor/super_admin author training courses; franchisees self-enroll
@@ -1151,6 +1215,36 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     (leads FK to service_types, so the lead had to go first) — this is
     live production data via the SSH-tunneled local dev DB, not a
     throwaway one.
+
+27. ✅ Manual lead entry from the franchisee portal — see "Manual lead
+    entry (franchisee portal)" under "AI chat agent" above for the full
+    design (`/dashboard/leads/new`, franchisee-only, same services/
+    questions/`depends_on` as the chat agent, writes directly to `leads`
+    for the first time from the web app rather than through the agent).
+
+    Found and fixed a real bug in the chat agent while building this — see
+    the same section above — `depends_on` targeting a boolean question
+    could never fire, since the stored answer is a real Python bool but
+    the comparison was against the raw DB string. Shipped silently broken
+    with the previous roadmap item, since neither worked example used a
+    boolean dependency target.
+
+    Verified end-to-end locally and on production concepts (schema/logic
+    identical, only exercised locally against the shared DB): submitted a
+    mortgage "purchase" lead through the new form and confirmed
+    `preapproval_status` correctly appeared and the resulting lead's
+    columns/details matched exactly what the chat path would have
+    produced, including `tenant_id` resolving to the submitting
+    franchisee's own tenant; added a temporary boolean-dependent question
+    pair (`has_bankruptcy` → `bankruptcy_year`) to `credit` and confirmed
+    the fix via a real chat conversation both ways (year question appears
+    on "yes," skipped on "no") and via the new form (same both ways, plus
+    server-side rejection when a currently-visible required field is
+    omitted, and no rejection when a now-hidden field is simply absent);
+    confirmed franchisor/super_admin/service_provider can't reach
+    `/dashboard/leads/new` and don't see the "Add lead" button; confirmed
+    submitted leads appear correctly in the franchisee's own Leads list.
+    All test leads/sessions/the temporary question pair removed afterward.
 
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.

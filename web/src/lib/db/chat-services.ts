@@ -88,15 +88,14 @@ export type ChatQuestion = {
 
 export type ChatServiceDetail = ChatService & { questions: ChatQuestion[] };
 
-export async function getChatServiceDetail(ctx: SessionContext, serviceId: string): Promise<ChatServiceDetail | null> {
-  requireManager(ctx);
-  const [service] = await sql<
-    { id: string; key: string; name: string; corporate_only: boolean; is_active: boolean }[]
-  >`
-    select id, key, name, corporate_only, is_active from service_types where id = ${serviceId}
-  `;
-  if (!service) return null;
-
+/**
+ * Ordered question list for a service, with options grouped per question —
+ * no role gate (the gate belongs in the caller); shared by the admin
+ * management UI (`getChatServiceDetail`) and the franchisee lead-entry
+ * form (`web/src/lib/db/lead-entry.ts`), so both read from one query
+ * instead of drifting apart.
+ */
+export async function getServiceQuestions(serviceId: string): Promise<ChatQuestion[]> {
   const rows = await sql<
     {
       id: string;
@@ -144,7 +143,19 @@ export async function getChatServiceDetail(ctx: SessionContext, serviceId: strin
       byId.get(r.id)!.options.push({ value: r.option_value, label: r.option_label ?? r.option_value });
     }
   }
-  const questions = order.map((id) => byId.get(id)!);
+  return order.map((id) => byId.get(id)!);
+}
+
+export async function getChatServiceDetail(ctx: SessionContext, serviceId: string): Promise<ChatServiceDetail | null> {
+  requireManager(ctx);
+  const [service] = await sql<
+    { id: string; key: string; name: string; corporate_only: boolean; is_active: boolean }[]
+  >`
+    select id, key, name, corporate_only, is_active from service_types where id = ${serviceId}
+  `;
+  if (!service) return null;
+
+  const questions = await getServiceQuestions(serviceId);
 
   return {
     id: service.id,

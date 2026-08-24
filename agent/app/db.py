@@ -153,6 +153,12 @@ async def get_questions_for_service(service_type_id: str) -> list[dict[str, Any]
         UUID(service_type_id),
     )
 
+    # Needed to coerce depends_on_values correctly below — a boolean
+    # question's stored answer is a real Python bool (from extract_answer),
+    # not the string "true"/"false" the depends_on_values column holds, so
+    # comparing them directly (`True == "true"`) would always be False.
+    field_types = {row["key"]: row["field_type"] for row in rows}
+
     fields: dict[str, dict[str, Any]] = {}
     order: list[str] = []
     for row in rows:
@@ -167,11 +173,14 @@ async def get_questions_for_service(service_type_id: str) -> list[dict[str, Any]
             if row["lead_field"]:
                 field["lead_field"] = row["lead_field"]
             if row["depends_on_key"]:
+                dep_values: list[Any] = list(row["depends_on_values"])
+                if field_types.get(row["depends_on_key"]) == "boolean":
+                    dep_values = [v == "true" for v in dep_values]
                 field["depends_on"] = {"field": row["depends_on_key"]}
                 if row["depends_on_mode"] == "equals":
-                    field["depends_on"]["equals"] = row["depends_on_values"][0]
+                    field["depends_on"]["equals"] = dep_values[0]
                 else:
-                    field["depends_on"]["one_of"] = list(row["depends_on_values"])
+                    field["depends_on"]["one_of"] = dep_values
             if row["field_type"] == "enum":
                 field["enum_values"] = []
                 field["enum_labels"] = {}
