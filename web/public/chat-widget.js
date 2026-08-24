@@ -142,9 +142,17 @@
     closeBtn.addEventListener("click", closePanel);
 
     messagesEl = el("div", { id: "cw-messages" });
-    input = el("input", { id: "cw-input", placeholder: "Type your answer..." });
+    // autocomplete="off" on both the input and its form — without a `name`
+    // attribute some browsers still key remembered values off `id`, which
+    // showed prior answers from completely unrelated questions (email,
+    // dollar amounts, yes/no) as autofill suggestions on every field.
+    input = el("input", {
+      id: "cw-input",
+      placeholder: "Type your answer...",
+      autocomplete: "off",
+    });
     sendBtn = el("button", { id: "cw-send", type: "submit", text: "Send" });
-    form = el("form", { id: "cw-form" }, [input, sendBtn]);
+    form = el("form", { id: "cw-form", autocomplete: "off" }, [input, sendBtn]);
     form.addEventListener("submit", sendMessage);
 
     panel = el("div", { id: "cw-panel" }, [
