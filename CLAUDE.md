@@ -1260,11 +1260,68 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     and can still edit an existing franchisee — only franchisee *creation*
     changed.
 
+29. ✅ Dashboard re-themed dark ("Nocturne") — re-tuned the existing
+    Forest/Moss/Gold token set in `web/src/app/globals.css` from the
+    original light palette to a deep-night one, in place, rather than
+    adding a toggle. Because the whole dashboard shell (cards, buttons,
+    badges, tables, the login/reset pages) is built on that one set of
+    CSS custom properties (`web/src/lib/dashboard-ui.ts`,
+    `status-badge.tsx`'s `TONE_CLASSES`, etc.), redefining the token
+    values re-themed nearly everything without touching component code.
+
+    A few pairings only worked under light-mode assumptions and needed
+    direct fixes instead of a pure variable swap: `page-header.tsx`'s and
+    the course-lesson-list icon chips did dark-text-on-light-chip
+    (`bg-sage-tint text-forest`) — switched to a moss-tinted chip
+    (`bg-moss/15 text-moss`) that still reads once `sage-tint` itself is
+    dark; the sidebar's active nav pill and `entity-row.tsx`'s avatar
+    circle put white text on solid `bg-moss` — fine against the old dark
+    moss, but the brighter moss this theme needs for moss-as-*text*
+    legibility elsewhere drops white-on-moss contrast too low, so those
+    two switched to dark text instead; `chart-theme.tsx`'s chart
+    surface/grid/categorical colors are hardcoded (not routed through the
+    CSS tokens), so it got its own dark-tuned values; TipTap's rendered
+    and editable rich text uses Tailwind Typography's `prose` class,
+    which ships its own light-mode text colors regardless of the app's
+    tokens — added `prose-invert` everywhere it's used (course lesson
+    view, lesson notes, the editor itself) or it would've rendered
+    dark-on-dark. Every text/background pairing was checked against WCAG
+    contrast math before picking final hex values, not eyeballed.
+
+    Went out to production via a PR (not a direct push to `main`) since
+    this is a broad, subjective visual change rather than a scoped
+    feature — but this Railway project turned out to have no PR/preview
+    environments actually configured (`railway environment list` shows
+    only `production`, despite the Hosting section above describing that
+    workflow), so there was no live preview URL to review before
+    merging; merged straight to `main` after local verification instead,
+    per the user's choice when asked. Verified end-to-end: clean
+    `tsc`/build, compiled CSS contains the new token values both locally
+    and on production, and `/dashboard`, `/dashboard/leads`,
+    `/dashboard/franchisees`, `/dashboard/courses`,
+    `/dashboard/chat-services` all render 200 with no server errors in
+    both places (no screenshot/browser tool available this session, so
+    this was verified structurally — HTML/CSS output and render status —
+    rather than visually).
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
 ## Known gaps / things to revisit
 
+- Railway **PR/preview environments are not actually enabled** on this
+  project, despite the Hosting section above describing that as the
+  workflow — `railway environment list` shows only `production`, no
+  environment has ever been created per-PR, and opening a real PR (#1,
+  the dashboard dark-theme redesign) produced no preview URL or Railway
+  check/comment. Enabling it is a one-time Railway dashboard setting
+  (Settings → Environments → PR deploys) tied to the account's
+  authenticated session — not something scriptable via `railway` CLI, so
+  it needs to be turned on interactively by whoever's logged into
+  Railway, same category of action as the original project/service
+  creation. Until then, anything that'd benefit from a live preview
+  before merging (visual/design changes especially) has no choice but to
+  verify locally and merge straight to `main`.
 - `RESEND_API_KEY` is **not** set on Railway `web` OR `agent` yet —
   forgot-password reset links, the lead-assigned/lead-created
   notifications, and the daily digest are all only landing in each
