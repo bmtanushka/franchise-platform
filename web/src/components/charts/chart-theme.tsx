@@ -13,21 +13,21 @@ export function ChartTheme({ children }: { children: React.ReactNode }) {
     <div className="viz-root">
       <style>{`
         .viz-root {
-          --chart-surface: #ffffff;
-          --text-secondary: #667169;
-          --text-muted: #667169;
-          --grid: #dee5e0;
-          --trend: #2c7a5b;
-          --tone-success: #22a35e;
-          --tone-warning: #d97706;
-          --tone-error: #dc2626;
-          --tone-info: #2563eb;
-          --tone-neutral: #667169;
-          --cat-1: #2a78d6;
-          --cat-2: #eb6834;
-          --cat-3: #1baf7a;
-          --cat-4: #eda100;
-          --cat-5: #e87ba4;
+          --chart-surface: #141b24;
+          --text-secondary: #8b96a8;
+          --text-muted: #8b96a8;
+          --grid: #333f4d;
+          --trend: #0e9f6e;
+          --tone-success: #22c55e;
+          --tone-warning: #f5a524;
+          --tone-error: #f0575c;
+          --tone-info: #4f8ff7;
+          --tone-neutral: #8b96a8;
+          --cat-1: #5b9bf0;
+          --cat-2: #ff8a52;
+          --cat-3: #2cd39a;
+          --cat-4: #ffbe3d;
+          --cat-5: #ff9dc2;
         }
       `}</style>
       {children}

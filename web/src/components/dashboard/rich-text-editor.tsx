@@ -148,7 +148,7 @@ export function RichTextEditor({
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "font-body prose prose-sm max-w-none px-3 py-2 text-sm text-ink focus:outline-none min-h-[8rem]",
+        class: "font-body prose prose-invert prose-sm max-w-none px-3 py-2 text-sm text-ink focus:outline-none min-h-[8rem]",
       },
     },
     onUpdate: ({ editor }) => setHtml(editor.getHTML()),

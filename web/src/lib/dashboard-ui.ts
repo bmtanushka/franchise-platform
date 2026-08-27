@@ -1,7 +1,7 @@
 // Shared className tokens for the dashboard style kit — kept in one
 // place so every form/table/card reads from the same set instead of
 // re-deriving Tailwind strings per component.
-export const cardClass = "rounded-[10px] border border-border bg-surface shadow-[0_1px_2px_rgba(22,75,60,0.06)]";
+export const cardClass = "rounded-[10px] border border-border bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.45)]";
 
 // Every dashboard page's top-level wrapper. Deliberately no `mx-auto` —
 // that was centering a narrow column in the wide <main> next to the

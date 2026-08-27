@@ -19,7 +19,7 @@ export function Sidebar({ role }: { role: Role }) {
             key={item.href}
             href={item.href}
             className={`font-body flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors ${
-              active ? "bg-moss font-medium text-white" : "text-white/70 hover:bg-moss/25 hover:text-white"
+              active ? "bg-moss font-medium text-background" : "text-white/70 hover:bg-moss/25 hover:text-white"
             }`}
           >
             <Icon size={17} strokeWidth={active ? 2.25 : 1.75} />

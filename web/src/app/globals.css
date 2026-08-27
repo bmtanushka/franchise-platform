@@ -1,37 +1,41 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
-/* Dashboard style kit — financial/professional tone. Deliberately a
-   single fixed light theme (no dark mode) per the kit; doesn't affect
-   the corporate/franchisee site templates, which are raw HTML with
-   their own inline styles and never touch these tokens. */
+/* Dashboard style kit — "Nocturne": a single fixed dark theme (no
+   toggle, same as the light kit it replaced) built on the same
+   Forest/Moss/Gold brand hues, re-tuned for a deep night palette
+   instead of the original light one. Doesn't affect the corporate/
+   franchisee site templates, which are raw HTML with their own inline
+   styles and never touch these tokens. Every value below was checked
+   against its actual pairing (text on its background) for WCAG
+   contrast — see git history for the numbers — rather than eyeballed. */
 :root {
-  --background: #f6f8f7;
-  --foreground: #1b211d;
+  --background: #0a0e13;
+  --foreground: #edf1f6;
 
-  --forest: #164b3c;
-  --moss: #2c7a5b;
-  --sage-tint: #e7f1ec;
-  --gold: #b8863b;
-  --ink: #1b211d;
-  --slate: #667169;
-  --surface: #ffffff;
-  --border: #dee5e0;
+  --forest: #0f2019;
+  --moss: #0e9f6e;
+  --sage-tint: #16241d;
+  --gold: #d9a750;
+  --ink: #edf1f6;
+  --slate: #8b96a8;
+  --surface: #141b24;
+  --border: #333f4d;
 
-  --success: #22a35e;
-  --success-bg: #e4f6ec;
-  --success-text: #166534;
-  --warning: #d97706;
-  --warning-bg: #fdf0dd;
-  --warning-text: #92400e;
-  --error: #dc2626;
-  --error-bg: #fdecec;
-  --error-text: #991b1b;
-  --info: #2563eb;
-  --info-bg: #e8effd;
-  --info-text: #1e3a8a;
-  --neutral-bg: #eef1ef;
-  --neutral-text: #3f4642;
+  --success: #22c55e;
+  --success-bg: #12291b;
+  --success-text: #6ee7a0;
+  --warning: #f5a524;
+  --warning-bg: #33220a;
+  --warning-text: #fbc36b;
+  --error: #f0575c;
+  --error-bg: #341316;
+  --error-text: #fca5a5;
+  --info: #4f8ff7;
+  --info-bg: #13233f;
+  --info-text: #93bbfa;
+  --neutral-bg: #1b222c;
+  --neutral-text: #9aa5b5;
 }
 
 @theme inline {
