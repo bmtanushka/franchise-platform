@@ -159,7 +159,7 @@ export function LeadsTable({
           <p className="font-body text-sm text-slate">No leads match these filters.</p>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-[10px] border border-border bg-surface shadow-[0_1px_2px_rgba(22,75,60,0.06)]">
+        <div className="overflow-x-auto rounded-[10px] border border-border bg-surface shadow-[0_1px_3px_rgba(0,0,0,0.45)]">
           <table className="w-full">
             <thead>
               <tr className="border-b-2 border-border bg-sage-tint">

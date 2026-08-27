@@ -72,7 +72,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
               const canOpen = isManager || course.isEnrolled;
               const content = (
                 <>
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sage-tint text-forest">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-moss/15 text-moss">
                     {lesson.contentType === "video" ? <Video size={15} /> : <FileText size={15} />}
                   </span>
                   <div className="min-w-0 flex-1">

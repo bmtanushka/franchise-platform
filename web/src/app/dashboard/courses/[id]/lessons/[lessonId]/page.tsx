@@ -69,7 +69,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
               <div className="border-t border-border pt-4">
                 <h2 className="font-heading mb-2 text-sm font-semibold text-ink">Notes</h2>
                 <div
-                  className="font-body prose prose-sm max-w-none text-sm leading-relaxed text-ink"
+                  className="font-body prose prose-invert prose-sm max-w-none text-sm leading-relaxed text-ink"
                   dangerouslySetInnerHTML={{ __html: sanitizedContent }}
                 />
               </div>
@@ -77,7 +77,7 @@ export default async function LessonPage({ params }: { params: Promise<{ id: str
           </div>
         ) : (
           <div
-            className="font-body prose prose-sm max-w-none text-sm leading-relaxed text-ink"
+            className="font-body prose prose-invert prose-sm max-w-none text-sm leading-relaxed text-ink"
             dangerouslySetInnerHTML={{ __html: sanitizedContent ?? "" }}
           />
         )}

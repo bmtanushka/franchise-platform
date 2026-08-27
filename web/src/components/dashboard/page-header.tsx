@@ -14,7 +14,7 @@ export function PageHeader({
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="flex items-start gap-3">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sage-tint text-forest">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-moss/15 text-moss">
           <Icon size={20} strokeWidth={1.75} />
         </span>
         <div>
