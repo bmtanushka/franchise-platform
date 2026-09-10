@@ -523,9 +523,13 @@ Cloudflare R2 + a `documents` table linked to `leads`).
   - `web`: `DATABASE_URL`, `AGENT_SERVICE_URL` (internal Railway domain),
     auth secret/keys, `NEXT_PUBLIC_APP_URL`.
   - `agent`: `DATABASE_URL`, `OPENAI_API_KEY`.
-- Use Railway's PR/preview environments — open a branch, get a live preview
-  URL, review before merging to production. This is how we'll sanity-check
-  changes rather than just reading diffs.
+- Originally the intended workflow: Railway PR/preview environments — open
+  a branch, get a live preview URL, review before merging to production.
+  Never actually got enabled on this project (see "Known gaps"), so it's
+  superseded for now by a `staging` git branch (see "GitHub" below) as the
+  review buffer instead — a real Railway environment tracking `staging`
+  would still be the better fix once someone's in the Railway dashboard to
+  set it up.
 - Railway project/service creation itself requires an authenticated Railway
   account (browser OAuth via `railway login`), so it must be done
   interactively by the user, not by an agent running non-interactively.
@@ -540,8 +544,20 @@ Cloudflare R2 + a `documents` table linked to `leads`).
   /agent     — FastAPI service
   /db/migrations — SQL migration files, run in order
   ```
-- Standard feature-branch workflow: branch → PR → Railway preview deploy →
-  review → merge to `main` → Railway auto-deploys `main` to production.
+- **`main` = production, `staging` = integration branch** (added once the
+  PR/preview-environments gap below made "PR → live preview → merge to
+  main" impossible to actually do). Workflow: `feature/x` branches off
+  `staging`, PR into `staging`, then a second PR promotes `staging` →
+  `main`. Both branches have GitHub branch protection (PR required, no
+  required review count since this is a solo repo, no force-push, no
+  branch deletion) — nobody pushes directly to either.
+  Railway currently only auto-deploys `main` (see "Known gaps" —
+  `staging` has no Railway environment/live URL yet, so a `staging` PR is
+  currently just a safer review buffer, not a place to click around and
+  verify; that needs a Railway environment created against the `staging`
+  branch before it's fully useful). If `main` and `staging` are ever
+  hotfixed independently, merge `main` back into `staging` right after so
+  staging doesn't silently revert the fix on its next promotion.
 - Don't commit secrets. All API keys and connection strings come from
   Railway environment variables, referenced via `.env` locally
   (`.env` gitignored, `.env.example` committed with empty values).
@@ -1319,9 +1335,13 @@ next — nothing currently queued.
   authenticated session — not something scriptable via `railway` CLI, so
   it needs to be turned on interactively by whoever's logged into
   Railway, same category of action as the original project/service
-  creation. Until then, anything that'd benefit from a live preview
-  before merging (visual/design changes especially) has no choice but to
-  verify locally and merge straight to `main`.
+  creation. Mitigated for now by adding a `staging` git branch (see
+  "GitHub" above) as a review buffer before `main` — but `staging` itself
+  has no Railway environment/live URL yet either, so it's currently only
+  a safer place to land a PR, not something to click around and verify
+  live. Whoever's next in the Railway dashboard should either enable PR
+  environments properly or create a `staging` environment tracking that
+  branch — either closes this gap for real.
 - `RESEND_API_KEY` is **not** set on Railway `web` OR `agent` yet —
   forgot-password reset links, the lead-assigned/lead-created
   notifications, and the daily digest are all only landing in each
