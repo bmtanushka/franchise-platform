@@ -1320,6 +1320,79 @@ Cloudflare R2 + a `documents` table linked to `leads`).
     this was verified structurally — HTML/CSS output and render status —
     rather than visually).
 
+30. ✅ Real estate temporarily hidden — every real-estate-facing surface on
+    both site types, plus the chat agent, hidden from visitors without
+    deleting anything, so it can be brought back later with no rebuild:
+    - **Separate page**: removed the `/real-estate` entry from
+      `PAGE_REGISTRY` in `web/src/lib/corporate-site.ts` and
+      `web/src/lib/franchisee-site.ts` (commented out with a pointer back
+      to this roadmap item, not deleted). The route falls out of
+      `CORPORATE_PATHS`/`FRANCHISEE_SITE_PATHS`, so `proxy.ts` no longer
+      rewrites it and it 404s through normal Next.js routing — the actual
+      `real-estate.html` file is untouched on disk either way.
+    - **Nav links**: the "Real Estate" dropdown item and the
+      "Rebate & Lender Credits" dropdown's "Real Estate" sub-link, in
+      both `_partials/header.html` files, wrapped in HTML comments.
+    - **Home page section**: the dedicated `<section id="realestate">`
+      block (heading, rebate calculators, video grid) on both `index.html`
+      files, plus the smaller "Real Estate Combined" hero stat card, the
+      "Real Estate Combined Rebate" benefit line in the "Claim Your Offer"
+      form, and the "Real Estate" pill in any `stream-row` — all wrapped
+      in HTML comments rather than removed.
+    - **Rebate & lender credits page**: the equivalent
+      `<section id="real-estate">` block on
+      `rebate-and-credit-rewards.html` (corporate) /
+      `rebate-and-lender-credits.html` (franchisee), the "Real Estate"
+      quick-nav button in the hero, and the "Real Estate" `stream` pill —
+      same wrapping treatment.
+    - **Chat**: `service_types.is_active` set to `false` for the
+      `real_estate` row — the exact soft-deactivate mechanism already
+      built for this in "Admin-editable chat services & questions" above,
+      so no code change was needed here at all. This automatically drops
+      it from `list_offered_services` (the chat's opening question) and
+      from `listServiceTypes()` (the New/Edit Provider "services handled"
+      picker), while leaving it fully visible and re-activatable from
+      `/dashboard/chat-services` — a super_admin/franchisor can flip it
+      back on from the dashboard alone, no deploy required. One existing
+      test provider ("Test Real Estate Group") still lists `real_estate`
+      in its own `service_types` array — untouched, since deactivating a
+      service doesn't retroactively edit a provider's existing selections,
+      same as toggling any other service inactive would.
+
+    A structural gotcha, not a content one: a naive "wrap the whole
+    section in `<!-- -->`" pass would have broken silently, because three
+    of the four hidden sections (both rebate pages' real-estate block, and
+    the corporate home page's) contain their own inner
+    `<!-- Calculator 1: ... -->` / `<!-- Calculator 2: ... -->` developer
+    comments — HTML comments don't nest, so the first inner `-->` would
+    have closed the outer wrapper early and left the rest of that section
+    visible. Fixed by deleting those two inner label comments in each
+    affected file (pure dev breadcrumbs, no visible/functional content)
+    before wrapping, then verified with a script that strips all
+    `<!-- -->` blocks from the rendered HTML and confirms zero real-estate
+    strings survive — not just eyeballing the source, since raw curl
+    output includes comment text that a real browser never renders.
+
+    Deliberately left untouched: passing mentions of "real estate" inside
+    prose that belongs to a *different* section (the general "why us"
+    copy, the Foreign Nationals section's "international real estate
+    investors" line, a "Commercial Property" pill about commercial
+    mortgages) — these aren't navigable to real-estate content and aren't
+    the feature being hidden, just a word inside unrelated marketing copy;
+    rewriting them was out of scope and risked introducing awkward phrasing
+    for no functional benefit.
+
+    Verified locally end-to-end on both tenant types (franchisor site at
+    `localhost:3000`, franchisee site at `va1.localhost:3000`): direct
+    `/real-estate` request 404s on both; a script strips HTML comments
+    from the fetched home page and rebate page and confirms zero
+    real-estate strings/links/section-ids survive into rendered output;
+    a real chat conversation's opening question no longer lists "Real
+    estate" as an option on either tenant type, and typing "real estate"
+    directly is rejected with a re-ask rather than accepted; confirmed
+    `/dashboard/chat-services` still lists it with an "Inactive" badge
+    (visible to admins, not silently gone); clean `tsc`/build.
+
 Both the original roadmap items are done. Next up is whatever's needed
 next — nothing currently queued.
 
