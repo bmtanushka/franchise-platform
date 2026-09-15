@@ -21,7 +21,9 @@ const PAGE_REGISTRY: Record<string, PageEntry> = {
   "/business": { file: "business.html", title: "Business Financing & Lines of Credit" },
   "/commercial-mortgages": { file: "commercial-mortgages.html", title: "Commercial Mortgages" },
   "/foreign-nationals": { file: "foreign-nationals.html", title: "Foreign Nationals & Investors" },
-  "/real-estate": { file: "real-estate.html", title: "Real Estate" },
+  // "/real-estate" temporarily hidden (not deleted) — see CLAUDE.md
+  // "Real estate temporarily hidden" for the full list of what else this
+  // touches. Re-add this line to bring the page back.
   "/rebate-and-credit-rewards": { file: "rebate-and-credit-rewards.html", title: "Rebate & Lender Credits" },
   "/about-us": { file: "about-us.html", title: "About Us" },
   "/how-it-works": { file: "how-it-works.html", title: "How It Works" },
